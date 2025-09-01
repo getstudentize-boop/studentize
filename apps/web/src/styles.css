@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 body {
-  @apply m-0 text-sm;
+  @apply m-0 text-sm text-left;
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
     "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
