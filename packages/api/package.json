@@ -1,0 +1,29 @@
+{
+  "name": "@student/api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "scripts": {
+    "generate": "drizzle-kit generate"
+  },
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.8",
+    "@types/node": "^24.3.0",
+    "tsx": "^4.19.4",
+    "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^2.0.19",
+    "@orpc/server": "1.8.1",
+    "@student/db": "workspace:*",
+    "ai": "^5.0.22",
+    "wrangler": "^4.32.0",
+    "zod": "^4.0.10"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

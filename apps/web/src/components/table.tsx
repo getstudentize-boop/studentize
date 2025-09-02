@@ -63,7 +63,7 @@ export const TableHead = forwardRef<HTMLTableCellElement, TableHeadProps>(
       <th
         ref={ref}
         className={cn(
-          "font-semibold h-10 border-secondary-b border-zinc-100 bg-clip-padding first:pl-6 last:pr-6",
+          "font-semibold h-10 border-secondary-b border-zinc-100 bg-clip-padding first:pl-4 last:pr-4",
           className
         )}
         {...rest}

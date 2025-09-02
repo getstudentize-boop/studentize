@@ -1,0 +1,29 @@
+{
+  "name": "@student/db",
+  "version": "1.0.0",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "scripts": {
+    "generate": "drizzle-kit generate",
+    "migrate:dev": "drizzle-kit migrate"
+  },
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.8",
+    "@types/node": "^24.3.0",
+    "drizzle-kit": "0.31.4",
+    "tsx": "^4.19.4"
+  },
+  "dependencies": {
+    "@paralleldrive/cuid2": "^2.2.2",
+    "dotenv": "^16.5.0",
+    "drizzle-orm": "0.44.4",
+    "pg": "^8.16.3",
+    "postgres": "^3.4.7"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

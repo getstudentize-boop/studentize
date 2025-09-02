@@ -18,11 +18,34 @@ import {
   TableBody,
 } from "@/components/table";
 
+import { useQuery } from "@tanstack/react-query";
+import { orpc } from "orpc/client";
+
 export const Route = createFileRoute("/sessions")({
   component: RouteComponent,
 });
 
+const StudentCell = (props: { name: string }) => {
+  return (
+    <div className="flex gap-2 items-center">
+      <Avvatar size={24} value={props.name} />
+      {props.name}
+    </div>
+  );
+};
+
+const AdvisorCell = (props: { name: string }) => {
+  return (
+    <div className="bg-indigo-50 text-indigo-950 rounded-md py-1 px-2.5 font-semibold border border-indigo-100 text-xs inline-flex items-center gap-2">
+      <CircleIcon className="size-2 fill-indigo-500" weight="fill" />
+      {props.name}
+    </div>
+  );
+};
+
 function RouteComponent() {
+  const listSessionsQuery = useQuery(orpc.session.list.queryOptions());
+
   const table = useReactTable({
     data: [
       {
@@ -37,12 +60,7 @@ function RouteComponent() {
         accessorKey: "student",
         header: "Student",
         cell: (info) => {
-          return (
-            <div className="flex gap-2 items-center">
-              <Avvatar size={24} value={info.getValue() as string} />
-              {info.getValue()}
-            </div>
-          );
+          return <StudentCell name={info.getValue()} />;
         },
       },
       { accessorKey: "title", header: "Title" },
@@ -51,12 +69,7 @@ function RouteComponent() {
         accessorKey: "advisor",
         header: "Advisor",
         cell: (info) => {
-          return (
-            <div className="bg-indigo-50 text-indigo-950 rounded-md py-1 px-2.5 font-semibold border border-indigo-100 text-xs inline-flex items-center gap-2">
-              <CircleIcon className="size-2 fill-indigo-500" weight="fill" />
-              {info.getValue()}
-            </div>
-          );
+          return <AdvisorCell name={info.getValue()} />;
         },
       },
     ],
@@ -75,7 +88,7 @@ function RouteComponent() {
         </div>
       </div>
       <div className="flex-1 rounded-lg border border-zinc-200/60 text-left">
-        <div className="p-4 border-b border-zinc-200/60">
+        <div className="p-2 border-b border-zinc-200/60">
           <div className="border border-zinc-200 rounded-lg inline-flex items-center">
             <div className="p-2 border-r border-zinc-200/80">
               <Avvatar size={24} value="test" />
@@ -111,7 +124,7 @@ function RouteComponent() {
                   return (
                     <TableCell
                       key={cell.id}
-                      className="max-w-0 p-0 first:pl-6 last:pr-6 overflow-hidden whitespace-nowrap"
+                      className="max-w-0 p-0 first:pl-4 last:pr-4 overflow-hidden whitespace-nowrap"
                     >
                       <div>
                         {flexRender(
