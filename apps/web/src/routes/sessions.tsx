@@ -25,8 +25,8 @@ function RouteComponent() {
           <PlusIcon />
         </div>
       </div>
-      <div className="flex-1 rounded-lg border border-zinc-200/60 text-left">
-        <div className="p-2 border-b border-zinc-200/60">
+      <div className="flex-1 rounded-lg border border-bzinc text-left">
+        <div className="p-2 border-b border-bzinc">
           <div className="border border-zinc-200 rounded-lg inline-flex items-center">
             <div className="p-2 border-r border-zinc-200/80">
               <Avvatar size={24} value="test" />

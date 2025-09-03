@@ -1,6 +1,6 @@
 import { pgEnum, pgTable, serial, text } from "drizzle-orm/pg-core";
 
-import { createdAt } from "./utils";
+import { createdAt, id } from "./utils";
 
 export const userType = pgEnum("user_type", ["ADMIN", "ADVISOR", "STUDENT"]);
 export const userStatus = pgEnum("user_status", [
@@ -10,10 +10,10 @@ export const userStatus = pgEnum("user_status", [
 ]);
 
 export const user = pgTable("user", {
-  id: serial("id").primaryKey(),
+  id,
   createdAt,
   email: text("email").notNull().unique(),
   name: text("name").notNull(),
-  type: userType().notNull(),
-  status: userStatus().notNull(),
+  type: userType().default("STUDENT").notNull(),
+  status: userStatus().default("PENDING").notNull(),
 });
