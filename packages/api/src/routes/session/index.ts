@@ -1,12 +1,12 @@
 import { os } from "@orpc/server";
 
-import { SessionListSchema, sessionList } from "./list";
+import { sessionList } from "./list";
 
 import { defaultMiddleware } from "../../utils/middleware";
 
 export const sessionListHandler = os
   .use(defaultMiddleware)
   .handler(async ({}) => {
-    const result = await sessionList({});
+    const result = await sessionList();
     return result;
   });

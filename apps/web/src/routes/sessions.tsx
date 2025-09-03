@@ -1,81 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  useReactTable,
-  getCoreRowModel,
-  getFilteredRowModel,
-  flexRender,
-} from "@tanstack/react-table";
 
-import { CircleIcon, PlusIcon } from "@phosphor-icons/react";
+import { PlusIcon } from "@phosphor-icons/react";
 
 import Avvatar from "avvvatars-react";
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableCell,
-  TableHead,
-  TableBody,
-} from "@/components/table";
 
 import { useQuery } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
+import { SessionTable } from "@/features/tables/session";
 
 export const Route = createFileRoute("/sessions")({
   component: RouteComponent,
 });
 
-const StudentCell = (props: { name: string }) => {
-  return (
-    <div className="flex gap-2 items-center">
-      <Avvatar size={24} value={props.name} />
-      {props.name}
-    </div>
-  );
-};
-
-const AdvisorCell = (props: { name: string }) => {
-  return (
-    <div className="bg-indigo-50 text-indigo-950 rounded-md py-1 px-2.5 font-semibold border border-indigo-100 text-xs inline-flex items-center gap-2">
-      <CircleIcon className="size-2 fill-indigo-500" weight="fill" />
-      {props.name}
-    </div>
-  );
-};
-
 function RouteComponent() {
   const listSessionsQuery = useQuery(orpc.session.list.queryOptions());
-
-  const table = useReactTable({
-    data: [
-      {
-        student: "Khaya Zulu",
-        createdAt: "(GMT+02:00) Pretoria",
-        title: "Advisor Session",
-        advisor: "Rachel Chang",
-      },
-    ],
-    columns: [
-      {
-        accessorKey: "student",
-        header: "Student",
-        cell: (info) => {
-          return <StudentCell name={info.getValue()} />;
-        },
-      },
-      { accessorKey: "title", header: "Title" },
-      { accessorKey: "createdAt", header: "Created At" },
-      {
-        accessorKey: "advisor",
-        header: "Advisor",
-        cell: (info) => {
-          return <AdvisorCell name={info.getValue()} />;
-        },
-      },
-    ],
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-  });
 
   return (
     <div className="flex flex-1 flex-col p-4 pt-2.5 h-screen">
@@ -102,43 +40,7 @@ function RouteComponent() {
           </div>
         </div>
 
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row.getAllCells().map((cell) => {
-                  return (
-                    <TableCell
-                      key={cell.id}
-                      className="max-w-0 p-0 first:pl-4 last:pr-4 overflow-hidden whitespace-nowrap"
-                    >
-                      <div>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </div>
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <SessionTable data={listSessionsQuery.data ?? []} />
       </div>
     </div>
   );

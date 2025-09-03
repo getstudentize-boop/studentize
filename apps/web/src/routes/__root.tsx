@@ -4,6 +4,7 @@ import { TanstackDevtools } from "@tanstack/react-devtools";
 
 import appCss from "../styles.css?url";
 import { Header } from "@/features/header";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -30,6 +31,8 @@ export const Route = createRootRoute({
   shellComponent: RootDocument,
 });
 
+const queryClient = new QueryClient();
+
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -37,7 +40,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <Header>{children}</Header>
+        <QueryClientProvider client={queryClient}>
+          <Header>{children}</Header>
+        </QueryClientProvider>
         <TanstackDevtools
           config={{
             position: "bottom-left",
