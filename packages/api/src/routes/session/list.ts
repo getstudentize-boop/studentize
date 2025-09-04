@@ -1,14 +1,20 @@
 import z from "zod";
 
-export const SessionListSchema = z.object({});
+import { getSessions } from "@student/db";
 
-export const sessionList = async () => {
-  return [
-    {
-      student: "Khaya Zulu",
-      createdAt: "(GMT+02:00) Pretoria",
-      title: "Advisor Session",
-      advisor: "Rachel Chang",
-    },
-  ];
+export const ListSessionInputSchema = z.object({
+  studentId: z.string().optional(),
+});
+
+export const listSessions = async (
+  data: z.infer<typeof ListSessionInputSchema>
+) => {
+  const sessions = await getSessions(data);
+
+  return sessions.map((s) => ({
+    student: s.student?.name ?? "",
+    createdAt: s.createdAt,
+    title: s.title,
+    advisor: s.advisor?.name ?? "",
+  }));
 };

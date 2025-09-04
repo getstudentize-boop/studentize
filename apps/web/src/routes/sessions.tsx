@@ -8,13 +8,23 @@ import { useQuery } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import { SessionTable } from "@/features/tables/session";
 import { Input } from "@/components/input";
+import { UserSearch } from "@/features/user-search";
+import { useState } from "react";
+import { Button } from "@/components/button";
+import { CreateSession } from "@/features/create-session";
 
 export const Route = createFileRoute("/sessions")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const listSessionsQuery = useQuery(orpc.session.list.queryOptions());
+  const [isOpen, setIsOpen] = useState(false);
+
+  const listSessionsQuery = useQuery(
+    orpc.session.list.queryOptions({ input: {} })
+  );
+
+  const sessions = listSessionsQuery.data ?? [];
 
   return (
     <>
@@ -22,10 +32,10 @@ function RouteComponent() {
         <div className="justify-between items-center flex p-2.5">
           <div className="flex gap-2 items-center">Sessions</div>
 
-          <div className="px-3 py-1.5 shadow border-b-2 border-zinc-950 flex gap-2 rounded-full text-white bg-zinc-800 items-center">
+          <Button onClick={() => setIsOpen(!isOpen)}>
             New Session
             <PlusIcon />
-          </div>
+          </Button>
         </div>
         <div className="flex-1 rounded-lg border border-bzinc text-left">
           <div className="p-2 border-b border-bzinc">
@@ -42,42 +52,10 @@ function RouteComponent() {
             </div>
           </div>
 
-          <SessionTable data={listSessionsQuery.data ?? []} />
+          <SessionTable data={sessions} />
         </div>
       </div>
-      <div className="w-[500px] border-l border-bzinc flex flex-col gap-4 p-4 py-7">
-        <Input label="Title" placeholder="e.g: Advisory Session" />
-        <div>
-          <label className="mb-2 mx-1 flex justify-between">
-            Transcription
-          </label>
-          <div className="border border-bzinc rounded-md">
-            <textarea className="w-full h-32 p-2 outline-none" rows={10} />
-            <div className="border-t border-bzinc p-2 text-left flex justify-between items-center">
-              <SubtitlesIcon size={18} />
-              <div className="flex gap-2 items-center">
-                Count: 100 words
-                <XIcon size={18} />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label className="mb-2 mx-1 flex justify-between">
-            Transcription
-          </label>
-          <div className="border border-bzinc rounded-md">
-            <textarea className="w-full h-32 p-2 outline-none" rows={10} />
-            <div className="border-t border-bzinc p-2 text-left flex justify-between items-center">
-              <SubtitlesIcon size={18} />
-              <div className="flex gap-2 items-center">
-                Count: 100 words
-                <XIcon size={18} />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {isOpen ? <CreateSession /> : null}
     </>
   );
 }

@@ -27,3 +27,20 @@ export const createBaseUser = async (data: {
 
   return user;
 };
+
+export const searchUserByName = async (data: {
+  query: string;
+  type: UserSelect["type"];
+}) => {
+  const users = await db.query.user.findMany({
+    columns: {
+      id: true,
+      name: true,
+    },
+    where: (user, { eq, ilike }) => {
+      return eq(user.type, data.type) && ilike(user.name, `%${data.query}%`);
+    },
+  });
+
+  return users;
+};

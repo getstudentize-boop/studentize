@@ -29,7 +29,7 @@ const AdvisorCell = (props: { name: string }) => {
 type Session = {
   student: string;
   title: string;
-  createdAt: string;
+  createdAt: Date | null;
   advisor: string;
 };
 
@@ -45,6 +45,7 @@ const columns = [
   }),
   columnHelper.accessor("createdAt", {
     header: "Created At",
+    cell: (info) => info.getValue()?.toString() ?? "",
   }),
   columnHelper.accessor("advisor", {
     header: "Advisor",
