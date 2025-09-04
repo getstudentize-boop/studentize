@@ -1,4 +1,5 @@
 import { NewStudentDialog } from "@/features/dialogs/new-student";
+import { NewAdvisorDialog } from "@/features/dialogs/new-advisor";
 import { AdvisorTable } from "@/features/tables/advisor";
 import { StudentTable } from "@/features/tables/student";
 import { cn } from "@/utils/cn";
@@ -38,20 +39,24 @@ export const Header = ({
 
 function RouteComponent() {
   const studentsQuery = useQuery(orpc.student.list.queryOptions());
+  const advisorsQuery = useQuery(orpc.advisor.list.queryOptions());
 
   const students = studentsQuery.data ?? [];
+  const advisors = advisorsQuery.data ?? [];
 
   return (
     <div className="flex flex-1 p-4 pt-2.5 gap-4 h-screen text-left">
       <div className="flex-1 flex-col flex">
-        <div className="p-[17.5px]">Advisors</div>
+        <div className="flex items-center justify-between p-2.5">
+          <div>Advisors</div>
+          <NewAdvisorDialog />
+        </div>
         <div className="border border-bzinc rounded-lg flex-1 text-left">
           <AdvisorTable
-            data={[
-              { name: "Dr. Alice Johnson", university: "Harvard University" },
-              { name: "Prof. Bob Lee", university: "Stanford University" },
-              { name: "Dr. Carol White", university: "MIT" },
-            ]}
+            data={advisors.map((a) => ({
+              name: a.name,
+              university: a.universityName,
+            }))}
           />
         </div>
       </div>
