@@ -67,15 +67,17 @@ export const Dialog = ({
   trigger,
   children,
   className,
+  isOpen,
+  onOpenChange,
 }: {
   trigger: ReactNode;
   children: ReactNode;
   className?: string;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) => {
-  console.log("Dialog className:", className);
-
   return (
-    <DialogRoot>
+    <DialogRoot open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger>{trigger}</DialogTrigger>
       <DialogPortal>
         <DialogOverlay />

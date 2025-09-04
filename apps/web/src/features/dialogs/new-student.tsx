@@ -9,10 +9,18 @@ import { Button } from "@/components/button";
 import { Input } from "@/components/input";
 import { useMutation } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
+import { useState } from "react";
 
 export const NewStudentDialog = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
   const createStudentMutation = useMutation(
-    orpc.user.createStudent.mutationOptions({})
+    orpc.student.create.mutationOptions({
+      onSuccess: () => {
+        form.reset();
+        setIsOpen(false);
+      },
+    })
   );
 
   const form = useForm({
@@ -26,9 +34,7 @@ export const NewStudentDialog = () => {
         email: z.email("Invalid email address"),
       }),
     },
-    onSubmit: async (vals) => {
-      await createStudentMutation.mutateAsync(vals.value);
-    },
+    onSubmit: (vals) => createStudentMutation.mutateAsync(vals.value),
   });
 
   return (
@@ -40,6 +46,8 @@ export const NewStudentDialog = () => {
         </button>
       }
       className="p-0"
+      isOpen={isOpen}
+      onOpenChange={setIsOpen}
     >
       <form
         onSubmit={(ev) => {
@@ -89,7 +97,7 @@ export const NewStudentDialog = () => {
           <form.Subscribe
             selector={(state) => [state.isSubmitting]}
             children={([isSubmitting]) => (
-              <Button type="submit" variant="primary" disabled={isSubmitting}>
+              <Button type="submit" variant="primary" isLoading={isSubmitting}>
                 Create
                 <GraduationCapIcon size={18} />
               </Button>

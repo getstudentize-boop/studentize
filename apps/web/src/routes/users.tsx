@@ -3,7 +3,9 @@ import { AdvisorTable } from "@/features/tables/advisor";
 import { StudentTable } from "@/features/tables/student";
 import { cn } from "@/utils/cn";
 import { PlusIcon } from "@phosphor-icons/react";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { orpc } from "orpc/client";
 
 export const Route = createFileRoute("/users")({
   component: RouteComponent,
@@ -35,6 +37,10 @@ export const Header = ({
 };
 
 function RouteComponent() {
+  const studentsQuery = useQuery(orpc.student.list.queryOptions());
+
+  const students = studentsQuery.data ?? [];
+
   return (
     <div className="flex flex-1 p-4 pt-2.5 gap-4 h-screen text-left">
       <div className="flex-1 flex-col flex">
@@ -56,11 +62,10 @@ function RouteComponent() {
         </div>
         <div className="border border-bzinc rounded-lg flex-1 text-left">
           <StudentTable
-            data={[
-              { name: "John Doe", sessions: 5 },
-              { name: "Jane Smith", sessions: 3 },
-              { name: "Jim Brown", sessions: 2 },
-            ]}
+            data={students.map((s) => ({
+              name: s.name,
+              sessions: 0,
+            }))}
           />
         </div>
       </div>

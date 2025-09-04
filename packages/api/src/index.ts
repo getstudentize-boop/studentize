@@ -1,12 +1,13 @@
 import { sessionListHandler } from "./routes/session";
 
-import { userCreateStudentHandler } from "./routes/user";
+import { studentCreateHandler, studentListHandler } from "./routes/student";
 
 export const router = {
   session: {
     list: sessionListHandler,
   },
-  user: {
-    createStudent: userCreateStudentHandler,
+  student: {
+    create: studentCreateHandler,
+    list: studentListHandler,
   },
 };
