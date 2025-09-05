@@ -1,5 +1,5 @@
 import * as schema from "../schema";
-import { db, InferInsertModel, InferSelectModel } from "..";
+import { and, db, InferInsertModel, InferSelectModel } from "..";
 
 type UserSelect = InferSelectModel<typeof schema.user>;
 type UserInsert = InferInsertModel<typeof schema.user>;
@@ -37,9 +37,8 @@ export const searchUserByName = async (data: {
       id: true,
       name: true,
     },
-    where: (user, { eq, ilike }) => {
-      return eq(user.type, data.type) && ilike(user.name, `%${data.query}%`);
-    },
+    where: (user, { eq, ilike }) =>
+      and(eq(user.type, data.type), ilike(user.name, `%${data.query}%`)),
   });
 
   return users;

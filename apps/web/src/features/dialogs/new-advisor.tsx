@@ -20,7 +20,10 @@ export const NewAdvisorDialog = () => {
       onSuccess: () => {
         form.reset();
         setIsOpen(false);
-        queryClient.invalidateQueries({ queryKey: ["advisor", "list"] });
+
+        return queryClient.invalidateQueries({
+          queryKey: orpc.advisor.list.key({ type: "query" }),
+        });
       },
     })
   );
