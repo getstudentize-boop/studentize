@@ -1,5 +1,7 @@
 import Avvatar from "avvvatars-react";
 
+import { format } from "date-fns";
+
 import { CircleIcon } from "@phosphor-icons/react";
 import {
   createColumnHelper,
@@ -45,7 +47,7 @@ const columns = [
   }),
   columnHelper.accessor("createdAt", {
     header: "Created At",
-    cell: (info) => info.getValue()?.toString() ?? "",
+    cell: (info) => format(info.getValue() ?? new Date(), "PPpp"),
   }),
   columnHelper.accessor("advisor", {
     header: "Advisor",
