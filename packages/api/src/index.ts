@@ -16,6 +16,8 @@ import {
   advisorSearchHandler,
 } from "./routes/advisor";
 
+import { chatStudentHandler } from "./routes/chat";
+
 import { userDisplayHandler } from "./routes/user";
 
 export const router = {
@@ -36,5 +38,8 @@ export const router = {
   },
   user: {
     display: userDisplayHandler,
+  },
+  chat: {
+    student: chatStudentHandler,
   },
 };
