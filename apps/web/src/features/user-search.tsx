@@ -5,6 +5,7 @@ import {
   DropdownTrigger,
   DropdownItem,
 } from "@/components/dropdown";
+import { cn } from "@/utils/cn";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import Avvatar from "avvvatars-react";
 
@@ -17,30 +18,44 @@ export const UserSearch = ({
   onSearch,
   data,
   user,
+  trigger,
+  side,
+  className,
 }: {
   placeholder: string;
   onSelect: (user: User) => void;
   onSearch: (query: string) => void;
   data: Array<User>;
   align?: "start" | "end";
+  side?: "top" | "bottom" | "left" | "right";
   user?: User;
+  trigger?: (user: User | undefined) => React.ReactNode;
+  className?: string;
 }) => {
   return (
     <DropdownRoot>
       <DropdownTrigger asChild>
-        <button className="border border-zinc-200 rounded-lg inline-flex items-center w-full cursor-pointer">
-          <div className="p-2 border-r border-zinc-200/80">
-            {user ? (
-              <Avvatar size={24} value={user?.name} />
-            ) : (
-              <div className="size-6" />
-            )}
-          </div>
-          <div className="px-2">{user?.name}</div>
-        </button>
+        {trigger ? (
+          trigger(user)
+        ) : (
+          <button className="border border-zinc-200 rounded-lg inline-flex items-center w-full cursor-pointer">
+            <div className="p-2 border-r border-zinc-200/80">
+              {user ? (
+                <Avvatar size={24} value={user?.name} />
+              ) : (
+                <div className="size-6" />
+              )}
+            </div>
+            <div className="px-2">{user?.name}</div>
+          </button>
+        )}
       </DropdownTrigger>
       <DropdownPortal>
-        <DropdownContent align={align} className="p-0 pb-2 w-[29.2rem]">
+        <DropdownContent
+          side={side}
+          align={align}
+          className={cn("p-0 pb-2 w-[29.2rem]", className)}
+        >
           <div className="py-2 px-2.5 border-b border-bzinc mb-2 flex gap-2.5 items-center">
             <MagnifyingGlassIcon
               size={17}

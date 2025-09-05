@@ -7,12 +7,47 @@ import {
   CaretCircleRightIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
+import { UserSearch } from "@/features/user-search";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { orpc } from "orpc/client";
+import { useForm } from "@tanstack/react-form";
+
+import { z } from "zod";
 
 export const Route = createFileRoute("/")({
   component: App,
+  validateSearch: (search) =>
+    z.object({ userId: z.string().optional() }).parse(search),
 });
 
 function App() {
+  const searchParams = Route.useSearch();
+  const navigate = Route.useNavigate();
+
+  const userId = searchParams.userId;
+
+  const queryClient = useQueryClient();
+
+  const searchStudentMutation = useMutation(
+    orpc.student.search.mutationOptions()
+  );
+
+  const userDisplayQuery = useQuery(
+    orpc.user.display.queryOptions({
+      input: { userId: userId! },
+      enabled: !!userId,
+    })
+  );
+
+  const form = useForm({
+    defaultValues: {
+      studentQuery: "",
+    },
+  });
+
+  const searchedStudents = searchStudentMutation.data ?? [];
+  const userDisplay = userDisplayQuery.data;
+
   return (
     <>
       <div className="border-r border-zinc-100 w-56"></div>
@@ -45,10 +80,49 @@ function App() {
               />
 
               <div className="flex justify-between">
-                <button className="px-3 py-1.5 border-b-2 border border-zinc-100 border-b-zinc-200 flex gap-2 rounded-full items-center">
-                  Mike Testing
-                  <CaretDownIcon weight="bold" size={12} />
-                </button>
+                <form.Field
+                  name="studentQuery"
+                  asyncDebounceMs={300}
+                  listeners={{
+                    onChange: ({ value }) => {
+                      searchStudentMutation.mutate({ query: value });
+                    },
+                  }}
+                  children={(field) => (
+                    <UserSearch
+                      placeholder="Select session"
+                      data={searchedStudents}
+                      onSearch={field.handleChange}
+                      onSelect={(user) => {
+                        queryClient.setQueryData(
+                          orpc.user.display.queryKey({
+                            input: { userId: user.userId },
+                          }),
+                          () => ({ email: "xxx", name: user.name })
+                        );
+
+                        navigate({ to: "/", search: { userId: user.userId } });
+                      }}
+                      user={
+                        userDisplay && userId
+                          ? {
+                              userId,
+                              name: userDisplay.name,
+                            }
+                          : undefined
+                      }
+                      side="left"
+                      align="end"
+                      className="w-72 h-50"
+                      trigger={(user) => (
+                        <Button variant="neutral" className="rounded-lg">
+                          {user ? user.name : "Select a student"}
+                          <CaretDownIcon weight="bold" />
+                        </Button>
+                      )}
+                    />
+                  )}
+                />
 
                 <Button>
                   <ArrowUpIcon weight="bold" />

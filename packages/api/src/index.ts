@@ -16,6 +16,8 @@ import {
   advisorSearchHandler,
 } from "./routes/advisor";
 
+import { userDisplayHandler } from "./routes/user";
+
 export const router = {
   session: {
     list: sessionListHandler,
@@ -31,5 +33,8 @@ export const router = {
     create: advisorCreateHandler,
     list: advisorListHandler,
     search: advisorSearchHandler,
+  },
+  user: {
+    display: userDisplayHandler,
   },
 };

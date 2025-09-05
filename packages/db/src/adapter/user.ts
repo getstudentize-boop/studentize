@@ -44,3 +44,15 @@ export const searchUserByName = async (data: {
 
   return users;
 };
+
+export const getUserName = async (userId: string) => {
+  const user = await db.query.user.findFirst({
+    columns: {
+      name: true,
+      email: true,
+    },
+    where: (user, { eq }) => eq(user.id, userId),
+  });
+
+  return user;
+};
