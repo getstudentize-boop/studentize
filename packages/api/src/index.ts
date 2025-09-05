@@ -6,7 +6,11 @@ import {
   studentSearchHandler,
 } from "./routes/student";
 
-import { advisorCreateHandler, advisorListHandler } from "./routes/advisor";
+import {
+  advisorCreateHandler,
+  advisorListHandler,
+  advisorSearchHandler,
+} from "./routes/advisor";
 
 export const router = {
   session: {
@@ -21,5 +25,6 @@ export const router = {
   advisor: {
     create: advisorCreateHandler,
     list: advisorListHandler,
+    search: advisorSearchHandler,
   },
 };

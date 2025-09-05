@@ -31,11 +31,16 @@ export const CreateSession = () => {
     orpc.session.create.mutationOptions()
   );
 
-  const searchSessionsMutation = useMutation(
+  const searchStudentsMutation = useMutation(
     orpc.student.search.mutationOptions()
   );
 
-  const sessions = searchSessionsMutation.data ?? [];
+  const searchAdvisorsMutation = useMutation(
+    orpc.advisor.search.mutationOptions()
+  );
+
+  const students = searchStudentsMutation.data ?? [];
+  const advisors = searchAdvisorsMutation.data ?? [];
 
   return (
     <form
@@ -65,7 +70,7 @@ export const CreateSession = () => {
           asyncDebounceMs={300}
           listeners={{
             onChange: ({ value }) => {
-              searchSessionsMutation.mutate({ query: value });
+              searchStudentsMutation.mutate({ query: value });
             },
           }}
           children={(field) => (
@@ -73,7 +78,7 @@ export const CreateSession = () => {
               <label className="mb-2 mx-1 flex justify-between">Student</label>
               <UserSearch
                 placeholder="Search student"
-                data={sessions}
+                data={students}
                 onSelect={setStudent}
                 user={student}
                 onSearch={field.handleChange}
@@ -81,16 +86,28 @@ export const CreateSession = () => {
             </div>
           )}
         />
-        <div className="flex-1">
-          <label className="mb-2 mx-1 flex justify-between">Advisor</label>
-          <UserSearch
-            align="end"
-            placeholder="Search advisor"
-            data={[]}
-            onSelect={() => {}}
-            onSearch={() => {}}
-          />
-        </div>
+        <form.Field
+          name="advisorQuery"
+          asyncDebounceMs={300}
+          listeners={{
+            onChange: ({ value }) => {
+              searchAdvisorsMutation.mutate({ query: value });
+            },
+          }}
+          children={(field) => (
+            <div className="flex-1">
+              <label className="mb-2 mx-1 flex justify-between">Advisor</label>
+              <UserSearch
+                align="end"
+                placeholder="Search advisor"
+                data={advisors}
+                onSelect={setAdvisor}
+                user={advisor}
+                onSearch={field.handleChange}
+              />
+            </div>
+          )}
+        />
       </div>
       <div>
         <label className="mb-2 mx-1 flex justify-between">Transcription</label>
