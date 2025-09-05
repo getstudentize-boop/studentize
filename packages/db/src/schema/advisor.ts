@@ -1,9 +1,9 @@
-import { pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text } from "drizzle-orm/pg-core";
 
-import { createdAt } from "./utils";
+import { createdAt, id } from "./utils";
 
 export const advisor = pgTable("advisor", {
-  id: serial("id").primaryKey(),
+  id,
   createdAt,
   universityName: text("university_name").notNull(),
   courseMajor: text("course_major").notNull(),

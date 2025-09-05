@@ -1,14 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { PlusIcon, SubtitlesIcon, XIcon } from "@phosphor-icons/react";
+import { PlusIcon } from "@phosphor-icons/react";
 
 import Avvatar from "avvvatars-react";
 
 import { useQuery } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import { SessionTable } from "@/features/tables/session";
-import { Input } from "@/components/input";
-import { UserSearch } from "@/features/user-search";
 import { useState } from "react";
 import { Button } from "@/components/button";
 import { CreateSession } from "@/features/create-session";

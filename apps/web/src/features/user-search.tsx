@@ -8,7 +8,7 @@ import {
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import Avvatar from "avvvatars-react";
 
-type User = { id: string; name: string };
+type User = { userId: string; name: string };
 
 export const UserSearch = ({
   align = "start",
@@ -56,7 +56,7 @@ export const UserSearch = ({
           </div>
           {data.length > 0 ? (
             data.map((d) => (
-              <DropdownItem onSelect={() => onSelect(d)} key={d.id}>
+              <DropdownItem onSelect={() => onSelect(d)} key={d.userId}>
                 <Avvatar value={d.name} size={24} />
                 <div>{d.name}</div>
               </DropdownItem>

@@ -7,15 +7,15 @@ type SessionInsert = InferInsertModel<typeof schema.session>;
 type SessionSelect = InferSelectModel<typeof schema.session>;
 
 export const createSession = async (data: {
-  studentId: string;
-  advisorId: string;
+  studentUserId: string;
+  advisorUserId: string;
   title: string;
 }) => {
   const [session] = await db
     .insert(schema.session)
     .values({
-      studentId: data.studentId,
-      advisorId: data.advisorId,
+      studentUserId: data.studentUserId,
+      advisorUserId: data.advisorUserId,
       title: data.title,
     })
     .returning({ id: schema.session.id });
@@ -23,9 +23,9 @@ export const createSession = async (data: {
   return session;
 };
 
-export const getSessions = async (data: { studentId?: string } = {}) => {
-  const advisorUser = alias(schema.user, "advisor");
-  const studentUser = alias(schema.user, "student");
+export const getSessions = async (data: { studentUserId?: string } = {}) => {
+  const advisorUser = alias(schema.user, "advisor_user");
+  const studentUser = alias(schema.user, "student_user");
 
   const query = db
     .select({
@@ -40,14 +40,11 @@ export const getSessions = async (data: { studentId?: string } = {}) => {
       },
     })
     .from(schema.session)
-    .leftJoin(schema.student, eq(schema.session.studentId, schema.student.id))
-    .leftJoin(schema.advisor, eq(schema.session.advisorId, schema.advisor.id))
-    //
-    .leftJoin(studentUser, eq(schema.student.userId, studentUser.id))
-    .leftJoin(advisorUser, eq(schema.advisor.userId, advisorUser.id));
+    .innerJoin(studentUser, eq(schema.session.studentUserId, studentUser.id))
+    .innerJoin(advisorUser, eq(schema.session.advisorUserId, advisorUser.id));
 
-  const sessions = data.studentId
-    ? await query.where(eq(schema.session.studentId, data.studentId))
+  const sessions = data.studentUserId
+    ? await query.where(eq(schema.session.studentUserId, data.studentUserId))
     : await query;
 
   return sessions;

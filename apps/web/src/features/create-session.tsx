@@ -5,12 +5,21 @@ import { useMutation } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
+import { z } from "zod";
+import { convertStringToFile, uploadFileToStorage } from "@/utils/s3";
+import { Button } from "@/components/button";
 
-type StudentOrAdvisor = { id: string; name: string };
+type StudentOrAdvisor = { userId: string; name: string };
 
 export const CreateSession = () => {
   const [advisor, setAdvisor] = useState<StudentOrAdvisor | undefined>();
   const [student, setStudent] = useState<StudentOrAdvisor | undefined>();
+
+  console.log({ advisor, student });
+
+  const uploadTranscriptionMutation = useMutation(
+    orpc.session.transcriptionUploadUrl.mutationOptions()
+  );
 
   const form = useForm({
     defaultValues: {
@@ -20,10 +29,38 @@ export const CreateSession = () => {
       transcription: "",
     },
     validators: {
-      //   onChange: z.object({
-      //     title: z.string().min(2, "Title is required"),
-      //     transcription: z.string(),
-      //   }),
+      onSubmit: z.object({
+        title: z.string().min(1, "Title is required"),
+        studentQuery: z.string(),
+        advisorQuery: z.string(),
+        transcription: z.string().min(1, "Transcription is required"),
+      }),
+    },
+    onSubmit: async (vals) => {
+      if (!student || !advisor) {
+        throw new Error("Student and Advisor are required");
+      }
+
+      const value = vals.value;
+
+      const session = await createSessionMutation.mutateAsync({
+        title: value.title,
+        studentUserId: student.userId,
+        advisorUserId: advisor.userId,
+      });
+
+      // upload transcription as markdown file
+      const result = await uploadTranscriptionMutation.mutateAsync({
+        sessionId: session.id,
+      });
+
+      const markdown = await convertStringToFile(
+        value.transcription,
+        "transcription.md",
+        "text/markdown"
+      );
+
+      await uploadFileToStorage(result.url, markdown);
     },
   });
 
@@ -109,19 +146,40 @@ export const CreateSession = () => {
           )}
         />
       </div>
-      <div>
-        <label className="mb-2 mx-1 flex justify-between">Transcription</label>
-        <div className="border border-bzinc rounded-md">
-          <textarea className="w-full h-32 p-2 outline-none" rows={10} />
-          <div className="border-t border-bzinc p-2 text-left flex justify-between items-center">
-            <SubtitlesIcon size={18} />
-            <div className="flex gap-2 items-center">
-              Count: 100 words
-              <XIcon size={18} />
+      <form.Field
+        name="transcription"
+        children={(field) => (
+          <div>
+            <label className="mb-2 mx-1 flex justify-between">
+              Transcription
+            </label>
+            <div className="border border-bzinc rounded-md">
+              <textarea
+                className="w-full h-32 p-2 outline-none"
+                rows={10}
+                onChange={(ev) => field.handleChange(ev.target.value)}
+                value={field.state.value}
+              />
+              <div className="border-t border-bzinc p-2 text-left flex justify-between items-center">
+                <SubtitlesIcon size={18} />
+                <div className="flex gap-2 items-center">
+                  Count: {field.state.value.length} chars
+                  <XIcon size={18} />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        )}
+      />
+
+      <form.Subscribe
+        selector={(state) => [state.isSubmitting]}
+        children={([isSubmitting]) => (
+          <Button className="mt-auto" type="submit" isLoading={isSubmitting}>
+            Upload
+          </Button>
+        )}
+      />
     </form>
   );
 };

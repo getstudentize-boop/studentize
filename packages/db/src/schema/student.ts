@@ -1,9 +1,9 @@
 import { jsonb, pgTable, serial, text } from "drizzle-orm/pg-core";
 
-import { createdAt } from "./utils";
+import { createdAt, id } from "./utils";
 
 export const student = pgTable("student", {
-  id: serial("id").primaryKey(),
+  id,
   createdAt,
   userId: text("user_id").notNull(),
   location: text("location"),

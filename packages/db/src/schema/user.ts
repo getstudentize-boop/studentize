@@ -1,4 +1,4 @@
-import { pgEnum, pgTable, serial, text } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, text } from "drizzle-orm/pg-core";
 
 import { createdAt, id } from "./utils";
 

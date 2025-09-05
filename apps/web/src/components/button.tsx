@@ -11,7 +11,7 @@ export const Button = ({ variant, isLoading, ...props }: ButtonProps) => {
     <button
       {...props}
       className={cn(
-        "px-3 py-1.5 cursor-pointer shadow border-b-2 border-zinc-950 flex gap-2 rounded-full text-white bg-zinc-800 items-center relative overflow-hidden",
+        "px-3 py-1.5 cursor-pointer shadow border-b-2 border-zinc-950 flex justify-center gap-2 rounded-full text-white bg-zinc-800 items-center relative overflow-hidden",
         variant === "neutral" &&
           "text-inherit bg-white border-b-2 border border-zinc-100 border-b-zinc-200",
         variant === "primary" &&

@@ -1,11 +1,11 @@
-import { pgTable, serial, text } from "drizzle-orm/pg-core";
+import { pgTable, text } from "drizzle-orm/pg-core";
 
-import { createdAt } from "./utils";
+import { createdAt, id } from "./utils";
 
 export const session = pgTable("session", {
-  id: serial("id").primaryKey(),
+  id,
   createdAt,
-  studentId: text("student_id").notNull(),
-  advisorId: text("advisor_id").notNull(),
+  studentUserId: text("student_user_id").notNull(),
+  advisorUserId: text("advisor_user_id").notNull(),
   title: text("title").notNull(),
 });

@@ -1,5 +1,5 @@
 import * as schema from "../schema";
-import { and, db, InferInsertModel, InferSelectModel } from "..";
+import { and, db, eq, ilike, InferInsertModel, InferSelectModel } from "..";
 
 type UserSelect = InferSelectModel<typeof schema.user>;
 type UserInsert = InferInsertModel<typeof schema.user>;
@@ -32,14 +32,15 @@ export const searchUserByName = async (data: {
   query: string;
   type: UserSelect["type"];
 }) => {
-  const users = await db.query.user.findMany({
-    columns: {
-      id: true,
-      name: true,
-    },
-    where: (user, { eq, ilike }) =>
-      and(eq(user.type, data.type), ilike(user.name, `%${data.query}%`)),
-  });
+  const users = await db
+    .select({ userId: schema.user.id, name: schema.user.name })
+    .from(schema.user)
+    .where(
+      and(
+        eq(schema.user.type, data.type),
+        ilike(schema.user.name, `%${data.query}%`)
+      )
+    );
 
   return users;
 };

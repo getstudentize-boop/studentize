@@ -1,4 +1,8 @@
-import { sessionCreateHandler, sessionListHandler } from "./routes/session";
+import {
+  sessionCreateHandler,
+  sessionListHandler,
+  sessionGetTranscriptionUploadUrlHandler,
+} from "./routes/session";
 
 import {
   studentCreateHandler,
@@ -16,6 +20,7 @@ export const router = {
   session: {
     list: sessionListHandler,
     create: sessionCreateHandler,
+    transcriptionUploadUrl: sessionGetTranscriptionUploadUrlHandler,
   },
   student: {
     create: studentCreateHandler,

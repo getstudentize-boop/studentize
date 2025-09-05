@@ -2,6 +2,10 @@ import { os } from "@orpc/server";
 
 import { listSessions, ListSessionInputSchema } from "./list";
 import { createSession, CreateSessionInputSchema } from "./create";
+import {
+  getTranscriptionUploadUrl,
+  TranscriptionUploadUrlInputSchema,
+} from "./transcription-upload-url";
 
 import { defaultMiddleware } from "../../utils/middleware";
 
@@ -19,4 +23,12 @@ export const sessionCreateHandler = os
   .handler(async ({ input }) => {
     const session = await createSession(input);
     return session;
+  });
+
+export const sessionGetTranscriptionUploadUrlHandler = os
+  .use(defaultMiddleware)
+  .input(TranscriptionUploadUrlInputSchema)
+  .handler(async ({ input }) => {
+    const result = await getTranscriptionUploadUrl(input);
+    return result;
   });
