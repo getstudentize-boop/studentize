@@ -19,10 +19,11 @@ import { useChat } from "@ai-sdk/react";
 
 import { z } from "zod";
 import { eventIteratorToStream } from "@orpc/client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/utils/cn";
 import { ChatHistory } from "@/features/chat-history";
 import { newChatId } from "node_modules/@student/api/src/routes/chat/new-id";
+import { AutosizeTextArea } from "@/features/autosize-text-area";
 
 export const Route = createFileRoute("/")({
   component: App,
@@ -67,6 +68,7 @@ function App() {
   const searchParams = Route.useSearch();
   const navigate = Route.useNavigate();
 
+  const submitRef = useRef<HTMLButtonElement>(null);
   const [input, setInput] = useState("");
 
   const userId = searchParams.userId;
@@ -156,7 +158,7 @@ function App() {
         <div className="justify-between items-center flex p-2.5">
           <div className="flex gap-2 items-center">
             <CaretCircleRightIcon className="size-[1.1rem]" />
-            Guru
+            {isNewChat ? "New Chat" : chatMessagesMutation.data?.title}
           </div>
 
           <div className="flex gap-2">
@@ -180,7 +182,7 @@ function App() {
                 chat.messages.length ? "gap-4" : "items-center justify-center"
               )}
             >
-              {!chatId || chat.messages.length > 0 ? null : <EmptyMessage />}
+              {isNewChat || chat.messages.length > 0 ? null : <EmptyMessage />}
               {chat.messages.map((msg) => (
                 <Message key={msg.id} role={msg.role}>
                   {msg.parts.map((part, index) =>
@@ -205,11 +207,16 @@ function App() {
               }}
             >
               <div className="rounded-2xl bg-white p-4 outline-[1px] outline-zinc-100 shadow-xs">
-                <textarea
+                <AutosizeTextArea
                   placeholder="Ask me anything..."
-                  className="w-full outline-none resize-none"
-                  onChange={(ev) => setInput(ev.target.value)}
                   value={input}
+                  onValueChange={setInput}
+                  onKeyDown={(ev) => {
+                    if (ev.key === "Enter" && !ev.shiftKey) {
+                      ev.preventDefault();
+                      submitRef.current?.click();
+                    }
+                  }}
                   rows={3}
                 />
 
@@ -261,7 +268,11 @@ function App() {
                     )}
                   />
 
-                  <Button type="submit" disabled={!input.trim() || !userId}>
+                  <Button
+                    ref={submitRef}
+                    type="submit"
+                    disabled={!input.trim() || !userId}
+                  >
                     <ArrowUpIcon weight="bold" />
                     Send
                   </Button>

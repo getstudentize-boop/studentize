@@ -8,7 +8,7 @@ import { Button } from "@/components/button";
 import { useQuery } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 
-import { differenceInDays, format } from "date-fns";
+import { format, isSameDay, subDays } from "date-fns";
 import { Link, useSearch } from "@tanstack/react-router";
 import { cn } from "@/utils/cn";
 
@@ -37,29 +37,41 @@ export const ChatHistory = () => {
 
       {chats.map((c, idx) => {
         const prevChat = chats[idx - 1];
-        const days = prevChat
-          ? differenceInDays(
+        const isDifferentDay = prevChat
+          ? !isSameDay(
               c.createdAt ?? new Date(),
               prevChat.createdAt ?? new Date()
             )
-          : 0;
+          : true; // First chat is always a different "day"
 
-        const isTitle = days > 0 || !prevChat;
+        const isTitle = isDifferentDay;
+
+        const now = new Date();
+        const yesterday = subDays(now, 1);
+        const chatDate = c.createdAt ?? new Date();
 
         const title = isTitle
-          ? days === 0
+          ? isSameDay(chatDate, now)
             ? "Today"
-            : days === 1
+            : isSameDay(chatDate, yesterday)
               ? "Yesterday"
-              : format(c.createdAt ?? new Date(), "E DD MMM")
+              : format(chatDate, "E dd MMM")
           : undefined;
 
         return (
           <>
-            {title ? <div className="text-zinc-400 mb-2.5">{title}</div> : null}
+            {title ? (
+              <div
+                className={cn("text-zinc-400 mb-2.5", {
+                  "mt-2": title !== "Today",
+                })}
+              >
+                {title}
+              </div>
+            ) : null}
             <Link
               to="/"
-              search={{ chatId: c.id, userId: searchParams.userId }}
+              search={{ chatId: c.id, userId: c.studentUserId }}
               className={cn("truncate mb-2.5", {
                 "font-semibold text-cyan-900 transition-all":
                   c.id === searchParams.chatId,
