@@ -1,10 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import {
   ArrowUpIcon,
   CaretDownIcon,
   SparkleIcon,
   CaretCircleRightIcon,
+  MagnifyingGlassIcon,
+  PlusIcon,
+  ExportIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
 import { UserSearch } from "@/features/user-search";
@@ -16,13 +19,17 @@ import { useChat } from "@ai-sdk/react";
 
 import { z } from "zod";
 import { eventIteratorToStream } from "@orpc/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/utils/cn";
+import { ChatHistory } from "@/features/chat-history";
+import { newChatId } from "node_modules/@student/api/src/routes/chat/new-id";
 
 export const Route = createFileRoute("/")({
   component: App,
   validateSearch: (search) =>
-    z.object({ userId: z.string().optional() }).parse(search),
+    z
+      .object({ userId: z.string().optional(), chatId: z.string().optional() })
+      .parse(search),
 });
 
 const EmptyMessage = () => {
@@ -48,7 +55,7 @@ const Message = ({
         "py-3 px-4 rounded-xl text-left max-w-xl",
         role === "assistant"
           ? "mr-auto rounded-bl-none bg-white"
-          : "ml-auto rounded-br-none bg-radial to-blue-600 from-blue-700 text-white"
+          : "ml-auto rounded-br-none bg-linear-to-t to-cyan-600 from-cyan-700/80 text-white"
       )}
     >
       {children}
@@ -70,6 +77,8 @@ function App() {
     orpc.student.search.mutationOptions()
   );
 
+  const newChatIdQuery = useQuery(orpc.chat.newId.queryOptions());
+
   const userDisplayQuery = useQuery(
     orpc.user.display.queryOptions({
       input: { userId: userId! },
@@ -77,7 +86,34 @@ function App() {
     })
   );
 
+  const isNewChat = !searchParams.chatId;
+
+  const chatId = searchParams.chatId ?? newChatIdQuery.data;
+
+  const chatMessagesMutation = useMutation(
+    orpc.advisor.chatMessages.mutationOptions({
+      onSuccess: (data) => {
+        chat.setMessages(
+          data.messages.map((m) => ({
+            ...m,
+            parts: [{ type: "text", text: m.content }],
+          }))
+        );
+      },
+    })
+  );
+
   const chat = useChat({
+    id: chatId ?? "new",
+    onFinish: async () => {
+      if (isNewChat) {
+        await queryClient.invalidateQueries({
+          queryKey: orpc.advisor.chatHistory.key(),
+        });
+
+        navigate({ to: "/", search: { userId, chatId } });
+      }
+    },
     transport: {
       sendMessages: async (options) => {
         return eventIteratorToStream(
@@ -86,12 +122,13 @@ function App() {
               advisorUserId: "1",
               studentUserId: userId!,
               messages: options.messages,
+              chatId: chatId!,
             },
             { signal: options.abortSignal }
           )
         );
       },
-      reconnectToStream: (opts) => {
+      reconnectToStream: () => {
         throw new Error("Unsupported");
       },
     },
@@ -106,9 +143,15 @@ function App() {
   const searchedStudents = searchStudentMutation.data ?? [];
   const userDisplay = userDisplayQuery.data;
 
+  useEffect(() => {
+    if (!isNewChat && chatId) {
+      chatMessagesMutation.mutate({ chatId });
+    }
+  }, [chatId, isNewChat]);
+
   return (
     <>
-      <div className="border-r border-zinc-100 w-56"></div>
+      <ChatHistory />
       <div className="flex flex-1 flex-col p-4 pt-2.5 h-screen">
         <div className="justify-between items-center flex p-2.5">
           <div className="flex gap-2 items-center">
@@ -116,20 +159,28 @@ function App() {
             Guru
           </div>
 
-          <div className="px-3 py-1.5 shadow border-b-2 border-zinc-950 flex gap-2 rounded-full text-white bg-zinc-800 items-center">
-            New Chat
-            <SparkleIcon weight="fill" />
+          <div className="flex gap-2">
+            <Button variant="neutral">
+              Share
+              <ExportIcon />
+            </Button>
+            <Link to="/">
+              <Button>
+                New Chat
+                <SparkleIcon weight="fill" />
+              </Button>
+            </Link>
           </div>
         </div>
-        <div className="flex-1 rounded-lg bg-gradient-to-b from-zinc-100/80 to-zinc-100 p-10">
-          <div className="max-w-3xl mx-auto w-full flex flex-col h-full justify-end">
+        <div className="flex-1 h-[90vh] rounded-lg bg-gradient-to-b from-zinc-100/80 to-zinc-100 p-10 pt-0">
+          <div className="max-w-3xl mx-auto w-full flex flex-col h-full relative">
             <div
               className={cn(
-                "flex-1 flex flex-col px-4",
+                "flex-1 flex flex-col px-4 pt-10 pb-36 overflow-y-auto no-scrollbar",
                 chat.messages.length ? "gap-4" : "items-center justify-center"
               )}
             >
-              {chat.messages.length > 0 ? null : <EmptyMessage />}
+              {!chatId || chat.messages.length > 0 ? null : <EmptyMessage />}
               {chat.messages.map((msg) => (
                 <Message key={msg.id} role={msg.role}>
                   {msg.parts.map((part, index) =>
@@ -142,7 +193,7 @@ function App() {
             </div>
             <form
               className={cn(
-                "transition-transform duration-500 ease-in-out",
+                "transition-transform duration-500 ease-in-out absolute bottom-0 left-0 w-full",
                 chat.messages.length > 0 ? "translate-y-5" : undefined
               )}
               onSubmit={(ev) => {
@@ -159,7 +210,6 @@ function App() {
                   className="w-full outline-none resize-none"
                   onChange={(ev) => setInput(ev.target.value)}
                   value={input}
-                  disabled={chat.status !== "ready"}
                   rows={3}
                 />
 

@@ -15,8 +15,6 @@ export const CreateSession = () => {
   const [advisor, setAdvisor] = useState<StudentOrAdvisor | undefined>();
   const [student, setStudent] = useState<StudentOrAdvisor | undefined>();
 
-  console.log({ advisor, student });
-
   const uploadTranscriptionMutation = useMutation(
     orpc.session.transcriptionUploadUrl.mutationOptions()
   );
@@ -52,12 +50,14 @@ export const CreateSession = () => {
       // upload transcription as markdown file
       const result = await uploadTranscriptionMutation.mutateAsync({
         sessionId: session.id,
+        ext: "txt",
+        studentUserId: student.userId,
       });
 
       const markdown = await convertStringToFile(
         value.transcription,
-        "transcription.md",
-        "text/markdown"
+        "transcription.txt",
+        "text/plain"
       );
 
       await uploadFileToStorage(result.url, markdown);
@@ -87,7 +87,7 @@ export const CreateSession = () => {
 
         form.handleSubmit();
       }}
-      className="w-[500px] border-l border-bzinc flex flex-col gap-4 p-4 py-7"
+      className="w-[500px] border-l border-bzinc flex flex-col gap-4 p-4 py-7 bg-white"
     >
       <form.Field
         name="title"

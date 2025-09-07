@@ -51,7 +51,7 @@ function RouteComponent() {
           <div>Advisors</div>
           <NewAdvisorDialog />
         </div>
-        <div className="border border-bzinc rounded-lg flex-1 text-left">
+        <div className="border border-bzinc bg-white rounded-lg flex-1 text-left">
           <AdvisorTable
             data={advisors.map((a) => ({
               name: a.name,
@@ -65,7 +65,7 @@ function RouteComponent() {
           <div>Students</div>
           <NewStudentDialog />
         </div>
-        <div className="border border-bzinc rounded-lg flex-1 text-left">
+        <div className="border border-bzinc bg-white rounded-lg flex-1 text-left">
           <StudentTable
             data={students.map((s) => ({
               name: s.name,

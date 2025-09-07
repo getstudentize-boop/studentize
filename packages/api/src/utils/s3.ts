@@ -13,10 +13,15 @@ export const S3 = new S3Client({
   },
 });
 
-export const getSignedUrl = (bucket: "transcription", key: string) => {
+export const getSignedUrl = (
+  bucket: "transcription",
+  key: string,
+  options?: { contentType?: string }
+) => {
   const putObject = new PutObjectCommand({
     Bucket: bucket,
     Key: key,
+    ContentType: options?.contentType,
   });
 
   return awsGetSignedUrl(S3, putObject, { expiresIn: 3600 });

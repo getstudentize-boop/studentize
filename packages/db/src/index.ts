@@ -1,4 +1,5 @@
 export * from "drizzle-orm";
+export { createId } from "@paralleldrive/cuid2";
 
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";

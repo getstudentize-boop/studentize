@@ -11,12 +11,14 @@ import {
 } from "./routes/student";
 
 import {
+  advisorChatHistoryHandler,
   advisorCreateHandler,
   advisorListHandler,
   advisorSearchHandler,
+  advisorChatMessagesHandler,
 } from "./routes/advisor";
 
-import { chatStudentHandler } from "./routes/chat";
+import { chatStudentHandler, chatNewIdHandler } from "./routes/chat";
 
 import { userDisplayHandler } from "./routes/user";
 
@@ -35,11 +37,14 @@ export const router = {
     create: advisorCreateHandler,
     list: advisorListHandler,
     search: advisorSearchHandler,
+    chatHistory: advisorChatHistoryHandler,
+    chatMessages: advisorChatMessagesHandler,
   },
   user: {
     display: userDisplayHandler,
   },
   chat: {
     student: chatStudentHandler,
+    newId: chatNewIdHandler,
   },
 };

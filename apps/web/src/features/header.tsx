@@ -21,8 +21,8 @@ export const Header = ({ children }: { children: ReactNode }) => {
   ];
 
   return (
-    <div className="text-center flex gap-4">
-      <div className="border-r border-zinc-100 px-3.5 py-6 gap-2 flex flex-col items-center">
+    <div className={cn("text-center flex gap-4", { "bg-zinc-50": !isGuru })}>
+      <div className="border-r border-zinc-100 px-3.5 py-6 gap-2 flex flex-col items-center bg-white">
         {icons.map(({ to, icon, isActive }) => (
           <Link
             to={to}

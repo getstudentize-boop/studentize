@@ -1,4 +1,4 @@
-import { jsonb, pgTable, serial, text } from "drizzle-orm/pg-core";
+import { jsonb, pgTable, text } from "drizzle-orm/pg-core";
 
 import { createdAt, id } from "./utils";
 
