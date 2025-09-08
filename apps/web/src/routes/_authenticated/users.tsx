@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { orpc } from "orpc/client";
 
-export const Route = createFileRoute("/users")({
+export const Route = createFileRoute("/_authenticated/users")({
   component: RouteComponent,
 });
 

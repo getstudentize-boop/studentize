@@ -11,7 +11,7 @@ import { useState } from "react";
 import { Button } from "@/components/button";
 import { CreateSession } from "@/features/create-session";
 
-export const Route = createFileRoute("/sessions")({
+export const Route = createFileRoute("/_authenticated/sessions")({
   component: RouteComponent,
 });
 

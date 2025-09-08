@@ -15,7 +15,7 @@ import { cn } from "@/utils/cn";
 export const ChatHistory = () => {
   const chatsQuery = useQuery(orpc.advisor.chatHistory.queryOptions());
 
-  const searchParams = useSearch({ from: "/" });
+  const searchParams = useSearch({ from: "/_authenticated/guru" });
 
   const chats = chatsQuery.data ?? [];
 
@@ -25,7 +25,7 @@ export const ChatHistory = () => {
         <div>Chat</div>
         <MagnifyingGlassIcon className="size-3.5 text-zinc-600" weight="bold" />
       </div>
-      <Link to="/">
+      <Link to="/guru">
         <Button className="my-4 w-full">
           <PlusIcon />
           New Chat
@@ -70,7 +70,7 @@ export const ChatHistory = () => {
               </div>
             ) : null}
             <Link
-              to="/"
+              to="/guru"
               search={{ chatId: c.id, userId: c.studentUserId }}
               className={cn("truncate mb-2.5", {
                 "font-semibold text-cyan-900 transition-all":

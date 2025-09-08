@@ -11,21 +11,19 @@
 import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UsersRouteImport } from './routes/users'
-import { Route as SessionsRouteImport } from './routes/sessions'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/users'
+import { Route as AuthenticatedSessionsRouteImport } from './routes/_authenticated/sessions'
+import { Route as AuthenticatedGuruRouteImport } from './routes/_authenticated/guru'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
+import { ServerRoute as ApiAuthLoginServerRouteImport } from './routes/api/auth/login'
+import { ServerRoute as ApiAuthCallbackServerRouteImport } from './routes/api/auth/callback'
 
 const rootServerRouteImport = createServerRootRoute()
 
-const UsersRoute = UsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SessionsRoute = SessionsRouteImport.update({
-  id: '/sessions',
-  path: '/sessions',
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -33,77 +31,112 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedUsersRoute = AuthenticatedUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSessionsRoute = AuthenticatedSessionsRouteImport.update({
+  id: '/sessions',
+  path: '/sessions',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedGuruRoute = AuthenticatedGuruRouteImport.update({
+  id: '/guru',
+  path: '/guru',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const ApiRpcSplatServerRoute = ApiRpcSplatServerRouteImport.update({
   id: '/api/rpc/$',
   path: '/api/rpc/$',
   getParentRoute: () => rootServerRouteImport,
 } as any)
+const ApiAuthLoginServerRoute = ApiAuthLoginServerRouteImport.update({
+  id: '/api/auth/login',
+  path: '/api/auth/login',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
+const ApiAuthCallbackServerRoute = ApiAuthCallbackServerRouteImport.update({
+  id: '/api/auth/callback',
+  path: '/api/auth/callback',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/sessions': typeof SessionsRoute
-  '/users': typeof UsersRoute
+  '/guru': typeof AuthenticatedGuruRoute
+  '/sessions': typeof AuthenticatedSessionsRoute
+  '/users': typeof AuthenticatedUsersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/sessions': typeof SessionsRoute
-  '/users': typeof UsersRoute
+  '/guru': typeof AuthenticatedGuruRoute
+  '/sessions': typeof AuthenticatedSessionsRoute
+  '/users': typeof AuthenticatedUsersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/sessions': typeof SessionsRoute
-  '/users': typeof UsersRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/_authenticated/guru': typeof AuthenticatedGuruRoute
+  '/_authenticated/sessions': typeof AuthenticatedSessionsRoute
+  '/_authenticated/users': typeof AuthenticatedUsersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sessions' | '/users'
+  fullPaths: '/' | '/guru' | '/sessions' | '/users'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sessions' | '/users'
-  id: '__root__' | '/' | '/sessions' | '/users'
+  to: '/' | '/guru' | '/sessions' | '/users'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/_authenticated/guru'
+    | '/_authenticated/sessions'
+    | '/_authenticated/users'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  SessionsRoute: typeof SessionsRoute
-  UsersRoute: typeof UsersRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
 }
 export interface FileServerRoutesByFullPath {
+  '/api/auth/callback': typeof ApiAuthCallbackServerRoute
+  '/api/auth/login': typeof ApiAuthLoginServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
 export interface FileServerRoutesByTo {
+  '/api/auth/callback': typeof ApiAuthCallbackServerRoute
+  '/api/auth/login': typeof ApiAuthLoginServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
+  '/api/auth/callback': typeof ApiAuthCallbackServerRoute
+  '/api/auth/login': typeof ApiAuthLoginServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
 export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/api/rpc/$'
+  fullPaths: '/api/auth/callback' | '/api/auth/login' | '/api/rpc/$'
   fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/api/rpc/$'
-  id: '__root__' | '/api/rpc/$'
+  to: '/api/auth/callback' | '/api/auth/login' | '/api/rpc/$'
+  id: '__root__' | '/api/auth/callback' | '/api/auth/login' | '/api/rpc/$'
   fileServerRoutesById: FileServerRoutesById
 }
 export interface RootServerRouteChildren {
+  ApiAuthCallbackServerRoute: typeof ApiAuthCallbackServerRoute
+  ApiAuthLoginServerRoute: typeof ApiAuthLoginServerRoute
   ApiRpcSplatServerRoute: typeof ApiRpcSplatServerRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/users': {
-      id: '/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof UsersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sessions': {
-      id: '/sessions'
-      path: '/sessions'
-      fullPath: '/sessions'
-      preLoaderRoute: typeof SessionsRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -112,6 +145,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/users': {
+      id: '/_authenticated/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AuthenticatedUsersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/sessions': {
+      id: '/_authenticated/sessions'
+      path: '/sessions'
+      fullPath: '/sessions'
+      preLoaderRoute: typeof AuthenticatedSessionsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/guru': {
+      id: '/_authenticated/guru'
+      path: '/guru'
+      fullPath: '/guru'
+      preLoaderRoute: typeof AuthenticatedGuruRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
   }
 }
@@ -124,18 +178,49 @@ declare module '@tanstack/react-start/server' {
       preLoaderRoute: typeof ApiRpcSplatServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
+    '/api/auth/login': {
+      id: '/api/auth/login'
+      path: '/api/auth/login'
+      fullPath: '/api/auth/login'
+      preLoaderRoute: typeof ApiAuthLoginServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/auth/callback': {
+      id: '/api/auth/callback'
+      path: '/api/auth/callback'
+      fullPath: '/api/auth/callback'
+      preLoaderRoute: typeof ApiAuthCallbackServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
   }
 }
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedGuruRoute: typeof AuthenticatedGuruRoute
+  AuthenticatedSessionsRoute: typeof AuthenticatedSessionsRoute
+  AuthenticatedUsersRoute: typeof AuthenticatedUsersRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedGuruRoute: AuthenticatedGuruRoute,
+  AuthenticatedSessionsRoute: AuthenticatedSessionsRoute,
+  AuthenticatedUsersRoute: AuthenticatedUsersRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  SessionsRoute: SessionsRoute,
-  UsersRoute: UsersRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 const rootServerRouteChildren: RootServerRouteChildren = {
+  ApiAuthCallbackServerRoute: ApiAuthCallbackServerRoute,
+  ApiAuthLoginServerRoute: ApiAuthLoginServerRoute,
   ApiRpcSplatServerRoute: ApiRpcSplatServerRoute,
 }
 export const serverRouteTree = rootServerRouteImport

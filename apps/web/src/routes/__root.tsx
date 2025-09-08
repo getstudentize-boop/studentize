@@ -3,10 +3,15 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanstackDevtools } from "@tanstack/react-devtools";
 
 import appCss from "../styles.css?url";
-import { Header } from "@/features/header";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+import { getUserAuth } from "@/utils/workos";
+
 export const Route = createRootRoute({
+  beforeLoad: async () => {
+    const user = await getUserAuth();
+    return { user };
+  },
   head: () => ({
     meta: [
       {
@@ -41,7 +46,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <QueryClientProvider client={queryClient}>
-          <Header>{children}</Header>
+          {children}
         </QueryClientProvider>
         <TanstackDevtools
           config={{
