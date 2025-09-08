@@ -1,15 +1,8 @@
 import { workos } from "@/utils/workos";
 import { createServerFileRoute, setCookie } from "@tanstack/react-start/server";
 
-import { WORKOS_SESSION_KEY } from "@/utils/workos";
+import { WORKOS_SESSION_KEY, cookieOpts } from "@/utils/workos";
 import { redirect } from "@tanstack/react-router";
-
-const cookieOpts = {
-  path: "/",
-  httpOnly: true,
-  secure: true,
-  sameSite: "lax",
-} as const;
 
 export const ServerRoute = createServerFileRoute("/api/auth/callback").methods({
   GET: async ({ request }) => {

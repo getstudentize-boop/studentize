@@ -20,7 +20,7 @@ import {
 
 import { chatStudentHandler, chatNewIdHandler } from "./routes/chat";
 
-import { userDisplayHandler } from "./routes/user";
+import { userDisplayHandler, userCurrentHandler } from "./routes/user";
 
 export const router = {
   session: {
@@ -42,6 +42,7 @@ export const router = {
   },
   user: {
     display: userDisplayHandler,
+    current: userCurrentHandler,
   },
   chat: {
     student: chatStudentHandler,

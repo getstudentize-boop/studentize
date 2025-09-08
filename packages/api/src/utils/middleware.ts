@@ -1,11 +1,12 @@
 import { ORPCError, os } from "@orpc/server";
 import { findOrCreateUser } from "@student/db";
 
-import type { AuthenticateWithSessionCookieSuccessResponse } from "@workos-inc/node";
-
-type Context = {
-  // authUser?: AuthenticateWithSessionCookieSuccessResponse["user"];
+export type Context = {
   user?: ReturnType<typeof findOrCreateUser> | null;
+};
+
+export type AuthContext = {
+  user: NonNullable<Context["user"]>;
 };
 
 export const defaultMiddleware = os.middleware(async ({ next, context }) => {
@@ -35,7 +36,7 @@ export const privateRoute = serverRoute.use(
     }
 
     return next({
-      context: { user: data.user as NonNullable<Context["user"]> },
+      context: data as AuthContext,
     });
   })
 );
