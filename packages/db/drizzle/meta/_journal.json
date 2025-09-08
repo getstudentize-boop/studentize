@@ -29,6 +29,20 @@
       "when": 1757098298938,
       "tag": "0003_unknown_speed",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1757362271202,
+      "tag": "0004_steep_squadron_supreme",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1757362294886,
+      "tag": "0005_fancy_warpath",
+      "breakpoints": true
     }
   ]
 }

@@ -37,10 +37,10 @@ export const ServerRoute = createServerFileRoute("/api/auth/callback").methods({
 
       setCookie(WORKOS_SESSION_KEY, sealedSession, cookieOpts);
 
-      return redirect({ href: "/" });
+      return redirect({ to: "/guru" });
     } catch (error: any) {
       console.error("Error during authentication:", error);
-      return redirect({ href: "/" });
+      return redirect({ to: "/" });
     }
   },
 });

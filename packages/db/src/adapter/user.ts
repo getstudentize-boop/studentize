@@ -4,6 +4,32 @@ import { and, db, eq, ilike, InferInsertModel, InferSelectModel } from "..";
 type UserSelect = InferSelectModel<typeof schema.user>;
 type UserInsert = InferInsertModel<typeof schema.user>;
 
+export const findOrCreateUser = async (data: { email: string }) => {
+  const user = await db.query.user.findFirst({
+    columns: {
+      id: true,
+      status: true,
+      type: true,
+    },
+    where: (user, { eq }) => eq(user.email, data.email),
+  });
+
+  if (user) {
+    return user;
+  } else {
+    const [newUser] = await db
+      .insert(schema.user)
+      .values({ email: data.email })
+      .returning({
+        id: schema.user.id,
+        status: schema.user.status,
+        type: schema.user.type,
+      });
+
+    return newUser;
+  }
+};
+
 export const findUserByEmail = async (email: string) => {
   const user = await db.query.user.findFirst({
     columns: {

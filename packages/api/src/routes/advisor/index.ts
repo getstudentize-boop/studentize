@@ -6,40 +6,33 @@ import { searchAdvisors, SearchAdvisorsInputSchema } from "./search";
 import { advisorChatHistory } from "./chat-history";
 import { chatMessages, ChatMessagesInputSchema } from "./chat-messages";
 
-import { defaultMiddleware } from "../../utils/middleware";
+import { defaultMiddleware, privateRoute } from "../../utils/middleware";
 
-export const advisorCreateHandler = os
-  .use(defaultMiddleware)
+export const advisorCreateHandler = privateRoute
   .input(CreateAdvisorInputSchema)
   .handler(async ({ input }) => {
     const result = await createAdvisor(input);
     return result;
   });
 
-export const advisorListHandler = os
-  .use(defaultMiddleware)
-  .handler(async () => {
-    const advisors = await listAdvisors();
-    return advisors;
-  });
+export const advisorListHandler = privateRoute.handler(async () => {
+  const advisors = await listAdvisors();
+  return advisors;
+});
 
-export const advisorSearchHandler = os
-  .use(defaultMiddleware)
+export const advisorSearchHandler = privateRoute
   .input(SearchAdvisorsInputSchema)
   .handler(async ({ input }) => {
     const advisors = await searchAdvisors(input);
     return advisors;
   });
 
-export const advisorChatHistoryHandler = os
-  .use(defaultMiddleware)
-  .handler(async () => {
-    const chats = await advisorChatHistory();
-    return chats;
-  });
+export const advisorChatHistoryHandler = privateRoute.handler(async () => {
+  const chats = await advisorChatHistory();
+  return chats;
+});
 
-export const advisorChatMessagesHandler = os
-  .use(defaultMiddleware)
+export const advisorChatMessagesHandler = privateRoute
   .input(ChatMessagesInputSchema)
   .handler(async ({ input }) => {
     const chat = await chatMessages(input);

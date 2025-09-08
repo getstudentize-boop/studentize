@@ -162,6 +162,9 @@ importers:
       '@student/db':
         specifier: workspace:*
         version: link:../db
+      '@workos-inc/node':
+        specifier: ^7.69.2
+        version: 7.69.2
       ai:
         specifier: ^5.0.29
         version: 5.0.29(zod@4.1.5)

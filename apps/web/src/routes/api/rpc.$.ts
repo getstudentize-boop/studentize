@@ -2,13 +2,16 @@ import { RPCHandler } from "@orpc/server/fetch";
 import { createServerFileRoute } from "@tanstack/react-start/server";
 
 import { router } from "@student/api";
+import { getUserAuth } from "@/utils/workos";
 
 const handler = new RPCHandler(router);
 
 async function handle({ request }: { request: Request }) {
+  const authResponse = await getUserAuth();
+
   const { response } = await handler.handle(request, {
     prefix: "/api/rpc",
-    context: {}, // Provide initial context if needed
+    context: { user: authResponse?.user },
   });
 
   return response ?? new Response("Not Found", { status: 404 });

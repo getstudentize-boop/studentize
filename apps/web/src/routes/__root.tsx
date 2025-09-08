@@ -5,13 +5,7 @@ import { TanstackDevtools } from "@tanstack/react-devtools";
 import appCss from "../styles.css?url";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import { getUserAuth } from "@/utils/workos";
-
 export const Route = createRootRoute({
-  beforeLoad: async () => {
-    const user = await getUserAuth();
-    return { user };
-  },
   head: () => ({
     meta: [
       {
@@ -32,7 +26,6 @@ export const Route = createRootRoute({
       },
     ],
   }),
-
   shellComponent: RootDocument,
 });
 

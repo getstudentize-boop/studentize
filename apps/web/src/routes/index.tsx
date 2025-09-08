@@ -1,14 +1,27 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 
 import { Button } from "@/components/button";
+// import { getUserAuth } from "@/utils/workos";
 
 export const Route = createFileRoute("/")({
   component: App,
-  beforeLoad: ({ context }) => {
-    if (context.user) {
-      throw redirect({ to: "/guru" });
-    }
+  ssr: true,
+  loader: async ({ context }) => {
+    throw redirect({ href: "/api/auth/login" });
+    // if (user) {
+    //   ;
+    // } else {
+    //   throw redirect({ to: "/guru" });
+    // }
   },
+  onEnter: ({ context }) => {
+    console.log("Entered the public route");
+  },
+  // beforeLoad: ({ context }) => {
+  //   if (context.user) {
+  //     throw redirect({ to: "/guru" });
+  //   }
+  // },
 });
 
 function App() {

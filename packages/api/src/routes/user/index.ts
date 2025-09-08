@@ -1,11 +1,8 @@
-import { os } from "@orpc/server";
-
 import { getUserDisplay, UserDisplayInputSchema } from "./display";
 
-import { defaultMiddleware } from "../../utils/middleware";
+import { privateRoute } from "../../utils/middleware";
 
-export const userDisplayHandler = os
-  .use(defaultMiddleware)
+export const userDisplayHandler = privateRoute
   .input(UserDisplayInputSchema)
   .handler(async ({ input }) => {
     const result = await getUserDisplay(input);

@@ -21,6 +21,7 @@
     "@aws-sdk/s3-request-presigner": "^3.882.0",
     "@orpc/server": "1.8.1",
     "@student/db": "workspace:*",
+    "@workos-inc/node": "^7.69.2",
     "ai": "^5.0.29",
     "wrangler": "^4.32.0",
     "zod": "^4.0.10"
