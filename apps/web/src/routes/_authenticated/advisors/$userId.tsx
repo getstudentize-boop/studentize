@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
+import { AdvisorUserSelection } from "@/features/advisor-user-selection";
 
 export const Route = createFileRoute("/_authenticated/advisors/$userId")({
   component: RouteComponent,
@@ -77,7 +78,7 @@ function RouteComponent() {
         <Link to="/advisors">
           <ArrowLeftIcon />
         </Link>
-        <Button variant="neutral">
+        <Button variant="neutral" type="button">
           {params.userId}
           <CopyIcon />
         </Button>
@@ -174,7 +175,7 @@ function RouteComponent() {
         </div>
       </div>
       <div className="flex-1 p-4 pt-2">
-        <div className="rounded-md border border-bzinc flex-1 h-full"></div>
+        <AdvisorUserSelection />
       </div>
       <form.Subscribe
         selector={(state) => [state.isSubmitting]}

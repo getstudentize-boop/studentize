@@ -43,6 +43,13 @@
       "when": 1757362294886,
       "tag": "0005_fancy_warpath",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1757542883362,
+      "tag": "0006_steep_vertigo",
+      "breakpoints": true
     }
   ]
 }

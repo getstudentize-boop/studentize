@@ -1,4 +1,4 @@
-import { jsonb, pgTable, text } from "drizzle-orm/pg-core";
+import { jsonb, pgTable, text, unique } from "drizzle-orm/pg-core";
 
 import { createdAt, id } from "./utils";
 
@@ -9,6 +9,13 @@ export const advisor = pgTable("advisor", {
   courseMajor: text("course_major").notNull(),
   courseMinor: text("course_minor"),
   userId: text("user_id").notNull(),
+});
+
+export const advisorStudentAccess = pgTable("advisor_student_access", {
+  id,
+  createdAt,
+  advisorId: text("advisor_id").notNull(),
+  studentId: text("student_id").notNull(),
 });
 
 type Tool = {
