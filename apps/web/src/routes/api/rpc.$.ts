@@ -7,11 +7,14 @@ import { getUserAuth } from "@/utils/workos";
 const handler = new RPCHandler(router);
 
 async function handle({ request }: { request: Request }) {
-  const authResponse = await getUserAuth();
+  const [_, accessToken] =
+    request.headers.get("Authorization")?.split(" ") ?? [];
+
+  const authResponse = await getUserAuth(accessToken);
 
   const { response } = await handler.handle(request, {
     prefix: "/api/rpc",
-    context: { user: authResponse?.user as any },
+    context: { user: authResponse as any },
   });
 
   return response ?? new Response("Not Found", { status: 404 });

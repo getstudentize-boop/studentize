@@ -8,11 +8,12 @@ import { createIsomorphicFn } from "@tanstack/react-start";
 import type { RouterClient } from "@orpc/server";
 
 import { router } from "@student/api";
+import { createClient } from "@workos-inc/authkit-js";
 
 const getORPCClient = createIsomorphicFn()
   .server(() =>
     createRouterClient(router, {
-      context: () => ({
+      context: async () => ({
         headers: getHeaders(),
       }),
     })
@@ -20,6 +21,16 @@ const getORPCClient = createIsomorphicFn()
   .client((): RouterClient<typeof router> => {
     const link = new RPCLink({
       url: `${window.location.origin}/api/rpc`,
+      headers: async () => {
+        const workos = await createClient(
+          import.meta.env.VITE_WORKOS_CLIENT_ID!
+        );
+        const data = await workos.getAccessToken();
+
+        return {
+          Authorization: `Bearer ${data}`,
+        };
+      },
       interceptors: [
         onError((error) => {
           // Log the error

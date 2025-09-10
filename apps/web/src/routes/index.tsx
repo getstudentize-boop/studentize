@@ -1,36 +1,35 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 
 import { Button } from "@/components/button";
+import { useAuth } from "@workos-inc/authkit-react";
+import { useEffect } from "react";
 // import { getUserAuth } from "@/utils/workos";
 
 export const Route = createFileRoute("/")({
   component: App,
-  ssr: true,
-  loader: async ({ context }) => {
-    throw redirect({ href: "/api/auth/login" });
-    // if (user) {
-    //   ;
-    // } else {
-    //   throw redirect({ to: "/guru" });
-    // }
-  },
-  onEnter: ({ context }) => {
-    console.log("Entered the public route");
-  },
-  // beforeLoad: ({ context }) => {
-  //   if (context.user) {
-  //     throw redirect({ to: "/guru" });
-  //   }
-  // },
+  ssr: false,
 });
 
 function App() {
+  const { signIn, isLoading, user } = useAuth();
+  const navigate = Route.useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate({ to: "/guru" });
+    }
+  }, [user]);
+
+  if (isLoading) {
+    return <></>;
+  }
+
   return (
     <div className="flex h-screen flex-1">
       <div className="flex-1 flex flex-col justify-center items-center gap-4">
-        <Link to="/guru">
-          <Button className="rounded-md w-52">Login</Button>
-        </Link>
+        <Button className="rounded-md w-52" onClick={() => signIn()}>
+          Login
+        </Button>
         <Button className="rounded-md w-52" variant="neutral">
           Sign up as advisor
         </Button>

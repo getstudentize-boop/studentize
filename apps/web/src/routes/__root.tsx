@@ -5,7 +5,11 @@ import { TanstackDevtools } from "@tanstack/react-devtools";
 import appCss from "../styles.css?url";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+import { AuthKitProvider } from "@workos-inc/authkit-react";
+import { getWorkOSClient } from "@/utils/workos";
+
 export const Route = createRootRoute({
+  ssr: false,
   head: () => ({
     meta: [
       {
@@ -27,6 +31,7 @@ export const Route = createRootRoute({
     ],
   }),
   shellComponent: RootDocument,
+  notFoundComponent: () => <div>404 - Not Found</div>,
 });
 
 const queryClient = new QueryClient();
@@ -38,9 +43,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
+        <AuthKitProvider clientId={import.meta.env.VITE_WORKOS_CLIENT_ID!}>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        </AuthKitProvider>
         <TanstackDevtools
           config={{
             position: "bottom-left",

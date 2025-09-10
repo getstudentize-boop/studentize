@@ -3,6 +3,8 @@ import { WorkOS } from "@workos-inc/node";
 import { createServerFn } from "@tanstack/react-start";
 import { getCookie, setCookie } from "@tanstack/react-start/server";
 
+import { jwtVerify, createRemoteJWKSet } from "jose";
+
 export const WORKOS_SESSION_KEY = "wos-session";
 
 export const cookieOpts = {
@@ -15,6 +17,9 @@ export const cookieOpts = {
 export const workos = new WorkOS(process.env.WORKOS_API_KEY!, {
   clientId: process.env.WORKOS_CLIENT_ID!,
 });
+
+const jwksUrl = workos.userManagement.getJwksUrl(process.env.WORKOS_CLIENT_ID!);
+const JWKS = createRemoteJWKSet(new URL(jwksUrl));
 
 export const getAuth = async (sessionData: string) => {
   const session = await workos.userManagement.loadSealedSession({
@@ -37,17 +42,22 @@ export const getAuth = async (sessionData: string) => {
   return response;
 };
 
-export const getUserAuth = createServerFn({ method: "GET" }).handler(
-  async () => {
-    const cookie = getCookie(WORKOS_SESSION_KEY);
-
-    if (cookie) {
-      const response = await getAuth(cookie);
-
-      if (response.authenticated) {
-        const user = response.user;
-        return { user };
-      }
-    }
+const verifyAccessToken = async (token: string) => {
+  try {
+    const { payload } = await jwtVerify(token, JWKS);
+    return payload;
+  } catch (e) {
+    console.error("Error verifying access token:", e);
+    return false;
   }
-);
+};
+
+export const getUserAuth = async (accessToken: string) => {
+  const user = await verifyAccessToken(accessToken);
+
+  const userId = user?.sub as string | undefined;
+  if (user) {
+    const userData = await workos.userManagement.getUser(userId!);
+    return userData;
+  }
+};

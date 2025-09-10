@@ -9,6 +9,7 @@ export const createRouter = () => {
     routeTree,
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
+    defaultPendingComponent: () => <div>Loading...</div>,
   });
 };
 

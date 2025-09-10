@@ -104,6 +104,8 @@ function App() {
     })
   );
 
+  console.log("chatId", chatMessagesMutation.data);
+
   const chat = useChat({
     id: chatId ?? "new",
     onFinish: async () => {
