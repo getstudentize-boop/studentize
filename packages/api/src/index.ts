@@ -15,6 +15,8 @@ import {
   advisorCreateHandler,
   advisorListHandler,
   advisorSearchHandler,
+  advisorGetOneHandler,
+  advisorUpdateHandler,
   advisorChatMessagesHandler,
 } from "./routes/advisor";
 
@@ -37,6 +39,8 @@ export const router = {
     create: advisorCreateHandler,
     list: advisorListHandler,
     search: advisorSearchHandler,
+    getOne: advisorGetOneHandler,
+    update: advisorUpdateHandler,
     chatHistory: advisorChatHistoryHandler,
     chatMessages: advisorChatMessagesHandler,
   },

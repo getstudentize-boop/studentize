@@ -11,17 +11,25 @@
 import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UsersRouteImport } from './routes/users'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/users'
+import { Route as AuthenticatedStudentsRouteImport } from './routes/_authenticated/students'
 import { Route as AuthenticatedSessionsRouteImport } from './routes/_authenticated/sessions'
 import { Route as AuthenticatedGuruRouteImport } from './routes/_authenticated/guru'
+import { Route as AuthenticatedAdvisorsRouteImport } from './routes/_authenticated/advisors'
+import { Route as AuthenticatedAdvisorsUserIdRouteImport } from './routes/_authenticated/advisors/$userId'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as ApiAuthLoginServerRouteImport } from './routes/api/auth/login'
 import { ServerRoute as ApiAuthCallbackServerRouteImport } from './routes/api/auth/callback'
 
 const rootServerRouteImport = createServerRootRoute()
 
+const UsersRoute = UsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -31,9 +39,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedUsersRoute = AuthenticatedUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
+const AuthenticatedStudentsRoute = AuthenticatedStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedSessionsRoute = AuthenticatedSessionsRouteImport.update({
@@ -46,6 +54,17 @@ const AuthenticatedGuruRoute = AuthenticatedGuruRouteImport.update({
   path: '/guru',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdvisorsRoute = AuthenticatedAdvisorsRouteImport.update({
+  id: '/advisors',
+  path: '/advisors',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAdvisorsUserIdRoute =
+  AuthenticatedAdvisorsUserIdRouteImport.update({
+    id: '/$userId',
+    path: '/$userId',
+    getParentRoute: () => AuthenticatedAdvisorsRoute,
+  } as any)
 const ApiRpcSplatServerRoute = ApiRpcSplatServerRouteImport.update({
   id: '/api/rpc/$',
   path: '/api/rpc/$',
@@ -64,41 +83,68 @@ const ApiAuthCallbackServerRoute = ApiAuthCallbackServerRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/users': typeof UsersRoute
+  '/advisors': typeof AuthenticatedAdvisorsRouteWithChildren
   '/guru': typeof AuthenticatedGuruRoute
   '/sessions': typeof AuthenticatedSessionsRoute
-  '/users': typeof AuthenticatedUsersRoute
+  '/students': typeof AuthenticatedStudentsRoute
+  '/advisors/$userId': typeof AuthenticatedAdvisorsUserIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/users': typeof UsersRoute
+  '/advisors': typeof AuthenticatedAdvisorsRouteWithChildren
   '/guru': typeof AuthenticatedGuruRoute
   '/sessions': typeof AuthenticatedSessionsRoute
-  '/users': typeof AuthenticatedUsersRoute
+  '/students': typeof AuthenticatedStudentsRoute
+  '/advisors/$userId': typeof AuthenticatedAdvisorsUserIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/users': typeof UsersRoute
+  '/_authenticated/advisors': typeof AuthenticatedAdvisorsRouteWithChildren
   '/_authenticated/guru': typeof AuthenticatedGuruRoute
   '/_authenticated/sessions': typeof AuthenticatedSessionsRoute
-  '/_authenticated/users': typeof AuthenticatedUsersRoute
+  '/_authenticated/students': typeof AuthenticatedStudentsRoute
+  '/_authenticated/advisors/$userId': typeof AuthenticatedAdvisorsUserIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/guru' | '/sessions' | '/users'
+  fullPaths:
+    | '/'
+    | '/users'
+    | '/advisors'
+    | '/guru'
+    | '/sessions'
+    | '/students'
+    | '/advisors/$userId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/guru' | '/sessions' | '/users'
+  to:
+    | '/'
+    | '/users'
+    | '/advisors'
+    | '/guru'
+    | '/sessions'
+    | '/students'
+    | '/advisors/$userId'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/users'
+    | '/_authenticated/advisors'
     | '/_authenticated/guru'
     | '/_authenticated/sessions'
-    | '/_authenticated/users'
+    | '/_authenticated/students'
+    | '/_authenticated/advisors/$userId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  UsersRoute: typeof UsersRoute
 }
 export interface FileServerRoutesByFullPath {
   '/api/auth/callback': typeof ApiAuthCallbackServerRoute
@@ -132,6 +178,13 @@ export interface RootServerRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/users': {
+      id: '/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof UsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -146,11 +199,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/users': {
-      id: '/_authenticated/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof AuthenticatedUsersRouteImport
+    '/_authenticated/students': {
+      id: '/_authenticated/students'
+      path: '/students'
+      fullPath: '/students'
+      preLoaderRoute: typeof AuthenticatedStudentsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/sessions': {
@@ -166,6 +219,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/guru'
       preLoaderRoute: typeof AuthenticatedGuruRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/advisors': {
+      id: '/_authenticated/advisors'
+      path: '/advisors'
+      fullPath: '/advisors'
+      preLoaderRoute: typeof AuthenticatedAdvisorsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/advisors/$userId': {
+      id: '/_authenticated/advisors/$userId'
+      path: '/$userId'
+      fullPath: '/advisors/$userId'
+      preLoaderRoute: typeof AuthenticatedAdvisorsUserIdRouteImport
+      parentRoute: typeof AuthenticatedAdvisorsRoute
     }
   }
 }
@@ -195,16 +262,31 @@ declare module '@tanstack/react-start/server' {
   }
 }
 
+interface AuthenticatedAdvisorsRouteChildren {
+  AuthenticatedAdvisorsUserIdRoute: typeof AuthenticatedAdvisorsUserIdRoute
+}
+
+const AuthenticatedAdvisorsRouteChildren: AuthenticatedAdvisorsRouteChildren = {
+  AuthenticatedAdvisorsUserIdRoute: AuthenticatedAdvisorsUserIdRoute,
+}
+
+const AuthenticatedAdvisorsRouteWithChildren =
+  AuthenticatedAdvisorsRoute._addFileChildren(
+    AuthenticatedAdvisorsRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
+  AuthenticatedAdvisorsRoute: typeof AuthenticatedAdvisorsRouteWithChildren
   AuthenticatedGuruRoute: typeof AuthenticatedGuruRoute
   AuthenticatedSessionsRoute: typeof AuthenticatedSessionsRoute
-  AuthenticatedUsersRoute: typeof AuthenticatedUsersRoute
+  AuthenticatedStudentsRoute: typeof AuthenticatedStudentsRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdvisorsRoute: AuthenticatedAdvisorsRouteWithChildren,
   AuthenticatedGuruRoute: AuthenticatedGuruRoute,
   AuthenticatedSessionsRoute: AuthenticatedSessionsRoute,
-  AuthenticatedUsersRoute: AuthenticatedUsersRoute,
+  AuthenticatedStudentsRoute: AuthenticatedStudentsRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -214,6 +296,7 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  UsersRoute: UsersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

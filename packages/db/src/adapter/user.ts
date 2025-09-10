@@ -19,7 +19,7 @@ export const findOrCreateUser = async (data: { email: string }) => {
   } else {
     const [newUser] = await db
       .insert(schema.user)
-      .values({ email: data.email })
+      .values({ email: data.email, type: "ADVISOR" })
       .returning({
         id: schema.user.id,
         status: schema.user.status,

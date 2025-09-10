@@ -3,10 +3,12 @@ import { os } from "@orpc/server";
 import { createAdvisor, CreateAdvisorInputSchema } from "./create";
 import { listAdvisors } from "./lists";
 import { searchAdvisors, SearchAdvisorsInputSchema } from "./search";
+import { getOneAdvisor, GetOneAdvisorInputSchema } from "./get-one";
+import { updateAdvisor, UpdateAdvisorInputSchema } from "./update";
 import { advisorChatHistory } from "./chat-history";
 import { chatMessages, ChatMessagesInputSchema } from "./chat-messages";
 
-import { defaultMiddleware, privateRoute } from "../../utils/middleware";
+import { privateRoute } from "../../utils/middleware";
 
 export const advisorCreateHandler = privateRoute
   .input(CreateAdvisorInputSchema)
@@ -37,4 +39,18 @@ export const advisorChatMessagesHandler = privateRoute
   .handler(async ({ input }) => {
     const chat = await chatMessages(input);
     return chat;
+  });
+
+export const advisorGetOneHandler = privateRoute
+  .input(GetOneAdvisorInputSchema)
+  .handler(async ({ input }) => {
+    const advisor = await getOneAdvisor(input);
+    return advisor;
+  });
+
+export const advisorUpdateHandler = privateRoute
+  .input(UpdateAdvisorInputSchema)
+  .handler(async ({ input }) => {
+    const result = await updateAdvisor(input);
+    return result;
   });

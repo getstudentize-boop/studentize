@@ -6,10 +6,21 @@ import {
   TableHead,
   TableBody,
 } from "@/components/table";
+import { cn } from "@/utils/cn";
 
-import { type Table as TableType, flexRender } from "@tanstack/react-table";
+import {
+  Row,
+  type Table as TableType,
+  flexRender,
+} from "@tanstack/react-table";
 
-export const DataTable = ({ table }: { table: TableType<any> }) => {
+export const DataTable = ({
+  table,
+  onRowClick,
+}: {
+  table: TableType<any>;
+  onRowClick?: (row: Row<any>) => void;
+}) => {
   return (
     <Table>
       <TableHeader>
@@ -28,7 +39,14 @@ export const DataTable = ({ table }: { table: TableType<any> }) => {
       </TableHeader>
       <TableBody>
         {table.getRowModel().rows.map((row) => (
-          <TableRow key={row.id}>
+          <TableRow
+            key={row.id}
+            onClick={() => onRowClick?.(row)}
+            className={cn(
+              "transition-colors",
+              !!onRowClick && "cursor-pointer hover:bg-zinc-50"
+            )}
+          >
             {row.getAllCells().map((cell) => {
               return (
                 <TableCell

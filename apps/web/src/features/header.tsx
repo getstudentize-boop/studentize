@@ -1,5 +1,10 @@
 import { cn } from "@/utils/cn";
-import { BrainIcon, HeadsetIcon, UserIcon } from "@phosphor-icons/react";
+import {
+  BrainIcon,
+  ChalkboardTeacherIcon,
+  HeadsetIcon,
+  StudentIcon,
+} from "@phosphor-icons/react";
 import { Link, useMatchRoute } from "@tanstack/react-router";
 import { ReactNode } from "react";
 
@@ -8,7 +13,8 @@ export const Header = ({ children }: { children: ReactNode }) => {
 
   const isGuru = route({ to: "/guru" });
   const isSessions = route({ to: "/sessions" });
-  const isUsers = route({ to: "/users" });
+  const isStudents = route({ to: "/students" });
+  const isAdvisors = route({ to: "/advisors" });
 
   const icons = [
     { to: "/guru", icon: <BrainIcon className="size-4" />, isActive: isGuru },
@@ -17,7 +23,16 @@ export const Header = ({ children }: { children: ReactNode }) => {
       icon: <HeadsetIcon className="size-4" />,
       isActive: isSessions,
     },
-    { to: "/users", icon: <UserIcon className="size-4" />, isActive: isUsers },
+    {
+      to: "/students",
+      icon: <StudentIcon className="size-4" />,
+      isActive: isStudents,
+    },
+    {
+      to: "/advisors",
+      icon: <ChalkboardTeacherIcon className="size-4" />,
+      isActive: isAdvisors,
+    },
   ];
 
   return (

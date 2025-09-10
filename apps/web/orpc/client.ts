@@ -5,10 +5,12 @@ import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 import { getHeaders } from "@tanstack/react-start/server";
 import { createIsomorphicFn } from "@tanstack/react-start";
 
-import type { RouterClient } from "@orpc/server";
+import type { RouterClient, InferRouterOutputs } from "@orpc/server";
 
 import { router } from "@student/api";
 import { createClient } from "@workos-inc/authkit-js";
+
+export type RouterOutputs = InferRouterOutputs<typeof router>;
 
 const getORPCClient = createIsomorphicFn()
   .server(() =>

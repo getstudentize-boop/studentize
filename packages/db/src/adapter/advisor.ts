@@ -34,6 +34,7 @@ export const getAdvisors = async () => {
       userId: schema.user.id,
       email: schema.user.email,
       name: schema.user.name,
+      status: schema.user.status,
       universityName: schema.advisor.universityName,
       courseMajor: schema.advisor.courseMajor,
       courseMinor: schema.advisor.courseMinor,
