@@ -17,7 +17,7 @@ export const Input = ({ label, error, ...props }: InputProps) => {
         type="text"
         {...props}
         className={cn(
-          "border border-bzinc rounded-md p-2 w-full focus:outline-violet-300",
+          "border border-bzinc rounded-md p-2 w-full focus:outline-violet-300 bg-white",
           { "focus:outline-rose-300": error },
           props.className
         )}

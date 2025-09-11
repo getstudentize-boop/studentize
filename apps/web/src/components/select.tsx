@@ -37,11 +37,7 @@ const SelectComponent = React.forwardRef<HTMLButtonElement, SelectProps>(
   ) => {
     return (
       <div className="flex flex-col w-full text-left">
-        {label && (
-          <label className="mb-2 mx-1 text-sm font-medium text-gray-700">
-            {label}
-          </label>
-        )}
+        {label && <label className="mb-2 mx-1">{label}</label>}
 
         <Select.Root
           value={value}

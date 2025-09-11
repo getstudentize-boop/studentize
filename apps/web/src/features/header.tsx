@@ -25,7 +25,7 @@ export const Header = ({
   const isStudents = route({ to: "/students" });
   const isAdvisors = route({ to: "/advisors" });
 
-  const icons = [
+  const icons: any = [
     { to: "/guru", icon: <BrainIcon className="size-4" />, isActive: isGuru },
     {
       to: "/sessions",
