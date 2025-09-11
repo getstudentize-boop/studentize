@@ -29,3 +29,35 @@ export const getStudents = async () => {
 
   return students;
 };
+
+export const getFullStudentList = async () => {
+  const students = await db
+    .select({
+      userId: schema.user.id,
+      email: schema.user.email,
+      name: schema.user.name,
+    })
+    .from(schema.user)
+    .where(eq(schema.user.type, "STUDENT"));
+
+  return students;
+};
+
+export const getAdvisorStudentList = async (input: {
+  advisorUserId: string;
+}) => {
+  const students = await db
+    .select({
+      userId: schema.user.id,
+      email: schema.user.email,
+      name: schema.user.name,
+    })
+    .from(schema.advisorStudentAccess)
+    .innerJoin(
+      schema.user,
+      eq(schema.advisorStudentAccess.studentUserId, schema.user.id)
+    )
+    .where(eq(schema.advisorStudentAccess.advisorUserId, input.advisorUserId));
+
+  return students;
+};

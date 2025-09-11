@@ -1,10 +1,10 @@
 import { os } from "@orpc/server";
 
 import { createStudent, CreateStudentInputSchema } from "./create";
-import { listStudents } from "./lists";
+import { listStudents, ListStudentsInputSchema } from "./lists";
 import { searchStudents, SearchStudentsInputSchema } from "./search";
 
-import { defaultMiddleware, privateRoute } from "../../utils/middleware";
+import { privateRoute } from "../../utils/middleware";
 
 export const studentCreateHandler = privateRoute
   .input(CreateStudentInputSchema)
@@ -13,10 +13,12 @@ export const studentCreateHandler = privateRoute
     return result;
   });
 
-export const studentListHandler = privateRoute.handler(async () => {
-  const students = await listStudents();
-  return students;
-});
+export const studentListHandler = privateRoute
+  .input(ListStudentsInputSchema)
+  .handler(async ({ context, input }) => {
+    const students = await listStudents(context, input);
+    return students;
+  });
 
 export const studentSearchHandler = privateRoute
   .input(SearchStudentsInputSchema)

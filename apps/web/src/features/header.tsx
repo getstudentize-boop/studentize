@@ -6,9 +6,18 @@ import {
   StudentIcon,
 } from "@phosphor-icons/react";
 import { Link, useMatchRoute } from "@tanstack/react-router";
+import { RouterOutputs } from "orpc/client";
 import { ReactNode } from "react";
 
-export const Header = ({ children }: { children: ReactNode }) => {
+type UserType = RouterOutputs["user"]["current"]["type"];
+
+export const Header = ({
+  children,
+  userType,
+}: {
+  children: ReactNode;
+  userType: UserType;
+}) => {
   const route = useMatchRoute();
 
   const isGuru = route({ to: "/guru" });
@@ -28,12 +37,14 @@ export const Header = ({ children }: { children: ReactNode }) => {
       icon: <StudentIcon className="size-4" />,
       isActive: isStudents,
     },
-    {
-      to: "/advisors",
-      icon: <ChalkboardTeacherIcon className="size-4" />,
-      isActive: isAdvisors,
-    },
-  ];
+    userType === "ADMIN"
+      ? {
+          to: "/advisors",
+          icon: <ChalkboardTeacherIcon className="size-4" />,
+          isActive: isAdvisors,
+        }
+      : null,
+  ].filter(Boolean);
 
   return (
     <div

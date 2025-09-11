@@ -14,6 +14,11 @@ export const Route = createFileRoute("/_authenticated")({
   },
 });
 
+export const useAuthUser = () => {
+  const data = Route.useLoaderData();
+  return data;
+};
+
 function App() {
   const { user } = Route.useLoaderData();
 
@@ -35,7 +40,7 @@ function App() {
   }
 
   return (
-    <Header>
+    <Header userType={user.type}>
       <Outlet />
     </Header>
   );

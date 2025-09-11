@@ -2,7 +2,7 @@ import { ORPCError, os } from "@orpc/server";
 import { findOrCreateUser } from "@student/db";
 
 export type Context = {
-  user?: ReturnType<typeof findOrCreateUser> | null;
+  user?: Awaited<ReturnType<typeof findOrCreateUser>> | null;
 };
 
 export type AuthContext = {
