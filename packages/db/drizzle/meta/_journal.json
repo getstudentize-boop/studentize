@@ -50,6 +50,20 @@
       "when": 1757542883362,
       "tag": "0006_steep_vertigo",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1757593156275,
+      "tag": "0007_dizzy_thaddeus_ross",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1757593168063,
+      "tag": "0008_woozy_mulholland_black",
+      "breakpoints": true
     }
   ]
 }

@@ -14,8 +14,8 @@ export const advisor = pgTable("advisor", {
 export const advisorStudentAccess = pgTable("advisor_student_access", {
   id,
   createdAt,
-  advisorId: text("advisor_id").notNull(),
-  studentId: text("student_id").notNull(),
+  advisorUserId: text("advisor_user_id").notNull(),
+  studentUserId: text("student_user_id").notNull(),
 });
 
 type Tool = {

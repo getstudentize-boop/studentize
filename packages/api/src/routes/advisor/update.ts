@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { db, eq, schema } from "@student/db";
+import { db, eq, schema, updateAdvisorStudentAccess } from "@student/db";
 
 export const UpdateAdvisorInputSchema = z.object({
   userId: z.string(),
@@ -8,6 +8,7 @@ export const UpdateAdvisorInputSchema = z.object({
   courseMajor: z.string().min(1),
   courseMinor: z.string().optional(),
   status: z.enum(["ACTIVE", "INACTIVE", "PENDING"]),
+  studentIds: z.array(z.object({ userId: z.string() })),
 });
 
 export const updateAdvisor = async (
@@ -42,6 +43,11 @@ export const updateAdvisor = async (
       ...advisorData,
     });
   }
+
+  await updateAdvisorStudentAccess(
+    data.userId,
+    data.studentIds.map((s) => s.userId)
+  );
 
   return { success: true };
 };

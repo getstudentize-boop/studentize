@@ -46,6 +46,7 @@ function RouteComponent() {
       courseMajor: advisor?.courseMajor ?? "",
       courseMinor: advisor?.courseMinor ?? "",
       status: advisor?.status ?? "PENDING",
+      studentIds: advisor?.studentIds ?? [],
     },
     validators: {
       onSubmit: z.object({
@@ -54,6 +55,7 @@ function RouteComponent() {
         courseMajor: z.string().min(1, "Course major is required"),
         courseMinor: z.string(),
         status: z.enum(["ACTIVE", "INACTIVE", "PENDING"]),
+        studentIds: z.array(z.object({ userId: z.string() })),
       }),
     },
     onSubmit: async (vals) => {
@@ -175,7 +177,17 @@ function RouteComponent() {
         </div>
       </div>
       <div className="flex-1 p-4 pt-2">
-        <AdvisorUserSelection />
+        <form.Field
+          name="studentIds"
+          children={(field) => (
+            <AdvisorUserSelection
+              onSelectionChange={(selectedUsers) => {
+                field.handleChange(selectedUsers);
+              }}
+              selectedUsers={field.state.value}
+            />
+          )}
+        />
       </div>
       <form.Subscribe
         selector={(state) => [state.isSubmitting]}

@@ -1,10 +1,14 @@
-import { os } from "@orpc/server";
-
 import { createAdvisor, CreateAdvisorInputSchema } from "./create";
 import { listAdvisors } from "./lists";
 import { searchAdvisors, SearchAdvisorsInputSchema } from "./search";
 import { getOneAdvisor, GetOneAdvisorInputSchema } from "./get-one";
 import { updateAdvisor, UpdateAdvisorInputSchema } from "./update";
+import {
+  getAdvisorStudentAccessList,
+  updateAdvisorStudentAccessList,
+  GetAdvisorStudentAccessInputSchema,
+  UpdateAdvisorStudentAccessInputSchema,
+} from "./student-access";
 import { advisorChatHistory } from "./chat-history";
 import { chatMessages, ChatMessagesInputSchema } from "./chat-messages";
 
@@ -52,5 +56,19 @@ export const advisorUpdateHandler = privateRoute
   .input(UpdateAdvisorInputSchema)
   .handler(async ({ input }) => {
     const result = await updateAdvisor(input);
+    return result;
+  });
+
+export const advisorStudentAccessGetHandler = privateRoute
+  .input(GetAdvisorStudentAccessInputSchema)
+  .handler(async ({ input }) => {
+    const result = await getAdvisorStudentAccessList(input);
+    return result;
+  });
+
+export const advisorStudentAccessUpdateHandler = privateRoute
+  .input(UpdateAdvisorStudentAccessInputSchema)
+  .handler(async ({ input }) => {
+    const result = await updateAdvisorStudentAccessList(input);
     return result;
   });

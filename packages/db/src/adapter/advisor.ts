@@ -45,6 +45,36 @@ export const getAdvisors = async () => {
   return advisors;
 };
 
+export const getAdvisorByUserId = async (userId: string) => {
+  const [advisor] = await db
+    .select({
+      advisorId: schema.advisor.id,
+      userId: schema.user.id,
+      email: schema.user.email,
+      name: schema.user.name,
+      status: schema.user.status,
+      universityName: schema.advisor.universityName,
+      courseMajor: schema.advisor.courseMajor,
+      courseMinor: schema.advisor.courseMinor,
+    })
+    .from(schema.advisor)
+    .innerJoin(schema.user, eq(schema.advisor.userId, schema.user.id))
+    .where(eq(schema.advisor.userId, userId));
+
+  return advisor as typeof advisor | undefined;
+};
+
+export const getAdvisorStudentAccessList = async (advisorUserId: string) => {
+  const accessList = await db
+    .select({
+      studentUserId: schema.advisorStudentAccess.studentUserId,
+    })
+    .from(schema.advisorStudentAccess)
+    .where(eq(schema.advisorStudentAccess.advisorUserId, advisorUserId));
+
+  return accessList;
+};
+
 export const createAdvisorChat = async (input: {
   chatId: string;
   title: string;
@@ -123,4 +153,43 @@ export const getAdvisorChatMessages = async (chatId: string) => {
     .where(eq(schema.advisorChatMessage.chatId, chatId));
 
   return messages;
+};
+
+export const getAdvisorStudentAccess = async (advisorUserId: string) => {
+  const accessList = await db
+    .select({
+      studentUserId: schema.advisorStudentAccess.studentUserId,
+      name: schema.user.name,
+      email: schema.user.email,
+    })
+    .from(schema.advisorStudentAccess)
+    .innerJoin(
+      schema.user,
+      eq(schema.advisorStudentAccess.studentUserId, schema.user.id)
+    )
+    .where(eq(schema.advisorStudentAccess.advisorUserId, advisorUserId));
+
+  return accessList;
+};
+
+export const updateAdvisorStudentAccess = async (
+  advisorUserId: string,
+  studentUserIds: string[]
+) => {
+  // First, remove all existing access for this advisor
+  await db
+    .delete(schema.advisorStudentAccess)
+    .where(eq(schema.advisorStudentAccess.advisorUserId, advisorUserId));
+
+  // Then, add the new access list
+  if (studentUserIds.length > 0) {
+    await db.insert(schema.advisorStudentAccess).values(
+      studentUserIds.map((studentUserId) => ({
+        advisorUserId,
+        studentUserId,
+      }))
+    );
+  }
+
+  return { success: true };
 };

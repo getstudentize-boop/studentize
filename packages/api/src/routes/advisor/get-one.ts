@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { getAdvisors } from "@student/db";
+import { getAdvisorByUserId, getAdvisorStudentAccessList } from "@student/db";
+import { ORPCError } from "@orpc/server";
 
 export const GetOneAdvisorInputSchema = z.object({
   userId: z.string(),
@@ -8,12 +9,18 @@ export const GetOneAdvisorInputSchema = z.object({
 export const getOneAdvisor = async (
   data: z.infer<typeof GetOneAdvisorInputSchema>
 ) => {
-  const advisors = await getAdvisors();
-  const advisor = advisors.find(a => a.userId === data.userId);
-  
+  const advisor = await getAdvisorByUserId(data.userId);
+
   if (!advisor) {
-    throw new Error("Advisor not found");
+    throw new ORPCError("NOT_FOUND");
   }
-  
-  return advisor;
+
+  const studentAccess = await getAdvisorStudentAccessList(data.userId);
+
+  return {
+    ...advisor,
+    studentIds: studentAccess.map((access) => ({
+      userId: access.studentUserId,
+    })),
+  };
 };

@@ -18,6 +18,8 @@ import {
   advisorGetOneHandler,
   advisorUpdateHandler,
   advisorChatMessagesHandler,
+  advisorStudentAccessGetHandler,
+  advisorStudentAccessUpdateHandler,
 } from "./routes/advisor";
 
 import { chatStudentHandler, chatNewIdHandler } from "./routes/chat";
@@ -43,6 +45,10 @@ export const router = {
     update: advisorUpdateHandler,
     chatHistory: advisorChatHistoryHandler,
     chatMessages: advisorChatMessagesHandler,
+    studentAccess: {
+      get: advisorStudentAccessGetHandler,
+      update: advisorStudentAccessUpdateHandler,
+    },
   },
   user: {
     display: userDisplayHandler,
