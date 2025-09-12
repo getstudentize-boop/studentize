@@ -49,3 +49,13 @@ export const getSessions = async (data: { studentUserId?: string } = {}) => {
 
   return sessions;
 };
+
+export const updateSessionSummary = async (input: {
+  sessionId: string;
+  summary: string;
+}) => {
+  await db
+    .update(schema.session)
+    .set({ summary: input.summary })
+    .where(eq(schema.session.id, input.sessionId));
+};

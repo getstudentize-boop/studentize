@@ -1,4 +1,8 @@
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 
 import { getSignedUrl as awsGetSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -13,16 +17,43 @@ export const S3 = new S3Client({
   },
 });
 
+/**
+ * context: we need to add the file extension, in order for the file to be
+ * indexed properly in autorag. Else it will throw an error "unsupported file type"
+ */
+export const createTranscriptionObjectKey = (input: {
+  studentUserId: string;
+  sessionId: string;
+  ext: string;
+}) => {
+  return `${input.studentUserId}/${input.sessionId}.${input.ext}`;
+};
+
+type Bucket = "transcription";
+
 export const getSignedUrl = (
-  bucket: "transcription",
+  bucket: Bucket,
   key: string,
-  options?: { contentType?: string }
+  options?: { contentType?: string; type?: "put" | "get" }
 ) => {
-  const putObject = new PutObjectCommand({
-    Bucket: bucket,
-    Key: key,
-    ContentType: options?.contentType,
+  const command =
+    options?.type === "get"
+      ? new GetObjectCommand({ Bucket: bucket, Key: key })
+      : new PutObjectCommand({
+          Bucket: bucket,
+          Key: key,
+          ContentType: options?.contentType,
+        });
+
+  return awsGetSignedUrl(S3, command, { expiresIn: 3600 });
+};
+
+export const readFile = async (input: { bucket: Bucket; key: string }) => {
+  const command = new GetObjectCommand({
+    Bucket: input.bucket,
+    Key: input.key,
   });
 
-  return awsGetSignedUrl(S3, putObject, { expiresIn: 3600 });
+  const { Body } = await S3.send(command);
+  return Body?.transformToString();
 };

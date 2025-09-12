@@ -1,0 +1,24 @@
+{
+  "name": "@student/ai",
+  "version": "1.0.0",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "scripts": {},
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.8",
+    "@types/node": "^24.3.0",
+    "tsx": "^4.19.4"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^2.0.19",
+    "ai": "^5.0.29",
+    "zod": "^4.0.10"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./services": "./src/services/index.ts"
+  }
+}

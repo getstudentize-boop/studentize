@@ -71,6 +71,13 @@
       "when": 1757627224214,
       "tag": "0009_chunky_gauntlet",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1757686163146,
+      "tag": "0010_clammy_pet_avengers",
+      "breakpoints": true
     }
   ]
 }

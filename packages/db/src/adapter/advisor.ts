@@ -193,3 +193,16 @@ export const updateAdvisorStudentAccess = async (
 
   return { success: true };
 };
+
+export const getOneStudentAccess = async (data: {
+  advisorUserId: string;
+  studentUserId: string;
+}) => {
+  const studentAccess = await db.query.advisorStudentAccess.findFirst({
+    where:
+      eq(schema.advisorStudentAccess.advisorUserId, data.advisorUserId) &&
+      eq(schema.advisorStudentAccess.studentUserId, data.studentUserId),
+  });
+
+  return studentAccess;
+};

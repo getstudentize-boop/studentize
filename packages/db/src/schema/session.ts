@@ -8,4 +8,5 @@ export const session = pgTable("session", {
   studentUserId: text("student_user_id").notNull(),
   advisorUserId: text("advisor_user_id").notNull(),
   title: text("title").notNull(),
+  summary: text("summary").default(""),
 });

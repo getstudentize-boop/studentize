@@ -24,7 +24,8 @@
     "@workos-inc/node": "^7.69.2",
     "ai": "^5.0.29",
     "wrangler": "^4.32.0",
-    "zod": "^4.0.10"
+    "zod": "^4.0.10",
+    "@student/ai": "workspace:*"
   },
   "exports": {
     ".": "./src/index.ts"
