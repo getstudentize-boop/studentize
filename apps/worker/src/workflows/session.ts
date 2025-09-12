@@ -5,16 +5,18 @@ import {
 } from "cloudflare:workers";
 
 import { Env } from "../utils/env";
+import { client } from "../utils/orpc";
 
-export class SessionWorkflow extends WorkflowEntrypoint<Env, Params> {
-  async run(event: WorkflowEvent<Params>, step: WorkflowStep) {
-    const object = await this.env.TRANSCRIPTIONS.get("example.txt");
+export class SummarizeSessionWorkflow extends WorkflowEntrypoint<Env, Params> {
+  async run(event: WorkflowEvent<{ sessionId: string }>, step: WorkflowStep) {
+    const sessionId = event.payload.sessionId;
 
-    if (object === null) {
-      console.log("Object not found");
-      return;
-    }
+    await step.do("Summarize transcription", async () => {
+      const result = await client.session.summarizeTranscription({
+        sessionId,
+      });
 
-    const text = await object.text();
+      return result;
+    });
   }
 }

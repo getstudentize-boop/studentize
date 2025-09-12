@@ -3,6 +3,13 @@
   "name": "worker",
   "main": "src/index.ts",
   "compatibility_date": "2025-09-12",
+  "workflows": [
+    {
+      "name": "summarize-session",
+      "binding": "SUMMARIZE_SESSION",
+      "class_name": "SummarizeSessionWorkflow",
+    },
+  ],
   // "compatibility_flags": [
   //   "nodejs_compat"
   // ],
@@ -15,12 +22,12 @@
   //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   //   }
   // ],
-  "r2_buckets": [
-    {
-      "binding": "TRANSCRIPTIONS",
-      "bucket_name": "transcriptions",
-    },
-  ],
+  // "r2_buckets": [
+  //   {
+  //     "binding": "TRANSCRIPTIONS",
+  //     "bucket_name": "transcriptions",
+  //   },
+  // ],
   // "d1_databases": [
   //   {
   //     "binding": "MY_DB",
