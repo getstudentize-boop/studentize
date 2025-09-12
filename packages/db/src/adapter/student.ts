@@ -103,3 +103,24 @@ export const getAdvisorStudentList = async (input: {
 
   return students;
 };
+
+export const getStudentSessionOverview = async (studentUserId: string) => {
+  return db.query.student.findFirst({
+    where: eq(schema.student.userId, studentUserId),
+    columns: {
+      sessionOverview: true,
+    },
+  });
+};
+
+export const updateStudentSessionOverview = async (input: {
+  studentUserId: string;
+  sessionOverview: string;
+}) => {
+  const [student] = await db
+    .update(schema.student)
+    .set({ sessionOverview: input.sessionOverview })
+    .where(eq(schema.student.userId, input.studentUserId));
+
+  return student;
+};

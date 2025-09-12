@@ -1,6 +1,6 @@
 import * as schema from "../schema";
 
-import { InferInsertModel, InferSelectModel, db, eq } from "..";
+import { InferInsertModel, InferSelectModel, db, desc, eq } from "..";
 import { alias } from "drizzle-orm/pg-core";
 import { createdAt } from "../schema/utils";
 
@@ -30,6 +30,7 @@ export const getSessionById = (input: { sessionId: string }) => {
     columns: {
       advisorUserId: true,
       studentUserId: true,
+      summary: true,
     },
   });
 };
@@ -81,5 +82,16 @@ export const getSessionSummarysByStudent = async (input: {
       title: schema.session.title,
     })
     .from(schema.session)
-    .where(eq(schema.session.studentUserId, input.studentUserId));
+    .where(eq(schema.session.studentUserId, input.studentUserId))
+    .orderBy(desc(schema.session.createdAt));
+};
+
+export const getLatestSessionSummaryByStudent = async (input: {
+  studentUserId: string;
+}) => {
+  return db.query.session.findFirst({
+    where: eq(schema.session.studentUserId, input.studentUserId),
+    orderBy: [desc(schema.session.createdAt)],
+    columns: { summary: true, createdAt: true, title: true },
+  });
 };

@@ -64,21 +64,21 @@ export const UserSessionsTab = ({
 }: {
   studentUserId: string;
 }) => {
-  const sessionsQuery = useQuery(
+  const summaryQuery = useQuery(
     orpc.session.summaryList.queryOptions({ input: { studentUserId } })
   );
 
-  const sessions = sessionsQuery.data ?? [];
+  const session = summaryQuery.data;
+
+  console.log("session", session);
 
   return (
     <div className="rounded-md p-6 flex flex-col gap-4">
-      <Card title="User Summary">
-        This student has attended 5 sessions and is actively engaged in
-        extracurricular activities. This indicates a well-rounded individual who
-        is likely to succeed academically and socially.
-      </Card>
+      {session?.overview ? (
+        <Card title="User Summary">{session?.overview}</Card>
+      ) : null}
 
-      {sessions.map((s) => (
+      {session?.summaries.map((s) => (
         <Card title={s.title} variant="zinc">
           {s.summary}
         </Card>

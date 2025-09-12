@@ -1,10 +1,12 @@
 import { AuthContext } from "@/utils/middleware";
 import { ORPCError } from "@orpc/server";
-import { getSessionById, updateSessionSummary } from "@student/db";
+import { updateSessionSummary } from "@student/db";
 import z from "zod";
 
 import { summarizeTranscript } from "@student/ai/services";
 import { createTranscriptionObjectKey, readFile } from "../../utils/s3";
+
+import { authenticateSession } from "../../route-utils";
 
 export const SummarizeTranscriptionInputSchema = z.object({
   sessionId: z.string(),
@@ -14,21 +16,7 @@ export const summarizeTranscription = async (
   ctx: AuthContext,
   data: z.infer<typeof SummarizeTranscriptionInputSchema>
 ) => {
-  const isAdminOrAdvisor = ["ADMIN", "ADVISOR"].includes(ctx.user.type);
-
-  if (!isAdminOrAdvisor) {
-    throw new ORPCError("FORBIDDEN", { message: "Access denied" });
-  }
-
-  const session = await getSessionById({ sessionId: data.sessionId });
-
-  if (ctx.user.type === "ADVISOR") {
-    const advisorUserId = ctx.user.id;
-
-    if (advisorUserId !== session?.advisorUserId) {
-      throw new ORPCError("FORBIDDEN", { message: "Access denied" });
-    }
-  }
+  const session = await authenticateSession(ctx, data);
 
   const transcriptionText = await readFile({
     bucket: "transcription",

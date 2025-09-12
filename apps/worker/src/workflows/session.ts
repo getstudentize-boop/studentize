@@ -15,19 +15,25 @@ export class SummarizeSessionWorkflow extends WorkflowEntrypoint<Env, Params> {
     const sessionId = event.payload.sessionId;
 
     await step.do("Summarize transcription", async () => {
-      try {
-        const result = await client.session.summarizeTranscription(
-          {
-            sessionId,
-          },
-          { context: { accessToken: event.payload.accessToken } }
-        );
+      const result = await client.session.summarizeTranscription(
+        {
+          sessionId,
+        },
+        { context: { accessToken: event.payload.accessToken } }
+      );
 
-        return result;
-      } catch (error) {
-        console.error("Error summarizing transcription:", error);
-        throw error;
-      }
+      return result;
+    });
+
+    await step.do("Summarize student overview", async () => {
+      const result = await client.session.summarizeStudentOverview(
+        {
+          sessionId,
+        },
+        { context: { accessToken: event.payload.accessToken } }
+      );
+
+      return result;
     });
   }
 }

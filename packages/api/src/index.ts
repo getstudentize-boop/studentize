@@ -4,6 +4,7 @@ import {
   sessionGetTranscriptionUploadUrlHandler,
   sessionSummarizeTranscriptionHandler,
   sessionSummaryListHandler,
+  sessionSummarizeStudentOverviewHandler,
 } from "./routes/session";
 
 import {
@@ -37,6 +38,7 @@ export const router = {
     transcriptionUploadUrl: sessionGetTranscriptionUploadUrlHandler,
     summarizeTranscription: sessionSummarizeTranscriptionHandler,
     summaryList: sessionSummaryListHandler,
+    summarizeStudentOverview: sessionSummarizeStudentOverviewHandler,
   },
   student: {
     create: studentCreateHandler,

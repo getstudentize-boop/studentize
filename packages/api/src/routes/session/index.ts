@@ -15,6 +15,10 @@ import {
   sessionSummaryList,
   SessionSummaryListInputSchema,
 } from "./summary-list";
+import {
+  summarizeStudentOverview,
+  SummarizeStudentOverviewInputSchema,
+} from "./summarize-student-overview";
 
 export const sessionListHandler = privateRoute
   .input(ListSessionInputSchema)
@@ -48,5 +52,12 @@ export const sessionSummaryListHandler = privateRoute
   .input(SessionSummaryListInputSchema)
   .handler(async ({ context, input }) => {
     const result = await sessionSummaryList(context, input);
+    return result;
+  });
+
+export const sessionSummarizeStudentOverviewHandler = privateRoute
+  .input(SummarizeStudentOverviewInputSchema)
+  .handler(async ({ context, input }) => {
+    const result = await summarizeStudentOverview(context, input);
     return result;
   });
