@@ -7,8 +7,8 @@ import { privateRoute } from "../../utils/middleware";
 
 export const chatStudentHandler = privateRoute
   .input(type<ChatStudentInput>())
-  .handler(async ({ input }) => {
-    const result = await chatStudent(input);
+  .handler(async ({ context, input }) => {
+    const result = await chatStudent(context, input);
     return result;
   });
 

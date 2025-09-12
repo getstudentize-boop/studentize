@@ -98,7 +98,7 @@ function RouteComponent() {
 
   return (
     <div className="w-[35rem] bg-white border-l border-bzinc flex flex-col text-left">
-      <div className="px-4 pt-7 pb-4 border-b border-bzinc flex justify-between items-center">
+      <div className="border-b h-14 mt-2 px-4 border-bzinc flex justify-between items-center">
         <Link to="/students">
           <ArrowLeftIcon />
         </Link>
@@ -124,7 +124,7 @@ function RouteComponent() {
           />
         </div>
       </div>
-      <div>
+      <div className="flex-1 overflow-auto custom-scrollbar">
         <div className="flex p-4 gap-4">
           <Avvvatars value="student name" size={50} style="shape" />
           <div className="flex-1">
@@ -145,7 +145,7 @@ function RouteComponent() {
             </div>
           </div>
         </div>
-        <div className="mt-2.5 flex px-5 border-b border-bzinc">
+        <div className="pt-2.5 flex px-5 border-b border-bzinc sticky top-0 bg-white">
           <Link
             to="."
             search={{ tab: "profile" }}

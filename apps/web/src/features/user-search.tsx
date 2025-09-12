@@ -8,8 +8,9 @@ import {
 import { cn } from "@/utils/cn";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import Avvatar from "avvvatars-react";
+import { RouterOutputs } from "orpc/client";
 
-type User = { userId: string; name: string };
+type User = RouterOutputs["student"]["search"][number];
 
 export const UserSearch = ({
   align = "start",
@@ -41,7 +42,7 @@ export const UserSearch = ({
           <button className="border border-zinc-200 rounded-lg inline-flex items-center w-full cursor-pointer">
             <div className="p-2 border-r border-zinc-200/80">
               {user ? (
-                <Avvatar size={20} value={user?.name} style="shape" />
+                <Avvatar size={20} value={user?.name ?? ""} style="shape" />
               ) : (
                 <div className="size-5" />
               )}
@@ -56,7 +57,7 @@ export const UserSearch = ({
           align={align}
           className={cn("p-0 pb-2 w-[29.2rem]", className)}
         >
-          <div className="py-2 px-2.5 border-b border-bzinc mb-2 flex gap-2.5 items-center">
+          <div className="py-2 px-2.5 border-b border-bzinc flex gap-2.5 items-center">
             <MagnifyingGlassIcon
               size={17}
               weight="bold"
@@ -69,16 +70,18 @@ export const UserSearch = ({
               onChange={(ev) => onSearch(ev.target.value)}
             />
           </div>
-          {data.length > 0 ? (
-            data.map((d) => (
-              <DropdownItem onSelect={() => onSelect?.(d)} key={d.userId}>
-                <Avvatar value={d.name} size={24} />
-                <div>{d.name}</div>
-              </DropdownItem>
-            ))
-          ) : (
-            <div className="h-48" />
-          )}
+          <div className="overflow-y-auto custom-scrollbar h-48">
+            <div className="pb-10">
+              {data.length > 0
+                ? data.map((d) => (
+                    <DropdownItem onSelect={() => onSelect?.(d)} key={d.userId}>
+                      <Avvatar value={d.name ?? ""} size={24} />
+                      <div>{d.name}</div>
+                    </DropdownItem>
+                  ))
+                : null}
+            </div>
+          </div>
         </DropdownContent>
       </DropdownPortal>
     </DropdownRoot>

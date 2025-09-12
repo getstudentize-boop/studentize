@@ -86,6 +86,13 @@ export const getSessionSummarysByStudent = async (input: {
     .orderBy(desc(schema.session.createdAt));
 };
 
+export const getSessionSummaryById = async (input: { sessionId: string }) => {
+  return db.query.session.findFirst({
+    where: eq(schema.session.id, input.sessionId),
+    columns: { summary: true, createdAt: true, title: true },
+  });
+};
+
 export const getLatestSessionSummaryByStudent = async (input: {
   studentUserId: string;
 }) => {

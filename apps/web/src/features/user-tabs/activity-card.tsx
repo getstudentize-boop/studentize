@@ -52,12 +52,16 @@ export const ActivityCard = ({
     defaultValues: defaultValues ?? {
       type: "",
       name: "",
-      hoursPerWeek: 0,
-      yearsOfExperience: 0,
+      hoursPerWeek: null as number | null,
+      yearsOfExperience: null as number | null,
       description: "",
     },
     onSubmit: (vals) => {
-      onChange(vals.value);
+      onChange({
+        ...vals.value,
+        hoursPerWeek: vals.value.hoursPerWeek ?? 0,
+        yearsOfExperience: vals.value.yearsOfExperience ?? 0,
+      });
     },
     validators: {
       onChange: ({ value }) => {

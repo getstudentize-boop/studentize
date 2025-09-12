@@ -73,7 +73,7 @@ export const ChatHistory = () => {
               to="/guru"
               search={{ chatId: c.id, userId: c.studentUserId }}
               className={cn("truncate mb-2.5", {
-                "font-semibold text-cyan-900 transition-all":
+                "font-semibold text-cyan-600 transition-transform":
                   c.id === searchParams.chatId,
               })}
             >

@@ -32,7 +32,10 @@ type Filter = {
   }>;
 };
 
-export const autoRag = async (query: string, options: { filter: Filter }) => {
+export const autoRag = async (
+  query: string,
+  options: { ranking_options?: { score_threshold: number }; filter: Filter }
+) => {
   const res = await fetch(
     `https://api.cloudflare.com/client/v4/accounts/${process.env.R2_ACCOUNT_ID}/autorag/rags/${process.env.AUTORAG_NAME}/ai-search`,
     {
@@ -41,7 +44,7 @@ export const autoRag = async (query: string, options: { filter: Filter }) => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${process.env.AUTORAG_API_TOKEN}`,
       },
-      body: JSON.stringify({ query, filter: options.filter }),
+      body: JSON.stringify({ query, ...options }),
     }
   );
 

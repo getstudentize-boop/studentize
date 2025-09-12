@@ -1,9 +1,12 @@
-import { convertMessageToContent } from "../../utils/chat";
 import { createNewChat } from "../../services/new-chat";
 import { autoRag } from "../../utils/auto-rag";
 import { openai } from "@ai-sdk/openai";
-import { streamToEventIterator } from "@orpc/server";
-import { createAdvisorChatMessage } from "@student/db";
+import { ORPCError, streamToEventIterator } from "@orpc/server";
+import {
+  createAdvisorChatMessage,
+  getSessionSummaryById,
+  getStudentSessionOverview,
+} from "@student/db";
 import {
   convertToModelMessages,
   stepCountIs,
@@ -13,10 +16,10 @@ import {
   UIMessage,
 } from "ai";
 import z from "zod";
+import { AuthContext } from "@/utils/middleware";
 
 export type ChatStudentInput = {
   studentUserId: string;
-  advisorUserId: string;
   chatId: string;
   messages: UIMessage[];
 };
@@ -32,36 +35,72 @@ const createTranscriptionTool = (input: { studentId: string }) => {
     }),
     execute: async ({ query }) => {
       const response = await autoRag(query, {
+        ranking_options: { score_threshold: 0 },
         filter: {
           type: "and",
           filters: [{ type: "eq", key: "folder", value: input.studentId }],
         },
       });
 
-      return response.result.response;
+      const sessionIds = response.result.data.map((item) => {
+        const [_, sessionId] = item.filename.split("/");
+        return sessionId.replace(".txt", "");
+      });
+
+      return {
+        response: response.result.response,
+        sessionIds,
+      };
     },
   });
 };
 
-export const chatStudent = async (input: ChatStudentInput) => {
+const createSessionOverviewTool = (input: { studentId: string }) => {
+  return tool({
+    description: "A tool that gets an overall overview of a student's session.",
+    inputSchema: z.object({}),
+    execute: async ({}) => {
+      const overview = await getStudentSessionOverview(input.studentId);
+      return overview?.sessionOverview ?? "";
+    },
+  });
+};
+
+const createSessionSummaryTool = (input: { studentId: string }) => {
+  return tool({
+    description: "A tool that gets the latest summary of a student's session.",
+    inputSchema: z.object({ sessionId: z.string() }),
+    execute: async ({ sessionId }) => {
+      // todo-before-review: verify session belongs to student
+      const sessionSummary = await getSessionSummaryById({ sessionId });
+      return sessionSummary?.summary ?? "";
+    },
+  });
+};
+
+export const chatStudent = async (
+  ctx: AuthContext,
+  input: ChatStudentInput
+) => {
+  if (ctx.user.type === "STUDENT") {
+    throw new ORPCError("FORBIDDEN");
+  }
+
   const isNewMessage = input.messages.length === 1;
 
   const modelMessages = convertToModelMessages(input.messages);
 
   if (isNewMessage) {
+    console.log("Creating new chat for student:", input.studentUserId);
     await createNewChat({
-      advisorUserId: input.advisorUserId,
+      advisorUserId: ctx.user.id,
       studentUserId: input.studentUserId,
       chatId: input.chatId,
       messages: modelMessages,
     });
   }
 
-  console.log("💡:", modelMessages);
-
   const userMessage = modelMessages.at(-1)?.content as TextPart[];
-
-  console.log("🔥:", userMessage);
 
   await createAdvisorChatMessage({
     chatId: input.chatId,
@@ -70,11 +109,17 @@ export const chatStudent = async (input: ChatStudentInput) => {
   });
 
   const result = streamText({
-    model: openai("gpt-4.1"),
+    model: openai("gpt-5"),
     tools: {
       userTranscriptions: createTranscriptionTool({
         studentId: input.studentUserId,
       }),
+      sessionOverview: createSessionOverviewTool({
+        studentId: input.studentUserId,
+      }),
+      // sessionSummary: createSessionSummaryTool({
+      //   studentId: input.studentUserId,
+      // }),
     },
     system: `You are a helpful assistant for an advisor helping get information about their student. Use the tools to get information from the student's session transcriptions to help answer the user's questions. If you don't know the answer, just say you don't know. Do not make up an answer.`,
     messages: convertToModelMessages(input.messages),
@@ -82,8 +127,6 @@ export const chatStudent = async (input: ChatStudentInput) => {
     onFinish: async (result) => {
       const message = result.response.messages.at(-1)
         ?.content as unknown as TextPart[];
-
-      console.log("💬:", message);
 
       await createAdvisorChatMessage({
         chatId: input.chatId,

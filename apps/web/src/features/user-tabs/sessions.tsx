@@ -1,8 +1,8 @@
+import { Markdown } from "@/components/markdown";
 import { cn } from "@/utils/cn";
 import { SparkleIcon, SubtitlesIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
-import { ReactNode } from "react";
 
 const Card = ({
   title,
@@ -10,7 +10,7 @@ const Card = ({
   variant = "violet",
 }: {
   title: string;
-  children: ReactNode;
+  children: string;
   variant?: "violet" | "zinc";
 }) => {
   const Icon = variant === "violet" ? SparkleIcon : SubtitlesIcon;
@@ -53,7 +53,7 @@ const Card = ({
           variant === "violet" ? "text-violet-950" : "text-zinc-950"
         )}
       >
-        {children}
+        <Markdown>{children}</Markdown>
       </div>
     </div>
   );
@@ -80,7 +80,7 @@ export const UserSessionsTab = ({
 
       {session?.summaries.map((s) => (
         <Card title={s.title} variant="zinc">
-          {s.summary}
+          {s.summary ?? ""}
         </Card>
       ))}
     </div>

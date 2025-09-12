@@ -15,7 +15,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import { useForm } from "@tanstack/react-form";
 
-import { useChat } from "@ai-sdk/react";
+import { UIMessage, useChat } from "@ai-sdk/react";
 
 import { z } from "zod";
 import { eventIteratorToStream } from "@orpc/client";
@@ -23,6 +23,7 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/utils/cn";
 import { ChatHistory } from "@/features/chat-history";
 import { AutosizeTextArea } from "@/features/autosize-text-area";
+import { Markdown } from "@/components/markdown";
 
 export const Route = createFileRoute("/_authenticated/guru")({
   component: App,
@@ -44,11 +45,15 @@ const EmptyMessage = () => {
 
 const Message = ({
   role,
-  children,
+  message,
 }: {
   role: "assistant" | "user" | "system";
-  children: React.ReactNode;
+  message: UIMessage;
 }) => {
+  const content = message.parts
+    .map((part) => (part.type === "text" ? part.text : ""))
+    .join("");
+
   return (
     <div
       className={cn(
@@ -58,7 +63,7 @@ const Message = ({
           : "ml-auto rounded-br-none bg-linear-to-t to-cyan-600 from-cyan-700/80 text-white"
       )}
     >
-      {children}
+      <Markdown>{content}</Markdown>
     </div>
   );
 };
@@ -104,8 +109,6 @@ function App() {
     })
   );
 
-  console.log("chatId", chatMessagesMutation.data);
-
   const chat = useChat({
     id: chatId ?? "new",
     onFinish: async () => {
@@ -119,10 +122,10 @@ function App() {
     },
     transport: {
       sendMessages: async (options) => {
+        console.log("Sending messages:", userId);
         return eventIteratorToStream(
           await orpc.chat.student.call(
             {
-              advisorUserId: "1",
               studentUserId: userId!,
               messages: options.messages,
               chatId: chatId!,
@@ -149,6 +152,10 @@ function App() {
   useEffect(() => {
     if (!isNewChat && chatId) {
       chatMessagesMutation.mutate({ chatId });
+    }
+
+    if (isNewChat) {
+      searchStudentMutation.mutate({ query: "" });
     }
   }, [chatId, isNewChat]);
 
@@ -185,13 +192,7 @@ function App() {
             >
               {isNewChat || chat.messages.length > 0 ? null : <EmptyMessage />}
               {chat.messages.map((msg) => (
-                <Message key={msg.id} role={msg.role}>
-                  {msg.parts.map((part, index) =>
-                    part.type === "text" ? (
-                      <span key={index}>{part.text}</span>
-                    ) : null
-                  )}
-                </Message>
+                <Message key={msg.id} role={msg.role} message={msg} />
               ))}
             </div>
             <form
