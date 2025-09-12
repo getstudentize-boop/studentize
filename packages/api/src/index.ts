@@ -8,6 +8,8 @@ import {
   studentCreateHandler,
   studentListHandler,
   studentSearchHandler,
+  studentGetOneHandler,
+  studentUpdateHandler,
 } from "./routes/student";
 
 import {
@@ -36,6 +38,8 @@ export const router = {
     create: studentCreateHandler,
     list: studentListHandler,
     search: studentSearchHandler,
+    getOne: studentGetOneHandler,
+    update: studentUpdateHandler,
   },
   advisor: {
     create: advisorCreateHandler,

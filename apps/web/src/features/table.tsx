@@ -17,9 +17,11 @@ import {
 export const DataTable = ({
   table,
   onRowClick,
+  isRowSelected,
 }: {
   table: TableType<any>;
   onRowClick?: (row: Row<any>) => void;
+  isRowSelected?: (row: Row<any>) => boolean;
 }) => {
   return (
     <Table>
@@ -44,7 +46,8 @@ export const DataTable = ({
             onClick={() => onRowClick?.(row)}
             className={cn(
               "transition-colors",
-              !!onRowClick && "cursor-pointer hover:bg-zinc-50"
+              !!onRowClick && "cursor-pointer hover:bg-zinc-50",
+              isRowSelected?.(row) && "bg-zinc-100"
             )}
           >
             {row.getAllCells().map((cell) => {

@@ -1,8 +1,8 @@
-import { os } from "@orpc/server";
-
 import { createStudent, CreateStudentInputSchema } from "./create";
 import { listStudents, ListStudentsInputSchema } from "./lists";
 import { searchStudents, SearchStudentsInputSchema } from "./search";
+import { getOneStudent, GetOneStudentInputSchema } from "./get-one";
+import { updateStudent, UpdateStudentInputSchema } from "./update";
 
 import { privateRoute } from "../../utils/middleware";
 
@@ -25,4 +25,18 @@ export const studentSearchHandler = privateRoute
   .handler(async ({ input }) => {
     const students = await searchStudents(input);
     return students;
+  });
+
+export const studentGetOneHandler = privateRoute
+  .input(GetOneStudentInputSchema)
+  .handler(async ({ context, input }) => {
+    const student = await getOneStudent(context, input);
+    return student;
+  });
+
+export const studentUpdateHandler = privateRoute
+  .input(UpdateStudentInputSchema)
+  .handler(async ({ context, input }) => {
+    const result = await updateStudent(context, input);
+    return result;
   });

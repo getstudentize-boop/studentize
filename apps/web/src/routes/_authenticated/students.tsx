@@ -1,7 +1,7 @@
 import { NewStudentDialog } from "@/features/dialogs/new-student";
 import { StudentTable } from "@/features/tables/student";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useParams } from "@tanstack/react-router";
 import { orpc } from "orpc/client";
 
 import { useAuthUser } from "../_authenticated";
@@ -11,6 +11,12 @@ export const Route = createFileRoute("/_authenticated/students")({
 });
 
 function RouteComponent() {
+  const params = useParams({
+    from: "/_authenticated/students/$userId",
+    shouldThrow: false,
+  });
+  const currentStudentUserId = params?.userId;
+
   const { user } = useAuthUser();
 
   const studentsQuery = useQuery(
@@ -28,7 +34,10 @@ function RouteComponent() {
             <NewStudentDialog />
           </div>
           <div className="border border-bzinc bg-white rounded-lg flex-1 text-left">
-            <StudentTable data={students} />
+            <StudentTable
+              data={students}
+              currentStudentUserId={currentStudentUserId}
+            />
           </div>
         </div>
       </div>

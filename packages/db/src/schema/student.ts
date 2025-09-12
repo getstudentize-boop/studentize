@@ -7,14 +7,19 @@ export const student = pgTable("student", {
   createdAt,
   userId: text("user_id").notNull(),
   location: text("location"),
-  gradeLevel: text("grade_level"),
-  academicPerformance: text("academic_performance"),
-  testScores: text("test_scores"),
-  primaryAcademicInterests: jsonb("primary_academic_interests"),
-  applicationStage: jsonb("application_stage"),
-  mainExtracurriculars: jsonb("main_extracurriculars"),
-  target: jsonb("target").$type<{
-    university: string;
-    geography: string;
-  }>(),
+  studyCurriculum: text("study_curriculum"),
+  expectedGraduationYear: text("expected_graduation_year"),
+  targetCountries: jsonb("target_countries").$type<string[]>().default([]),
+  areasOfInterest: jsonb("areas_of_interest").$type<string[]>().default([]),
+  extracurricular: jsonb("extracurricular")
+    .$type<
+      Array<{
+        type: string;
+        name: string;
+        hoursPerWeek: number;
+        yearsOfExperience: number;
+        description?: string;
+      }>
+    >()
+    .default([]),
 });

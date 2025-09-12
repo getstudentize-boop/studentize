@@ -1,11 +1,17 @@
-import { db, InferSelectModel, InferInsertModel, eq } from "..";
+import {
+  db,
+  InferSelectModel,
+  InferInsertModel,
+  eq,
+  getTableColumns,
+} from "..";
 
 import * as schema from "../schema";
 
 import {} from "drizzle-orm/pg-core";
 
 type StudentSelect = InferSelectModel<typeof schema.student>;
-type StudentUser = InferInsertModel<typeof schema.student>;
+type StudentInsert = InferInsertModel<typeof schema.student>;
 
 export const createBaseStudent = async (data: { userId: string }) => {
   const student = await db
@@ -14,6 +20,33 @@ export const createBaseStudent = async (data: { userId: string }) => {
     .returning({ id: schema.student.id });
 
   return student;
+};
+
+export const updateStudentByUserId = async (
+  userId: string,
+  data: Partial<StudentInsert>
+) => {
+  const [student] = await db
+    .update(schema.student)
+    .set(data)
+    .where(eq(schema.student.userId, userId))
+    .returning({ studentId: schema.student.id });
+
+  return student;
+};
+
+export const getStudentByUserId = async (userId: string) => {
+  const [student] = await db
+    .select({
+      ...getTableColumns(schema.student),
+      email: schema.user.email,
+      name: schema.user.name,
+    })
+    .from(schema.student)
+    .innerJoin(schema.user, eq(schema.student.userId, schema.user.id))
+    .where(eq(schema.student.userId, userId));
+
+  return student as typeof student | undefined;
 };
 
 export const getStudents = async () => {
@@ -36,8 +69,11 @@ export const getFullStudentList = async () => {
       userId: schema.user.id,
       email: schema.user.email,
       name: schema.user.name,
+      studyCurriculum: schema.student.studyCurriculum,
+      targetCountries: schema.student.targetCountries,
     })
     .from(schema.user)
+    .innerJoin(schema.student, eq(schema.student.userId, schema.user.id))
     .where(eq(schema.user.type, "STUDENT"));
 
   return students;
@@ -51,8 +87,14 @@ export const getAdvisorStudentList = async (input: {
       userId: schema.user.id,
       email: schema.user.email,
       name: schema.user.name,
+      studyCurriculum: schema.student.studyCurriculum,
+      targetCountries: schema.student.targetCountries,
     })
     .from(schema.advisorStudentAccess)
+    .innerJoin(
+      schema.student,
+      eq(schema.advisorStudentAccess.studentUserId, schema.student.userId)
+    )
     .innerJoin(
       schema.user,
       eq(schema.advisorStudentAccess.studentUserId, schema.user.id)

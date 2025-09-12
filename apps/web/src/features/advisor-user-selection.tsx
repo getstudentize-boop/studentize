@@ -44,7 +44,9 @@ export const AdvisorUserSelection = ({
     );
   };
 
-  const studentsListQuery = useQuery(orpc.student.list.queryOptions());
+  const studentsListQuery = useQuery(
+    orpc.student.list.queryOptions({ input: {} })
+  );
 
   const studentsList = studentsListQuery.data ?? [];
 
