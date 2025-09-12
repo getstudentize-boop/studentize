@@ -4,11 +4,13 @@ import { RouterClient } from "@orpc/server";
 
 import { router } from "@student/api";
 
+import { env } from "node:process";
+
 const link = new RPCLink({
-  url: "https://localhost:3000/api/rpc",
-  headers: () => {
+  url: env.API_URL ?? "",
+  headers: ({ context }) => {
     return {
-      authorization: `Bearer`,
+      authorization: `Bearer ${context.accessToken}`,
     };
   },
 });

@@ -6,6 +6,10 @@ import {
 } from "./transcription-upload-url";
 
 import { privateRoute } from "../../utils/middleware";
+import {
+  summarizeTranscription,
+  SummarizeTranscriptionInputSchema,
+} from "./summarize-transcription";
 
 export const sessionListHandler = privateRoute
   .input(ListSessionInputSchema)
@@ -25,5 +29,12 @@ export const sessionGetTranscriptionUploadUrlHandler = privateRoute
   .input(TranscriptionUploadUrlInputSchema)
   .handler(async ({ input }) => {
     const result = await getTranscriptionUploadUrl(input);
+    return result;
+  });
+
+export const sessionSummarizeTranscriptionHandler = privateRoute
+  .input(SummarizeTranscriptionInputSchema)
+  .handler(async ({ context, input }) => {
+    const result = await summarizeTranscription(context, input);
     return result;
   });

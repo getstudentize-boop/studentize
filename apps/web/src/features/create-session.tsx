@@ -9,9 +9,14 @@ import { z } from "zod";
 import { convertStringToFile, uploadFileToStorage } from "@/utils/s3";
 import { Button } from "@/components/button";
 
+import { session as workerSession } from "@student/worker/sdk";
+import { useAuth } from "@workos-inc/authkit-react";
+
 type StudentOrAdvisor = { userId: string; name: string };
 
 export const CreateSession = () => {
+  const user = useAuth();
+
   const [advisor, setAdvisor] = useState<StudentOrAdvisor | undefined>();
   const [student, setStudent] = useState<StudentOrAdvisor | undefined>();
 
@@ -61,6 +66,11 @@ export const CreateSession = () => {
       );
 
       await uploadFileToStorage(result.url, markdown);
+
+      const accessToken = await user.getAccessToken();
+      await workerSession.triggerSummaryUpdate(accessToken, {
+        sessionId: session.id,
+      });
     },
   });
 

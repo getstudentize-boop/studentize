@@ -23,6 +23,16 @@ export const createSession = async (data: {
   return session;
 };
 
+export const getSessionById = (input: { sessionId: string }) => {
+  return db.query.session.findFirst({
+    where: eq(schema.session.id, input.sessionId),
+    columns: {
+      advisorUserId: true,
+      studentUserId: true,
+    },
+  });
+};
+
 export const getSessions = async (data: { studentUserId?: string } = {}) => {
   const advisorUser = alias(schema.user, "advisor_user");
   const studentUser = alias(schema.user, "student_user");

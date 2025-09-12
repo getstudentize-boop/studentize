@@ -18,6 +18,12 @@ const getORPCClient = createIsomorphicFn()
       context: async () => ({
         headers: getHeaders(),
       }),
+      interceptors: [
+        onError((error) => {
+          // Log the error
+          console.error("ORPC Error:", error);
+        }),
+      ],
     })
   )
   .client((): RouterClient<typeof router> => {

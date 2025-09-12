@@ -15,6 +15,10 @@
   },
   "devDependencies": {
     "@orpc/server": "^1.8.8",
+    "@types/node": "^24.3.0",
     "wrangler": "^4.4.0"
+  },
+  "exports": {
+    "./sdk": "./src/sdk/index.ts"
   }
 }

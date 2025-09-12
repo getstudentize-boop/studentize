@@ -24,7 +24,17 @@ app.post(
   ),
   async (c) => {
     const { sessionId } = c.req.valid("form");
-    await c.env.SUMMARIZE_SESSION_WORKFLOW.create({ params: { sessionId } });
+    const authorization = c.req.header("Authorization");
+
+    if (!authorization) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const [_, accessToken] = authorization.split(" ");
+
+    await c.env.SUMMARIZE_SESSION_WORKFLOW.create({
+      params: { sessionId, accessToken },
+    });
   }
 );
 

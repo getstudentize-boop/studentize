@@ -15,7 +15,7 @@ export const ServerRoute = createServerFileRoute("/api/auth/callback").methods({
 
     try {
       const response = await workos.userManagement.authenticateWithCode({
-        clientId: process.env.WORKOS_CLIENT_ID!,
+        clientId: process.env.VITE_WORKOS_CLIENT_ID!,
         code,
         session: {
           sealSession: true,

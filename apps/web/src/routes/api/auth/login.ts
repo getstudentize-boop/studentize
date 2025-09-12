@@ -7,7 +7,7 @@ export const ServerRoute = createServerFileRoute("/api/auth/login").methods({
     const authorizationUrl = workos.userManagement.getAuthorizationUrl({
       provider: "authkit",
       redirectUri: `${process.env.WEB_APP_URL}/api/auth/callback`,
-      clientId: process.env.WORKOS_CLIENT_ID!,
+      clientId: process.env.VITE_WORKOS_CLIENT_ID!,
     });
 
     throw redirect({ href: authorizationUrl });

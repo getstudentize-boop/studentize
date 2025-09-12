@@ -2,6 +2,7 @@ import {
   sessionCreateHandler,
   sessionListHandler,
   sessionGetTranscriptionUploadUrlHandler,
+  sessionSummarizeTranscriptionHandler,
 } from "./routes/session";
 
 import {
@@ -33,6 +34,7 @@ export const router = {
     list: sessionListHandler,
     create: sessionCreateHandler,
     transcriptionUploadUrl: sessionGetTranscriptionUploadUrlHandler,
+    summarizeTranscription: sessionSummarizeTranscriptionHandler,
   },
   student: {
     create: studentCreateHandler,

@@ -15,10 +15,12 @@ export const cookieOpts = {
 } as const;
 
 export const workos = new WorkOS(process.env.WORKOS_API_KEY!, {
-  clientId: process.env.WORKOS_CLIENT_ID!,
+  clientId: process.env.VITE_WORKOS_CLIENT_ID!,
 });
 
-const jwksUrl = workos.userManagement.getJwksUrl(process.env.WORKOS_CLIENT_ID!);
+const jwksUrl = workos.userManagement.getJwksUrl(
+  process.env.VITE_WORKOS_CLIENT_ID!
+);
 const JWKS = createRemoteJWKSet(new URL(jwksUrl));
 
 export const getAuth = async (sessionData: string) => {
