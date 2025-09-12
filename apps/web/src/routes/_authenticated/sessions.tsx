@@ -39,7 +39,7 @@ function RouteComponent() {
           <div className="p-2 border-b border-bzinc">
             <div className="border border-zinc-200 rounded-lg inline-flex items-center">
               <div className="p-2 border-r border-zinc-200/80">
-                <Avvatar size={24} value="test" />
+                <Avvatar size={20} value="test" />
               </div>
               <div className="px-2">
                 <input
@@ -53,7 +53,7 @@ function RouteComponent() {
           <SessionTable data={sessions} />
         </div>
       </div>
-      {isOpen ? <CreateSession /> : null}
+      {isOpen ? <CreateSession onComplete={() => setIsOpen(false)} /> : null}
     </>
   );
 }

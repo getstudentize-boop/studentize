@@ -3,6 +3,7 @@ import {
   sessionListHandler,
   sessionGetTranscriptionUploadUrlHandler,
   sessionSummarizeTranscriptionHandler,
+  sessionSummaryListHandler,
 } from "./routes/session";
 
 import {
@@ -35,6 +36,7 @@ export const router = {
     create: sessionCreateHandler,
     transcriptionUploadUrl: sessionGetTranscriptionUploadUrlHandler,
     summarizeTranscription: sessionSummarizeTranscriptionHandler,
+    summaryList: sessionSummaryListHandler,
   },
   student: {
     create: studentCreateHandler,
@@ -65,3 +67,5 @@ export const router = {
     newId: chatNewIdHandler,
   },
 };
+
+export * from "./utils/workos";

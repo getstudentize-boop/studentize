@@ -22,16 +22,21 @@ export const studentListHandler = privateRoute
 
 export const studentSearchHandler = privateRoute
   .input(SearchStudentsInputSchema)
-  .handler(async ({ input }) => {
-    const students = await searchStudents(input);
+  .handler(async ({ input, context }) => {
+    const students = await searchStudents(context, input);
     return students;
   });
 
 export const studentGetOneHandler = privateRoute
   .input(GetOneStudentInputSchema)
   .handler(async ({ context, input }) => {
-    const student = await getOneStudent(context, input);
-    return student;
+    try {
+      const student = await getOneStudent(context, input);
+      return student;
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
   });
 
 export const studentUpdateHandler = privateRoute

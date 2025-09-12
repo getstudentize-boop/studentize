@@ -11,6 +11,11 @@ import {
   SummarizeTranscriptionInputSchema,
 } from "./summarize-transcription";
 
+import {
+  sessionSummaryList,
+  SessionSummaryListInputSchema,
+} from "./summary-list";
+
 export const sessionListHandler = privateRoute
   .input(ListSessionInputSchema)
   .handler(async ({ input }) => {
@@ -36,5 +41,12 @@ export const sessionSummarizeTranscriptionHandler = privateRoute
   .input(SummarizeTranscriptionInputSchema)
   .handler(async ({ context, input }) => {
     const result = await summarizeTranscription(context, input);
+    return result;
+  });
+
+export const sessionSummaryListHandler = privateRoute
+  .input(SessionSummaryListInputSchema)
+  .handler(async ({ context, input }) => {
+    const result = await sessionSummaryList(context, input);
     return result;
   });

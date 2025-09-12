@@ -13,7 +13,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import Avvvatars from "avvvatars-react";
 import { orpc } from "orpc/client";
-import { useEffect } from "react";
 import z from "zod";
 
 const { fieldContext, formContext } = createFormHookContexts();
@@ -184,7 +183,9 @@ function RouteComponent() {
         {currentTab === "extracurricular" ? (
           <UserExtracurricularTab form={form} />
         ) : null}
-        {currentTab === "sessions" ? <UserSessionsTab /> : null}
+        {currentTab === "sessions" ? (
+          <UserSessionsTab studentUserId={params.userId} />
+        ) : null}
       </div>
     </div>
   );

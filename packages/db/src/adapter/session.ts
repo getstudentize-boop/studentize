@@ -2,6 +2,7 @@ import * as schema from "../schema";
 
 import { InferInsertModel, InferSelectModel, db, eq } from "..";
 import { alias } from "drizzle-orm/pg-core";
+import { createdAt } from "../schema/utils";
 
 type SessionInsert = InferInsertModel<typeof schema.session>;
 type SessionSelect = InferSelectModel<typeof schema.session>;
@@ -68,4 +69,17 @@ export const updateSessionSummary = async (input: {
     .update(schema.session)
     .set({ summary: input.summary })
     .where(eq(schema.session.id, input.sessionId));
+};
+
+export const getSessionSummarysByStudent = async (input: {
+  studentUserId: string;
+}) => {
+  return db
+    .select({
+      summary: schema.session.summary,
+      createdAt: schema.session.createdAt,
+      title: schema.session.title,
+    })
+    .from(schema.session)
+    .where(eq(schema.session.studentUserId, input.studentUserId));
 };

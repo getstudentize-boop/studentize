@@ -7,6 +7,7 @@ export const student = pgTable("student", {
   createdAt,
   userId: text("user_id").notNull(),
   location: text("location"),
+  sessionOverview: text("session_overview"),
   studyCurriculum: text("study_curriculum"),
   expectedGraduationYear: text("expected_graduation_year"),
   targetCountries: jsonb("target_countries").$type<string[]>().default([]),

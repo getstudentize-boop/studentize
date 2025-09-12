@@ -23,7 +23,7 @@ export const UserSearch = ({
   className,
 }: {
   placeholder: string;
-  onSelect: (user: User) => void;
+  onSelect?: (user: User) => void;
   onSearch: (query: string) => void;
   data: Array<User>;
   align?: "start" | "end";
@@ -34,16 +34,16 @@ export const UserSearch = ({
 }) => {
   return (
     <DropdownRoot>
-      <DropdownTrigger asChild>
+      <DropdownTrigger disabled={!onSelect} asChild>
         {trigger ? (
           trigger(user)
         ) : (
           <button className="border border-zinc-200 rounded-lg inline-flex items-center w-full cursor-pointer">
             <div className="p-2 border-r border-zinc-200/80">
               {user ? (
-                <Avvatar size={24} value={user?.name} />
+                <Avvatar size={20} value={user?.name} style="shape" />
               ) : (
-                <div className="size-6" />
+                <div className="size-5" />
               )}
             </div>
             <div className="px-2">{user?.name}</div>
@@ -71,7 +71,7 @@ export const UserSearch = ({
           </div>
           {data.length > 0 ? (
             data.map((d) => (
-              <DropdownItem onSelect={() => onSelect(d)} key={d.userId}>
+              <DropdownItem onSelect={() => onSelect?.(d)} key={d.userId}>
                 <Avvatar value={d.name} size={24} />
                 <div>{d.name}</div>
               </DropdownItem>

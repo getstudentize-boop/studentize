@@ -1,8 +1,7 @@
 import { RPCHandler } from "@orpc/server/fetch";
 import { createServerFileRoute } from "@tanstack/react-start/server";
 
-import { router } from "@student/api";
-import { getUserAuth } from "@/utils/workos";
+import { router, getUserAuth } from "@student/api";
 
 const handler = new RPCHandler(router);
 

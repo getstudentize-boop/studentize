@@ -1,5 +1,5 @@
 import * as schema from "../schema";
-import { and, db, eq, ilike, InferInsertModel, InferSelectModel } from "..";
+import { and, db, eq, ilike, InferInsertModel, InferSelectModel, or } from "..";
 
 type UserSelect = InferSelectModel<typeof schema.user>;
 type UserInsert = InferInsertModel<typeof schema.user>;
@@ -52,6 +52,51 @@ export const createBaseUser = async (data: {
     .returning({ id: schema.user.id });
 
   return user;
+};
+
+export const searchStudentsByAdvisor = async (input: {
+  advisorUserId: string;
+  query: string;
+}) => {
+  const andStatements = [
+    eq(schema.advisorStudentAccess.advisorUserId, input.advisorUserId),
+    input.query
+      ? or(
+          ilike(schema.user.name, `%${input.query}%`),
+          ilike(schema.user.email, `%${input.query}%`)
+        )
+      : undefined,
+  ];
+
+  const students = await db
+    .select({ userId: schema.user.id, name: schema.user.name })
+    .from(schema.advisorStudentAccess)
+    .innerJoin(
+      schema.user,
+      eq(schema.advisorStudentAccess.studentUserId, schema.user.id)
+    )
+    .where(and(...andStatements));
+
+  return students;
+};
+
+export const searchStudentsByAdmin = async (input: { query: string }) => {
+  const students = await db
+    .select({ userId: schema.user.id, name: schema.user.name })
+    .from(schema.user)
+    .where(
+      and(
+        eq(schema.user.type, "STUDENT"),
+        input.query
+          ? or(
+              ilike(schema.user.name, `%${input.query}%`),
+              ilike(schema.user.email, `%${input.query}%`)
+            )
+          : undefined
+      )
+    );
+
+  return students;
 };
 
 export const searchUserByName = async (data: {

@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 
 import { z } from "zod";
 
@@ -10,6 +11,8 @@ type Bindings = {
 
 const app = new Hono<{ Bindings: Bindings }>();
 
+app.use("/*", cors());
+
 app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
@@ -17,13 +20,13 @@ app.get("/", (c) => {
 app.post(
   "/sessions/summary",
   zValidator(
-    "form",
+    "json",
     z.object({
       sessionId: z.string(),
     })
   ),
   async (c) => {
-    const { sessionId } = c.req.valid("form");
+    const { sessionId } = c.req.valid("json");
     const authorization = c.req.header("Authorization");
 
     if (!authorization) {
@@ -35,6 +38,8 @@ app.post(
     await c.env.SUMMARIZE_SESSION_WORKFLOW.create({
       params: { sessionId, accessToken },
     });
+
+    return c.json({ status: "ok" });
   }
 );
 

@@ -1,0 +1,1 @@
+ALTER TABLE "student" RENAME COLUMN "session_summary" TO "session_overview";

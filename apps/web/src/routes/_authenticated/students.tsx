@@ -15,6 +15,7 @@ function RouteComponent() {
     from: "/_authenticated/students/$userId",
     shouldThrow: false,
   });
+
   const currentStudentUserId = params?.userId;
 
   const { user } = useAuthUser();

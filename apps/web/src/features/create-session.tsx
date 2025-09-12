@@ -1,21 +1,25 @@
 import { Input } from "@/components/input";
 import { UserSearch } from "./user-search";
 import { SubtitlesIcon, XIcon } from "@phosphor-icons/react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import { useForm } from "@tanstack/react-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { convertStringToFile, uploadFileToStorage } from "@/utils/s3";
 import { Button } from "@/components/button";
 
 import { session as workerSession } from "@student/worker/sdk";
 import { useAuth } from "@workos-inc/authkit-react";
+import { useAuthUser } from "@/routes/_authenticated";
 
 type StudentOrAdvisor = { userId: string; name: string };
 
-export const CreateSession = () => {
+export const CreateSession = ({ onComplete }: { onComplete: () => void }) => {
   const user = useAuth();
+  const currentUser = useAuthUser();
+
+  const utils = useQueryClient();
 
   const [advisor, setAdvisor] = useState<StudentOrAdvisor | undefined>();
   const [student, setStudent] = useState<StudentOrAdvisor | undefined>();
@@ -61,7 +65,7 @@ export const CreateSession = () => {
 
       const markdown = await convertStringToFile(
         value.transcription,
-        "transcription.txt",
+        `${session.id}.txt`,
         "text/plain"
       );
 
@@ -75,7 +79,15 @@ export const CreateSession = () => {
   });
 
   const createSessionMutation = useMutation(
-    orpc.session.create.mutationOptions()
+    orpc.session.create.mutationOptions({
+      onSuccess: async () => {
+        await utils.invalidateQueries({
+          queryKey: orpc.session.list.key({ type: "query" }),
+        });
+
+        onComplete();
+      },
+    })
   );
 
   const searchStudentsMutation = useMutation(
@@ -83,19 +95,35 @@ export const CreateSession = () => {
   );
 
   const searchAdvisorsMutation = useMutation(
-    orpc.advisor.search.mutationOptions()
+    orpc.advisor.search.mutationOptions({
+      onSuccess: (data) => {
+        if (currentUser.user.type === "ADVISOR") {
+          const advisor = data[0];
+          setAdvisor({
+            userId: advisor.userId,
+            name: advisor.name ?? "",
+          });
+        }
+      },
+    })
   );
 
   const students = searchStudentsMutation.data ?? [];
   const advisors = searchAdvisorsMutation.data ?? [];
 
+  useEffect(() => {
+    searchStudentsMutation.mutate({ query: "" });
+    searchAdvisorsMutation.mutate({ query: "" });
+  }, []);
+
   return (
     <form
-      onSubmit={(ev) => {
+      onSubmit={async (ev) => {
         ev.preventDefault();
         ev.stopPropagation();
 
-        form.handleSubmit();
+        await form.handleSubmit();
+        form.reset();
       }}
       className="w-[500px] border-l border-bzinc flex flex-col gap-4 p-4 py-7 bg-white"
     >

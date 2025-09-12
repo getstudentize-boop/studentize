@@ -1,18 +1,33 @@
 import z from "zod";
 
-import { searchUserByName } from "@student/db";
+import { getAdvisorByUserId, searchUserByName } from "@student/db";
+import { AuthContext } from "@/utils/middleware";
+import { ORPCError } from "@orpc/server";
 
 export const SearchAdvisorsInputSchema = z.object({
-  query: z.string().min(2),
+  query: z.string(),
 });
 
 export const searchAdvisors = async (
-  data: z.infer<typeof SearchAdvisorsInputSchema>
+  ctx: AuthContext,
+  input: z.infer<typeof SearchAdvisorsInputSchema>
 ) => {
-  const advisors = await searchUserByName({
-    query: data.query,
-    type: "ADVISOR",
-  });
+  if (ctx.user.type === "ADMIN") {
+    const advisors = await searchUserByName({
+      query: input.query,
+      type: "ADVISOR",
+    });
 
-  return advisors;
+    return advisors;
+  } else if (ctx.user.type === "ADVISOR") {
+    const advisor = await getAdvisorByUserId(ctx.user.id);
+
+    if (!advisor) {
+      throw new ORPCError("BAD_REQUEST");
+    }
+
+    return [{ userId: advisor.userId, name: advisor.name }];
+  }
+
+  throw new ORPCError("FORBIDDEN");
 };

@@ -28,8 +28,8 @@ export const advisorListHandler = privateRoute.handler(async () => {
 
 export const advisorSearchHandler = privateRoute
   .input(SearchAdvisorsInputSchema)
-  .handler(async ({ input }) => {
-    const advisors = await searchAdvisors(input);
+  .handler(async ({ input, context }) => {
+    const advisors = await searchAdvisors(context, input);
     return advisors;
   });
 
@@ -47,8 +47,8 @@ export const advisorChatMessagesHandler = privateRoute
 
 export const advisorGetOneHandler = privateRoute
   .input(GetOneAdvisorInputSchema)
-  .handler(async ({ input }) => {
-    const advisor = await getOneAdvisor(input);
+  .handler(async ({ input, context }) => {
+    const advisor = await getOneAdvisor(context, input);
     return advisor;
   });
 

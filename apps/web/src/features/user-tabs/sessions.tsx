@@ -1,5 +1,7 @@
 import { cn } from "@/utils/cn";
 import { SparkleIcon, SubtitlesIcon } from "@phosphor-icons/react";
+import { useQuery } from "@tanstack/react-query";
+import { orpc } from "orpc/client";
 import { ReactNode } from "react";
 
 const Card = ({
@@ -57,7 +59,17 @@ const Card = ({
   );
 };
 
-export const UserSessionsTab = () => {
+export const UserSessionsTab = ({
+  studentUserId,
+}: {
+  studentUserId: string;
+}) => {
+  const sessionsQuery = useQuery(
+    orpc.session.summaryList.queryOptions({ input: { studentUserId } })
+  );
+
+  const sessions = sessionsQuery.data ?? [];
+
   return (
     <div className="rounded-md p-6 flex flex-col gap-4">
       <Card title="User Summary">
@@ -66,11 +78,11 @@ export const UserSessionsTab = () => {
         is likely to succeed academically and socially.
       </Card>
 
-      <Card title="Chad / Mike Session" variant="zinc">
-        This student has attended 5 sessions and is actively engaged in
-        extracurricular activities. This indicates a well-rounded individual who
-        is likely to succeed academically and socially.
-      </Card>
+      {sessions.map((s) => (
+        <Card title={s.title} variant="zinc">
+          {s.summary}
+        </Card>
+      ))}
     </div>
   );
 };
