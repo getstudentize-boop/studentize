@@ -109,8 +109,6 @@ function App() {
     })
   );
 
-  const isEmptyState = isNewChat;
-
   const chat = useChat({
     id: !userId ? "select" : (chatId ?? "new"),
     onFinish: async () => {
@@ -138,6 +136,8 @@ function App() {
       },
     },
   });
+
+  const isEmptyState = isNewChat && chat.messages.length === 0;
 
   const form = useForm({
     defaultValues: {
