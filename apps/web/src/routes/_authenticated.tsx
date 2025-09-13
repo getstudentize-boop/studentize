@@ -1,13 +1,21 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 import { ArrowsCounterClockwiseIcon } from "@phosphor-icons/react";
 
 import { Header } from "@/features/header";
 import { orpc } from "orpc/client";
 import { Button } from "@/components/button";
+import { getUserAuth } from "@/utils/workos";
 
 export const Route = createFileRoute("/_authenticated")({
   component: App,
+  beforeLoad: async () => {
+    const user = await getUserAuth();
+
+    if (!user) {
+      throw redirect({ to: "/" });
+    }
+  },
   loader: async ({ context }) => {
     const user = await context.queryClient.ensureQueryData(
       orpc.user.current.queryOptions()

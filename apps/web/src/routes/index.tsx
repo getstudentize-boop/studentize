@@ -1,28 +1,23 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import { Button } from "@/components/button";
 import { useAuth } from "@workos-inc/authkit-react";
-import { useEffect } from "react";
-// import { getUserAuth } from "@/utils/workos";
+import { getUserAuth } from "@/utils/workos";
 
 export const Route = createFileRoute("/")({
   component: App,
   ssr: false,
+  beforeLoad: async () => {
+    const user = await getUserAuth();
+
+    if (user) {
+      throw redirect({ to: "/guru" });
+    }
+  },
 });
 
 function App() {
-  const { signIn, isLoading, user } = useAuth();
-  const navigate = Route.useNavigate();
-
-  useEffect(() => {
-    if (user) {
-      navigate({ to: "/guru" });
-    }
-  }, [user]);
-
-  if (isLoading) {
-    return <></>;
-  }
+  const { signIn } = useAuth();
 
   return (
     <div className="flex h-screen flex-1">
