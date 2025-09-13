@@ -8,8 +8,11 @@ import { Button } from "@/components/button";
 
 export const Route = createFileRoute("/_authenticated")({
   component: App,
-  loader: async () => {
-    const user = await orpc.user.current.call();
+  loader: async ({ context }) => {
+    const user = await context.queryClient.ensureQueryData(
+      orpc.user.current.queryOptions()
+    );
+
     return { user };
   },
 });
