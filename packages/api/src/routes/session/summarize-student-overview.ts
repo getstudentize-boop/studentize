@@ -8,6 +8,7 @@ import {
 } from "@student/db";
 
 import { summarizeSessionOverview } from "@student/ai/services";
+import { autoRagSync } from "../../utils/auto-rag";
 
 export const SummarizeStudentOverviewInputSchema = z.object({
   sessionId: z.string(),
@@ -30,4 +31,7 @@ export const summarizeStudentOverview = async (
     studentUserId: session.studentUserId,
     sessionOverview: newSessionOverview,
   });
+
+  const syncResult = await autoRagSync();
+  return { success: true, syncResult };
 };

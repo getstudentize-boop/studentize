@@ -23,6 +23,11 @@ export const Route = createFileRoute("/_authenticated")({
 
     return { user };
   },
+  pendingComponent: () => (
+    <div className="flex h-screen items-center justify-center">
+      <img src="/cube.png" className="w-36 animate-float" />
+    </div>
+  ),
 });
 
 export const useAuthUser = () => {

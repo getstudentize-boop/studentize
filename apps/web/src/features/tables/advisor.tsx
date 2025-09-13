@@ -43,13 +43,11 @@ const columns = [
       return (
         <span
           className={cn(
-            "rounded-md px-2 py-1 border text-xs border-bzinc inline-block"
-            // { "bg-zinc-50 text-zinc-950": status === "PENDING" },
-            // { "bg-green-50 text-green-950": status === "ACTIVE" },
-            // { "bg-rose-50 text-rose-950": status === "INACTIVE" }
+            "rounded-md px-2 py-1 border text-xs border-bzinc inline-flex gap-2"
           )}
         >
           {{ ACTIVE: "🟢", INACTIVE: "🔴", PENDING: "🟡" }[status]}
+          <span className="ml-1 font-semibold">{status}</span>
         </span>
       );
     },

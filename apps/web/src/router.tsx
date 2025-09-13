@@ -15,11 +15,6 @@ export const createRouter = () => {
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
     context: { queryClient },
-    defaultPendingComponent: () => (
-      <div className="flex h-screen items-center justify-center">
-        <img src="/cube.png" className="w-48 animate-float" />
-      </div>
-    ),
   });
 
   setupRouterSsrQueryIntegration({

@@ -36,6 +36,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     }),
     shellComponent: RootDocument,
     notFoundComponent: () => <div>404 - Not Found</div>,
+    pendingComponent: () => (
+      <div className="flex h-screen items-center justify-center">
+        <img src="/cube.png" className="w-36 animate-float" />
+      </div>
+    ),
   }
 );
 

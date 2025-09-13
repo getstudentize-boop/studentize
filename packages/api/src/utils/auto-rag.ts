@@ -56,3 +56,31 @@ export const autoRag = async (
   const data = await res.json();
   return data as SearchResult;
 };
+
+type SyncResult = {
+  result: {
+    job_id: string;
+  };
+  success: boolean;
+};
+
+export const autoRagSync = async () => {
+  const res = await fetch(
+    `https://api.cloudflare.com/client/v4/accounts/${process.env.R2_ACCOUNT_ID}/autorag/rags/${process.env.AUTORAG_NAME}/sync`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.AUTORAG_API_TOKEN}`,
+      },
+    }
+  );
+
+  if (!res.ok) {
+    console.error("AutoRAG sync error:", await res.text());
+    throw new Error("Failed to sync AutoRAG");
+  }
+
+  const data = await res.json();
+  return data as SyncResult;
+};

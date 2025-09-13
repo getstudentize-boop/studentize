@@ -54,7 +54,7 @@ export const DataTable = ({
               return (
                 <TableCell
                   key={cell.id}
-                  className="max-w-0 p-0 first:pl-4 last:pr-4 overflow-hidden whitespace-nowrap"
+                  className="p-0 first:pl-4 last:pr-4 overflow-hidden whitespace-nowrap"
                 >
                   <div>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

@@ -7,7 +7,8 @@ import {
 } from "@tanstack/react-table";
 import { DataTable } from "../table";
 import { RouterOutputs } from "orpc/client";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 
 const StudentCell = (props: { name: string }) => {
   return (
@@ -37,7 +38,7 @@ const columns = [
       const curriculum = info.getValue();
 
       return (
-        <span className="py-1 px-2 border border-bzinc rounded-md text-xs bg-white">
+        <span className="py-1 px-2 border border-bzinc rounded-md text-xs inline-flex gap-2 bg-white">
           {
             {
               IB: "🎓",
@@ -49,6 +50,7 @@ const columns = [
               Other: "✏️",
             }[curriculum ?? "Other"]
           }
+          <span>{curriculum ?? "n/a"}</span>
         </span>
       );
     },
@@ -83,6 +85,43 @@ const columns = [
       );
     },
   }),
+  columnHelper.accessor("userId", {
+    header: "Session Summary",
+    cell: (info) => {
+      const userId = info.getValue();
+
+      return (
+        <Link
+          to="/students/$userId"
+          params={{ userId }}
+          search={{ tab: "sessions" }}
+          className="underline"
+        >
+          View
+        </Link>
+      );
+    },
+  }),
+  columnHelper.accessor("userId", {
+    header: " ",
+    cell: (info) => {
+      const userId = info.getValue();
+
+      return (
+        <Link
+          to="/students/$userId"
+          params={{ userId }}
+          search={{ tab: "sessions" }}
+          className="py-0.5 px-1.5 rounded-sm border-bzinc border inline-flex group bg-white gap-2 items-center"
+        >
+          <span className="group-hover:translate-x-0.5 transition-transform duration-300">
+            Open
+          </span>
+          <ArrowRightIcon className="group-hover:-translate-x-0.5 transition-transform duration-300" />
+        </Link>
+      );
+    },
+  }),
 ];
 
 export const StudentTable = ({
@@ -104,12 +143,6 @@ export const StudentTable = ({
     <DataTable
       table={table}
       isRowSelected={(row) => row.original.userId === currentStudentUserId}
-      onRowClick={(row) => {
-        navigate({
-          to: "/students/$userId",
-          params: { userId: row.original.userId },
-        });
-      }}
     />
   );
 };
