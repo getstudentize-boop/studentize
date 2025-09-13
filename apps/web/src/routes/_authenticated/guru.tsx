@@ -110,7 +110,7 @@ function App() {
   );
 
   const chat = useChat({
-    id: chatId ?? "new",
+    id: !userId ? "select" : (chatId ?? "new"),
     onFinish: async () => {
       if (isNewChat) {
         await queryClient.invalidateQueries({
@@ -122,7 +122,6 @@ function App() {
     },
     transport: {
       sendMessages: async (options) => {
-        console.log("Sending messages:", userId);
         return eventIteratorToStream(
           await orpc.chat.student.call(
             {

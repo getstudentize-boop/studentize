@@ -13,16 +13,10 @@ export const Markdown = ({
       <ReactMarkdown
         components={{
           ul: (props) => (
-            <ul
-              {...props}
-              className="leading-tight list-inside list-disc -my-2"
-            />
+            <ul {...props} className="list-inside list-disc -my-5" />
           ),
           ol: (props) => (
-            <ol
-              {...props}
-              className="leading-tight list-inside list-decimal -my-2"
-            />
+            <ol {...props} className="list-inside list-decimal -my-5" />
           ),
           strong: (props) => <strong {...props} className="font-semibold" />,
           em: (props) => <em {...props} className="italic" />,
