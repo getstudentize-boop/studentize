@@ -13,7 +13,7 @@ import { useNavigate } from "@tanstack/react-router";
 const AdvisorCell = (props: { name: string }) => {
   return (
     <div className="flex gap-2 items-center">
-      <Avvatar size={24} value={props.name} />
+      <Avvatar size={24} value={props.name} style="shape" />
       {props.name}
     </div>
   );
@@ -43,20 +43,26 @@ const columns = [
       return (
         <span
           className={cn(
-            "rounded-md px-2 py-0.5 bg-lime-50 text-lime-950 font-semibold inline-block",
-            { "bg-zinc-50 text-zinc-950": status === "PENDING" },
-            { "bg-green-50 text-green-950": status === "ACTIVE" },
-            { "bg-rose-50 text-rose-950": status === "INACTIVE" }
+            "rounded-md px-2 py-1 border text-xs border-bzinc inline-block"
+            // { "bg-zinc-50 text-zinc-950": status === "PENDING" },
+            // { "bg-green-50 text-green-950": status === "ACTIVE" },
+            // { "bg-rose-50 text-rose-950": status === "INACTIVE" }
           )}
         >
-          {info.getValue()}
+          {{ ACTIVE: "🟢", INACTIVE: "🔴", PENDING: "🟡" }[status]}
         </span>
       );
     },
   }),
 ];
 
-export const AdvisorTable = ({ data }: { data: Advisor[] }) => {
+export const AdvisorTable = ({
+  data,
+  currentAdvisorUserId,
+}: {
+  data: Advisor[];
+  currentAdvisorUserId?: string;
+}) => {
   const navigate = useNavigate();
 
   const table = useReactTable({
@@ -68,6 +74,7 @@ export const AdvisorTable = ({ data }: { data: Advisor[] }) => {
   return (
     <DataTable
       table={table}
+      isRowSelected={(row) => row.original.userId === currentAdvisorUserId}
       onRowClick={(row) => {
         navigate({
           to: "/advisors/$userId",

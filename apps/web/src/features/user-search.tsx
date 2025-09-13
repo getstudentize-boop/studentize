@@ -75,7 +75,7 @@ export const UserSearch = ({
               {data.length > 0
                 ? data.map((d) => (
                     <DropdownItem onSelect={() => onSelect?.(d)} key={d.userId}>
-                      <Avvatar value={d.name ?? ""} size={24} />
+                      <Avvatar value={d.name ?? ""} size={20} style="shape" />
                       <div>{d.name}</div>
                     </DropdownItem>
                   ))

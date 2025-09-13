@@ -13,7 +13,7 @@ import { DataTable } from "../table";
 const StudentCell = (props: { name: string }) => {
   return (
     <div className="flex gap-2 items-center">
-      <Avvatar size={24} value={props.name} />
+      <Avvatar size={24} value={props.name} style="shape" />
       {props.name}
     </div>
   );
