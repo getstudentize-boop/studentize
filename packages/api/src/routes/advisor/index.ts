@@ -33,15 +33,17 @@ export const advisorSearchHandler = privateRoute
     return advisors;
   });
 
-export const advisorChatHistoryHandler = privateRoute.handler(async () => {
-  const chats = await advisorChatHistory();
-  return chats;
-});
+export const advisorChatHistoryHandler = privateRoute.handler(
+  async ({ context }) => {
+    const chats = await advisorChatHistory(context);
+    return chats;
+  }
+);
 
 export const advisorChatMessagesHandler = privateRoute
   .input(ChatMessagesInputSchema)
-  .handler(async ({ input }) => {
-    const chat = await chatMessages(input);
+  .handler(async ({ context, input }) => {
+    const chat = await chatMessages(context, input);
     return chat;
   });
 

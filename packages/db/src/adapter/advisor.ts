@@ -1,4 +1,4 @@
-import { db, InferSelectModel, InferInsertModel, eq, desc } from "..";
+import { db, InferSelectModel, InferInsertModel, eq, desc, and } from "..";
 
 import * as schema from "../schema";
 import { createdAt } from "../schema/utils";
@@ -115,8 +115,9 @@ export const createAdvisorChatMessage = async (input: {
   return message;
 };
 
-export const getAdvisorChatHistory = async () => {
-  // todo-before-review: filter by advisor id
+export const getAdvisorChatHistory = async (input: {
+  advisorUserId: string;
+}) => {
   const chats = await db
     .select({
       id: schema.advisorChat.id,
@@ -125,23 +126,35 @@ export const getAdvisorChatHistory = async () => {
       studentUserId: schema.advisorChat.studentId,
     })
     .from(schema.advisorChat)
+    .where(eq(schema.advisorChat.userId, input.advisorUserId))
     .orderBy(desc(schema.advisorChat.createdAt));
 
   return chats;
 };
 
-export const getAdvisorChatTitle = async (chatId: string) => {
+export const getAdvisorChatTitle = async (input: {
+  chatId: string;
+  userId: string;
+}) => {
   const [chat] = await db
     .select({
       title: schema.advisorChat.title,
     })
     .from(schema.advisorChat)
-    .where(eq(schema.advisorChat.id, chatId));
+    .where(
+      and(
+        eq(schema.advisorChat.id, input.chatId),
+        eq(schema.advisorChat.userId, input.userId)
+      )
+    );
 
   return chat;
 };
 
-export const getAdvisorChatMessages = async (chatId: string) => {
+export const getAdvisorChatMessages = async (input: {
+  chatId: string;
+  userId: string;
+}) => {
   const messages = await db
     .select({
       id: schema.advisorChatMessage.id,
@@ -150,7 +163,7 @@ export const getAdvisorChatMessages = async (chatId: string) => {
       createdAt: schema.advisorChatMessage.createdAt,
     })
     .from(schema.advisorChatMessage)
-    .where(eq(schema.advisorChatMessage.chatId, chatId));
+    .where(eq(schema.advisorChatMessage.chatId, input.chatId));
 
   return messages;
 };

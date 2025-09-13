@@ -9,18 +9,20 @@ export type AuthContext = {
   user: NonNullable<Context["user"]>;
 };
 
-export const defaultMiddleware = os.middleware(async ({ next, context }) => {
-  const { user } = context as any;
-  const userEmail = user?.email;
+export const defaultMiddleware = os.middleware(
+  async ({ next, context, path }) => {
+    const { user } = context as any;
+    const userEmail = user?.email;
 
-  const u = userEmail ? await findOrCreateUser({ email: userEmail }) : null;
+    const u = userEmail ? await findOrCreateUser({ email: userEmail }) : null;
 
-  return await next({
-    context: {
-      user: u,
-    },
-  });
-});
+    return await next({
+      context: {
+        user: u,
+      },
+    });
+  }
+);
 
 export const serverRoute = os
   .$context<Context>()
@@ -28,7 +30,7 @@ export const serverRoute = os
   .use(os.middleware(defaultMiddleware));
 
 export const privateRoute = serverRoute.use(
-  os.middleware(({ context, next }) => {
+  os.middleware(({ context, next, path }) => {
     const data = context as Context;
 
     if (!data.user) {

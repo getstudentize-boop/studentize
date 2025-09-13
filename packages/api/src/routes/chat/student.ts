@@ -40,6 +40,7 @@ const createSearchSessionTranscriptions = (input: {
         ),
     }),
     execute: async ({ query }) => {
+      console.log("Tool: calling search session transcriptions");
       const response = await autoRag(query, {
         ranking_options: { score_threshold: 0 },
         filter: {
@@ -67,6 +68,8 @@ const createSessionOverviewTool = (input: { studentId: string }) => {
       "Get a comprehensive overview of the student's entire session history and academic progress. This provides a high-level summary of all sessions, key themes, progress made, and overall development over time.",
     inputSchema: z.object({}),
     execute: async ({}) => {
+      console.log("Tool: calling getStudentSessionOverview");
+
       const overview = await getStudentSessionOverview(input.studentId);
       return overview?.sessionOverview ?? "";
     },
@@ -85,6 +88,8 @@ const createSessionSummaryTool = (input: { studentId: string }) => {
         ),
     }),
     execute: async ({ sessionId }) => {
+      console.log("Tool: calling getSessionSummaryById");
+
       // todo-before-review: verify session belongs to student
       const sessionSummary = await getSessionSummaryById({ sessionId });
       return sessionSummary?.summary ?? "";
@@ -98,6 +103,7 @@ const createStudentInfoTool = (input: { studentUserId: string }) => {
       "Get comprehensive information about the student including their academic background, areas of interest, extracurricular activities, study curriculum, target countries, and other profile details. Use this to provide detailed context about the student's academic profile, interests, and background when advisors ask profile-related questions.",
     inputSchema: z.object({}),
     execute: async ({}) => {
+      console.log("Tool: calling getStudentByUserId");
       const student = await getStudentByUserId(input.studentUserId);
       if (!student) {
         return "No student information found.";

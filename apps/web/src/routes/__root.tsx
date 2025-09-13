@@ -6,7 +6,6 @@ import appCss from "../styles.css?url";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { AuthKitProvider } from "@workos-inc/authkit-react";
-import { getWorkOSClient } from "@/utils/workos";
 
 export const Route = createRootRoute({
   ssr: false,

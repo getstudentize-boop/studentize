@@ -109,6 +109,8 @@ function App() {
     })
   );
 
+  const isEmptyState = isNewChat;
+
   const chat = useChat({
     id: !userId ? "select" : (chatId ?? "new"),
     onFinish: async () => {
@@ -116,8 +118,6 @@ function App() {
         await queryClient.invalidateQueries({
           queryKey: orpc.advisor.chatHistory.key(),
         });
-
-        navigate({ to: "/guru", search: { userId, chatId } });
       }
     },
     transport: {
@@ -189,7 +189,7 @@ function App() {
                 chat.messages.length ? "gap-4" : "items-center justify-center"
               )}
             >
-              {isNewChat || chat.messages.length > 0 ? null : <EmptyMessage />}
+              {isEmptyState ? <EmptyMessage /> : null}
               {chat.messages.map((msg) => (
                 <Message key={msg.id} role={msg.role} message={msg} />
               ))}
@@ -197,13 +197,15 @@ function App() {
             <form
               className={cn(
                 "transition-transform duration-500 ease-in-out absolute bottom-0 left-0 w-full",
-                chat.messages.length > 0 ? "translate-y-5" : undefined
+                !isEmptyState ? "translate-y-5" : undefined
               )}
               onSubmit={(ev) => {
                 ev.preventDefault();
                 if (input.trim()) {
                   chat.sendMessage({ text: input });
                   setInput("");
+
+                  navigate({ to: "/guru", search: { userId, chatId } });
                 }
               }}
             >
