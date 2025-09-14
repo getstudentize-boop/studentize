@@ -10,7 +10,10 @@ import { getUserAuth } from "@/utils/workos";
 export const Route = createFileRoute("/_authenticated")({
   component: App,
   beforeLoad: async () => {
+    console.log("beforeLoad 🔥");
     const user = await getUserAuth();
+
+    console.log("user 🔥".repeat(19), user);
 
     if (!user) {
       throw redirect({ to: "/" });
