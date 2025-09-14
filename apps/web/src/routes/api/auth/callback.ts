@@ -1,7 +1,6 @@
-import { workos } from "@/utils/workos";
 import { createServerFileRoute, setCookie } from "@tanstack/react-start/server";
 
-import { WORKOS_SESSION_KEY, cookieOpts } from "@/utils/workos";
+import { WORKOS_SESSION_KEY, cookieOpts, workos } from "@student/api";
 import { redirect } from "@tanstack/react-router";
 
 export const ServerRoute = createServerFileRoute("/api/auth/callback").methods({
