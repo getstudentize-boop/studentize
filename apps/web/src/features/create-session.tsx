@@ -17,6 +17,7 @@ type StudentOrAdvisor = { userId: string; name: string };
 
 export const CreateSession = ({ onComplete }: { onComplete: () => void }) => {
   const user = useAuth();
+  console.log("user", user);
   const currentUser = useAuthUser();
 
   const utils = useQueryClient();

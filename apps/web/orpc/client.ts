@@ -32,6 +32,7 @@ const getORPCClient = createIsomorphicFn()
       headers: async () => {
         const workos = await createClient(
           import.meta.env.VITE_WORKOS_CLIENT_ID!
+          { devMode: true }
         );
         const data = await workos.getAccessToken();
 
