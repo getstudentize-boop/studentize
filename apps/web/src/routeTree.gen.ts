@@ -11,9 +11,9 @@
 import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UsersRouteImport } from './routes/users'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/users'
 import { Route as AuthenticatedStudentsRouteImport } from './routes/_authenticated/students'
 import { Route as AuthenticatedSessionsRouteImport } from './routes/_authenticated/sessions'
 import { Route as AuthenticatedGuruRouteImport } from './routes/_authenticated/guru'
@@ -26,11 +26,6 @@ import { ServerRoute as ApiAuthCallbackServerRouteImport } from './routes/api/au
 
 const rootServerRouteImport = createServerRootRoute()
 
-const UsersRoute = UsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -39,6 +34,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedUsersRoute = AuthenticatedUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedStudentsRoute = AuthenticatedStudentsRouteImport.update({
   id: '/students',
@@ -90,21 +90,21 @@ const ApiAuthCallbackServerRoute = ApiAuthCallbackServerRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/users': typeof UsersRoute
   '/advisors': typeof AuthenticatedAdvisorsRouteWithChildren
   '/guru': typeof AuthenticatedGuruRoute
   '/sessions': typeof AuthenticatedSessionsRoute
   '/students': typeof AuthenticatedStudentsRouteWithChildren
+  '/users': typeof AuthenticatedUsersRoute
   '/advisors/$userId': typeof AuthenticatedAdvisorsUserIdRoute
   '/students/$userId': typeof AuthenticatedStudentsUserIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/users': typeof UsersRoute
   '/advisors': typeof AuthenticatedAdvisorsRouteWithChildren
   '/guru': typeof AuthenticatedGuruRoute
   '/sessions': typeof AuthenticatedSessionsRoute
   '/students': typeof AuthenticatedStudentsRouteWithChildren
+  '/users': typeof AuthenticatedUsersRoute
   '/advisors/$userId': typeof AuthenticatedAdvisorsUserIdRoute
   '/students/$userId': typeof AuthenticatedStudentsUserIdRoute
 }
@@ -112,11 +112,11 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
-  '/users': typeof UsersRoute
   '/_authenticated/advisors': typeof AuthenticatedAdvisorsRouteWithChildren
   '/_authenticated/guru': typeof AuthenticatedGuruRoute
   '/_authenticated/sessions': typeof AuthenticatedSessionsRoute
   '/_authenticated/students': typeof AuthenticatedStudentsRouteWithChildren
+  '/_authenticated/users': typeof AuthenticatedUsersRoute
   '/_authenticated/advisors/$userId': typeof AuthenticatedAdvisorsUserIdRoute
   '/_authenticated/students/$userId': typeof AuthenticatedStudentsUserIdRoute
 }
@@ -124,32 +124,32 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/users'
     | '/advisors'
     | '/guru'
     | '/sessions'
     | '/students'
+    | '/users'
     | '/advisors/$userId'
     | '/students/$userId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/users'
     | '/advisors'
     | '/guru'
     | '/sessions'
     | '/students'
+    | '/users'
     | '/advisors/$userId'
     | '/students/$userId'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
-    | '/users'
     | '/_authenticated/advisors'
     | '/_authenticated/guru'
     | '/_authenticated/sessions'
     | '/_authenticated/students'
+    | '/_authenticated/users'
     | '/_authenticated/advisors/$userId'
     | '/_authenticated/students/$userId'
   fileRoutesById: FileRoutesById
@@ -157,7 +157,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
-  UsersRoute: typeof UsersRoute
 }
 export interface FileServerRoutesByFullPath {
   '/api/auth/callback': typeof ApiAuthCallbackServerRoute
@@ -191,13 +190,6 @@ export interface RootServerRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/users': {
-      id: '/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof UsersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -211,6 +203,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/users': {
+      id: '/_authenticated/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AuthenticatedUsersRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/students': {
       id: '/_authenticated/students'
@@ -313,6 +312,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedGuruRoute: typeof AuthenticatedGuruRoute
   AuthenticatedSessionsRoute: typeof AuthenticatedSessionsRoute
   AuthenticatedStudentsRoute: typeof AuthenticatedStudentsRouteWithChildren
+  AuthenticatedUsersRoute: typeof AuthenticatedUsersRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -320,6 +320,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedGuruRoute: AuthenticatedGuruRoute,
   AuthenticatedSessionsRoute: AuthenticatedSessionsRoute,
   AuthenticatedStudentsRoute: AuthenticatedStudentsRouteWithChildren,
+  AuthenticatedUsersRoute: AuthenticatedUsersRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -329,7 +330,6 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
-  UsersRoute: UsersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
