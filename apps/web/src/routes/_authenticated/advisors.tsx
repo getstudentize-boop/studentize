@@ -13,6 +13,7 @@ function RouteComponent() {
     from: "/_authenticated/advisors/$userId",
     shouldThrow: false,
   });
+
   const advisorsQuery = useQuery(orpc.advisor.list.queryOptions());
 
   const advisors = advisorsQuery.data ?? [];

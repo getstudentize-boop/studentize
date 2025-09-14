@@ -70,8 +70,6 @@ export const UserSessionsTab = ({
 
   const session = summaryQuery.data;
 
-  console.log("session", session);
-
   return (
     <div className="rounded-md p-6 flex flex-col gap-4">
       {session?.overview ? (

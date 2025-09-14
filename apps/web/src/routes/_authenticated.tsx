@@ -10,10 +10,7 @@ import { getUserAuth } from "@/utils/workos";
 export const Route = createFileRoute("/_authenticated")({
   component: App,
   beforeLoad: async () => {
-    console.log("beforeLoad 🔥");
     const user = await getUserAuth();
-
-    console.log("user 🔥".repeat(19), user);
 
     if (!user) {
       throw redirect({ to: "/" });
@@ -41,7 +38,7 @@ export const useAuthUser = () => {
 function App() {
   const { user } = Route.useLoaderData();
 
-  if (user.status === "PENDING") {
+  if (user.type !== "ADMIN" && ["PENDING", "INACTIVE"].includes(user.status)) {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="max-w-sm text-center flex flex-col gap-4 items-center">
