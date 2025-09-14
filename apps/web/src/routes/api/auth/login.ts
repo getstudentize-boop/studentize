@@ -1,4 +1,5 @@
-import { workos } from "@/utils/workos";
+import { workos } from "@student/api";
+
 import { redirect } from "@tanstack/react-router";
 import { createServerFileRoute } from "@tanstack/react-start/server";
 
