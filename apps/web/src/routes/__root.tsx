@@ -53,7 +53,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <AuthKitProvider
           clientId={import.meta.env.VITE_WORKOS_CLIENT_ID!}
-          apiHostname="auth.workos.com"
+          // apiHostname="auth.workos.com"
+          devMode
         >
           {children}
         </AuthKitProvider>
