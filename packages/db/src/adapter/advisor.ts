@@ -39,8 +39,9 @@ export const getAdvisors = async () => {
       courseMajor: schema.advisor.courseMajor,
       courseMinor: schema.advisor.courseMinor,
     })
-    .from(schema.advisor)
-    .innerJoin(schema.user, eq(schema.advisor.userId, schema.user.id));
+    .from(schema.user)
+    .leftJoin(schema.advisor, eq(schema.user.id, schema.advisor.userId))
+    .where(eq(schema.user.type, "ADVISOR"));
 
   return advisors;
 };
