@@ -51,7 +51,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <AuthKitProvider clientId={import.meta.env.VITE_WORKOS_CLIENT_ID!}>
+        <AuthKitProvider
+          clientId={import.meta.env.VITE_WORKOS_CLIENT_ID!}
+          apiHostname="auth.workos.com"
+        >
           {children}
         </AuthKitProvider>
         <TanstackDevtools
