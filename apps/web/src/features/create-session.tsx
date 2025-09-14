@@ -78,10 +78,6 @@ export const CreateSession = ({ onComplete }: { onComplete: () => void }) => {
     },
   });
 
-  useEffect(() => {
-    user.getAccessToken().then(console.log);
-  }, []);
-
   const createSessionMutation = useMutation(
     orpc.session.create.mutationOptions({
       onSuccess: async () => {
