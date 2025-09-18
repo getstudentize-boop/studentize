@@ -127,3 +127,16 @@ export const getUserName = async (userId: string) => {
 
   return user;
 };
+
+export const updateUserEmail = async (
+  userId: string,
+  data: { email: string }
+) => {
+  const [user] = await db
+    .update(schema.user)
+    .set({ email: data.email })
+    .where(eq(schema.user.id, userId))
+    .returning({ id: schema.user.id, email: schema.user.email });
+
+  return user;
+};

@@ -7,13 +7,7 @@ import {
   sessionSummarizeStudentOverviewHandler,
 } from "./routes/session";
 
-import {
-  studentCreateHandler,
-  studentListHandler,
-  studentSearchHandler,
-  studentGetOneHandler,
-  studentUpdateHandler,
-} from "./routes/student";
+import { student } from "./routes/student";
 
 import {
   advisorChatHistoryHandler,
@@ -40,13 +34,7 @@ export const router = {
     summaryList: sessionSummaryListHandler,
     summarizeStudentOverview: sessionSummarizeStudentOverviewHandler,
   },
-  student: {
-    create: studentCreateHandler,
-    list: studentListHandler,
-    search: studentSearchHandler,
-    getOne: studentGetOneHandler,
-    update: studentUpdateHandler,
-  },
+  student,
   advisor: {
     create: advisorCreateHandler,
     list: advisorListHandler,

@@ -1,4 +1,6 @@
 import { Button } from "@/components/button";
+import { Dialog } from "@/components/dialog";
+import { Input } from "@/components/input";
 import { UserExtracurricularTab } from "@/features/user-tabs/extracurricular";
 import { UserProfileTab } from "@/features/user-tabs/profile";
 import { UserSessionsTab } from "@/features/user-tabs/sessions";
@@ -8,11 +10,13 @@ import {
   createFormHook,
   createFormHookContexts,
   formOptions,
+  useForm,
 } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import Avvvatars from "avvvatars-react";
 import { orpc } from "orpc/client";
+import { useState } from "react";
 import z from "zod";
 
 const { fieldContext, formContext } = createFormHookContexts();
@@ -42,6 +46,97 @@ export const studentFormOpts = formOptions({
   },
 });
 
+const StudentSettingsDialog = ({
+  location,
+  email,
+  userId,
+  isOpen,
+  onOpenChange,
+}: {
+  location: string;
+  email: string;
+  userId: string;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}) => {
+  const utils = useQueryClient();
+
+  const updateStudentMutation = useMutation(
+    orpc.student.updateSettings.mutationOptions({
+      onSuccess: async () => {
+        await utils.invalidateQueries({
+          queryKey: orpc.student.getOne.key({ input: { userId } }),
+        });
+
+        onOpenChange?.(false);
+      },
+    })
+  );
+
+  const form = useForm({
+    defaultState: {
+      values: {
+        location,
+        email,
+      },
+    },
+    onSubmit: (field) => {
+      updateStudentMutation.mutate({
+        location: field.value.location,
+        email: field.value.email,
+        userId,
+      });
+    },
+  });
+
+  return (
+    <Dialog
+      trigger={
+        <button>
+          <GearIcon className="size-4" />
+        </button>
+      }
+      className="p-0 max-w-sm"
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+    >
+      <div className="px-4 py-2.5 border-b border-bzinc">Student settings</div>
+      <div className="p-4 flex flex-col gap-4">
+        <form.Field
+          name="location"
+          children={(field) => (
+            <Input
+              label="Location"
+              placeholder="South Africa"
+              value={field.state.value}
+              onChange={(ev) => field.handleChange(ev.target.value)}
+            />
+          )}
+        />
+        <form.Field
+          name="email"
+          children={(field) => (
+            <Input
+              label="Email"
+              placeholder="student@example.com"
+              value={field.state.value}
+              onChange={(ev) => field.handleChange(ev.target.value)}
+            />
+          )}
+        />
+
+        <Button
+          className="rounded-md"
+          isLoading={updateStudentMutation.isPending}
+          onClick={() => form.handleSubmit()}
+        >
+          Update <FloppyDiskIcon />
+        </Button>
+      </div>
+    </Dialog>
+  );
+};
+
 export const Route = createFileRoute("/_authenticated/students/$userId")({
   component: RouteComponent,
   validateSearch: (search) =>
@@ -57,6 +152,8 @@ export const Route = createFileRoute("/_authenticated/students/$userId")({
 
 function RouteComponent() {
   const params = Route.useParams();
+
+  const [isUserSettingsOpen, setIsUserSettingsOpen] = useState(false);
 
   const utils = useQueryClient();
 
@@ -104,7 +201,13 @@ function RouteComponent() {
         </Link>
 
         <div className="flex gap-4 items-center">
-          <GearIcon className="size-4" />
+          <StudentSettingsDialog
+            email={student?.email ?? ""}
+            location={student?.location ?? ""}
+            userId={params.userId}
+            isOpen={isUserSettingsOpen}
+            onOpenChange={setIsUserSettingsOpen}
+          />
           <form.Subscribe
             selector={(val) => [val.isDirty, val.isSubmitting]}
             children={([isDirty, isSubmitting]) =>
