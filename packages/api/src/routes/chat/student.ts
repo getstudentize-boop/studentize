@@ -8,6 +8,7 @@ import {
   getStudentSessionOverview,
   getUserName,
   getStudentByUserId,
+  createAdvisorChatMessageTools,
 } from "@student/db";
 import {
   convertToModelMessages,
@@ -154,7 +155,7 @@ export const chatStudent = async (
   });
 
   const result = streamText({
-    model: openai("gpt-5"),
+    model: openai("gpt-4.1"),
     tools: {
       searchSessionTranscriptions: createSearchSessionTranscriptions({
         studentUserId: input.studentUserId,
@@ -235,14 +236,52 @@ Always structure responses with bullet points for easy scanning, but use natural
     messages: convertToModelMessages(input.messages),
     stopWhen: stepCountIs(5),
     onFinish: async (result) => {
-      const message = result.response.messages.at(-1)
-        ?.content as unknown as TextPart[];
+      const resultMessages = result.response.messages;
 
-      await createAdvisorChatMessage({
+      const message = resultMessages.at(-1)?.content as unknown as TextPart[];
+
+      const newMessage = await createAdvisorChatMessage({
         chatId: input.chatId,
         content: message.map((part) => part.text).join(""),
         role: "assistant",
       });
+
+      const toolCalls = resultMessages
+        .filter((t) => t.role === "assistant")
+        .map((m) => {
+          const t = [...m.content].find(
+            (part: any) => part.type === "tool-call"
+          ) as any;
+
+          return {
+            toolCallId: (t?.toolCallId || "") as string,
+            input: t?.input ?? ("" as any),
+          };
+        });
+
+      const tools = resultMessages
+        .filter((m) => m.role === "tool")
+        .map((t) => {
+          const toolResult = t.content.find(
+            (part) => part.type === "tool-result"
+          );
+
+          if (toolResult) {
+            const toolInput = toolCalls.find(
+              (tc) => tc.toolCallId === toolResult.toolCallId
+            )?.input;
+
+            return {
+              messageId: newMessage.id,
+              toolCallId: toolResult?.toolCallId || "",
+              toolName: toolResult?.toolName || "",
+              input: toolInput,
+              output: toolResult?.output.value ?? {},
+            };
+          }
+        });
+
+      await createAdvisorChatMessageTools(tools.filter(Boolean) as any[]);
     },
   });
 

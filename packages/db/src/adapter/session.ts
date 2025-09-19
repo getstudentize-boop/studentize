@@ -2,7 +2,6 @@ import * as schema from "../schema";
 
 import { InferInsertModel, InferSelectModel, db, desc, eq } from "..";
 import { alias } from "drizzle-orm/pg-core";
-import { createdAt } from "../schema/utils";
 
 type SessionInsert = InferInsertModel<typeof schema.session>;
 type SessionSelect = InferSelectModel<typeof schema.session>;

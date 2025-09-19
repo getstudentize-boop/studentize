@@ -236,18 +236,14 @@ function RouteComponent() {
             <div className="font-semibold">{student?.name}</div>
             <div className="flex mt-2 gap-8">
               <div>
-                <div>Location</div>
-                <div className="font-semibold">
-                  {student?.location ?? "n/a"}
-                </div>
-              </div>
-              <div>
                 <div>Email</div>
                 <div className="font-semibold">{student?.email}</div>
               </div>
               <div>
-                <div>Sessions</div>
-                <div className="font-semibold">5</div>
+                <div>Location</div>
+                <div className="font-semibold">
+                  {student?.location ?? "n/a"}
+                </div>
               </div>
             </div>
           </div>

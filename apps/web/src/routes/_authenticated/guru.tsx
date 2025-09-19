@@ -8,6 +8,10 @@ import {
   MagnifyingGlassIcon,
   PlusIcon,
   ExportIcon,
+  FileMagnifyingGlassIcon,
+  UserIcon,
+  UserSquareIcon,
+  SubtitlesIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
 import { UserSearch } from "@/features/user-search";
@@ -44,6 +48,34 @@ const EmptyMessage = () => {
   );
 };
 
+const Tool = ({ type }: { type: string }) => {
+  switch (type) {
+    case "tool-searchSessionTranscriptions":
+      return (
+        <div className="rounded-md shadow-sm outline outline-bzinc py-1 px-2 inline-flex gap-2 items-center">
+          <FileMagnifyingGlassIcon />
+          <div>Session Transcription</div>
+        </div>
+      );
+    case "tool-studentInfo":
+      return (
+        <div className="rounded-md shadow-sm outline outline-bzinc py-1 px-2 inline-flex gap-2 items-center">
+          <UserSquareIcon />
+          <div>Student Bio</div>
+        </div>
+      );
+    case "tool-sessionSummary":
+      return (
+        <div className="rounded-md shadow-sm outline outline-bzinc py-1 px-2 inline-flex gap-2 items-center">
+          <SubtitlesIcon />
+          <div>Session Summary</div>
+        </div>
+      );
+    default:
+      return null;
+  }
+};
+
 const Message = ({
   role,
   message,
@@ -55,6 +87,8 @@ const Message = ({
     .map((part) => (part.type === "text" ? part.text : ""))
     .join("");
 
+  const tools = message.parts.filter((p) => p.type.startsWith("tool-"));
+
   return (
     <div
       className={cn(
@@ -65,6 +99,18 @@ const Message = ({
       )}
     >
       <Markdown>{content}</Markdown>
+
+      {tools.length ? (
+        <>
+          <hr className="my-4 border-bzinc" />
+
+          <div className="space-x-2 space-y-2">
+            {tools.map((t: any) => (
+              <Tool key={t.toolCallId} type={t.type} />
+            ))}
+          </div>
+        </>
+      ) : null}
     </div>
   );
 };
@@ -150,7 +196,8 @@ function App() {
   const userDisplay = userDisplayQuery.data;
 
   const isPendingOrError =
-    chatMessagesMutation.isPending || chatMessagesMutation.isError;
+    chat.messages.length === 0 &&
+    (chatMessagesMutation.isPending || chatMessagesMutation.isError);
 
   useEffect(() => {
     if (!isNewChat && chatId) {

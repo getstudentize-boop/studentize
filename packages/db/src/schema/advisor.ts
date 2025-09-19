@@ -38,5 +38,14 @@ export const advisorChatMessage = pgTable("advisor_chat_message", {
   role: text("role").notNull().$type<"user" | "assistant">(),
   chatId: text("chat_id").notNull(),
   createdAt,
-  tools: jsonb("tools").$type<Tool[]>().default([]),
+});
+
+export const advisorChatMessageTool = pgTable("advisor_chat_message_tool", {
+  id,
+  createdAt,
+  messageId: text("message_id").notNull(),
+  toolCallId: text("tool_call_id").notNull(),
+  toolName: text("tool_name").notNull(),
+  input: jsonb("input").notNull().default({}),
+  output: jsonb("output").notNull().default({}),
 });

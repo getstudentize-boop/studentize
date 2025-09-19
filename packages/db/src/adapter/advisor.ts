@@ -116,6 +116,25 @@ export const createAdvisorChatMessage = async (input: {
   return message;
 };
 
+export const createAdvisorChatMessageTools = async (
+  input: Array<{
+    messageId: string;
+    toolCallId: string;
+    toolName: string;
+    input: Record<string, any>;
+    output: Record<string, any>;
+  }>
+) => {
+  const tools = await db
+    .insert(schema.advisorChatMessageTool)
+    .values(input)
+    .returning({
+      id: schema.advisorChatMessageTool.id,
+    });
+
+  return tools;
+};
+
 export const getAdvisorChatHistory = async (input: {
   advisorUserId: string;
 }) => {
@@ -167,6 +186,18 @@ export const getAdvisorChatMessages = async (input: {
     .where(eq(schema.advisorChatMessage.chatId, input.chatId));
 
   return messages;
+};
+
+export const getAdvisorChatMessageToolByMessageId = async (input: {
+  messageId: string;
+}) => {
+  const tools = await db
+    .select()
+    .from(schema.advisorChatMessageTool)
+    .where(eq(schema.advisorChatMessageTool.messageId, input.messageId))
+    .orderBy(desc(schema.advisorChatMessageTool.createdAt));
+
+  return tools;
 };
 
 export const getAdvisorStudentAccess = async (advisorUserId: string) => {
