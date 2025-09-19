@@ -53,6 +53,7 @@ code {
 
 @theme {
   --color-bzinc: #e4e4e7b3;
+  --color-zincLoading: #e4e4e7;
 
   --animate-overlayShow: 150ms cubic-bezier(0.16, 1, 0.3, 1);
   --animate-contentShow: 150ms cubic-bezier(0.16, 1, 0.3, 1);

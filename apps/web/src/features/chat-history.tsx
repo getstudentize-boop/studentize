@@ -35,6 +35,15 @@ export const ChatHistory = () => {
 
       <hr className="border-bzinc border-b border-t-0 mb-4" />
 
+      {chatsQuery.isLoading ? (
+        <div>
+          <div className="h-5 bg-zinc-200 animate-pulse rounded-sm w-10 mb-4" />
+          {Array.from({ length: 5 }).map((_, idx) => (
+            <div className="h-5 bg-zinc-200 animate-pulse w-full rounded-sm mb-2" />
+          ))}
+        </div>
+      ) : null}
+
       {chats.map((c, idx) => {
         const prevChat = chats[idx - 1];
         const isDifferentDay = prevChat
