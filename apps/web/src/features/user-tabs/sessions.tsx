@@ -1,4 +1,6 @@
+import { Loader } from "@/components/loader";
 import { Markdown } from "@/components/markdown";
+import { Repeat } from "@/components/repeat";
 import { cn } from "@/utils/cn";
 import { SparkleIcon, SubtitlesIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
@@ -70,17 +72,38 @@ export const UserSessionsTab = ({
 
   const session = summaryQuery.data;
 
+  const isPendingOrError = summaryQuery.isPending || summaryQuery.isError;
+
   return (
     <div className="rounded-md p-6 flex flex-col gap-4">
-      {session?.overview ? (
-        <Card title="User Summary">{session?.overview}</Card>
+      {isPendingOrError ? (
+        <Repeat
+          component={
+            <div className="rounded-lg border border-bzinc p-2">
+              <Loader className="h-6 w-32 mb-2" />
+
+              <Loader />
+              <Loader className="mt-1 w-3/4" />
+              <Loader className="mt-1 w-1/4" />
+            </div>
+          }
+          times={4}
+        />
       ) : null}
 
-      {session?.summaries.map((s) => (
-        <Card title={s.title} variant="zinc">
-          {s.summary ?? ""}
-        </Card>
-      ))}
+      {!isPendingOrError ? (
+        <>
+          {session?.overview ? (
+            <Card title="User Summary">{session?.overview}</Card>
+          ) : null}
+
+          {session?.summaries.map((s) => (
+            <Card title={s.title} variant="zinc">
+              {s.summary ?? ""}
+            </Card>
+          ))}
+        </>
+      ) : null}
     </div>
   );
 };

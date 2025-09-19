@@ -24,6 +24,7 @@ import { cn } from "@/utils/cn";
 import { ChatHistory } from "@/features/chat-history";
 import { AutosizeTextArea } from "@/features/autosize-text-area";
 import { Markdown } from "@/components/markdown";
+import { Loader } from "@/components/loader";
 
 export const Route = createFileRoute("/_authenticated/guru")({
   component: App,
@@ -148,6 +149,9 @@ function App() {
   const searchedStudents = searchStudentMutation.data ?? [];
   const userDisplay = userDisplayQuery.data;
 
+  const isPendingOrError =
+    chatMessagesMutation.isPending || chatMessagesMutation.isError;
+
   useEffect(() => {
     if (!isNewChat && chatId) {
       chatMessagesMutation.mutate({ chatId });
@@ -165,7 +169,18 @@ function App() {
         <div className="justify-between items-center flex p-2.5">
           <div className="flex gap-2 items-center">
             <CaretCircleRightIcon className="size-[1.1rem]" />
-            {isNewChat ? "New Chat" : chatMessagesMutation.data?.title}
+            {!isPendingOrError ? (
+              isNewChat ? (
+                "New Chat"
+              ) : (
+                chatMessagesMutation.data?.title
+              )
+            ) : (
+              <Loader
+                className="h-5 w-48"
+                isError={chatMessagesMutation.isError}
+              />
+            )}
           </div>
 
           <div className="flex gap-2">
@@ -189,6 +204,18 @@ function App() {
                 chat.messages.length ? "gap-4" : "items-center justify-center"
               )}
             >
+              {isPendingOrError ? (
+                <div className="space-y-4">
+                  <Loader
+                    className="w-72 rounded-lg rounded-br-none h-11 ml-auto"
+                    isError={chatMessagesMutation.isError}
+                  />
+                  <Loader
+                    className="w-[35rem] rounded-lg rounded-bl-none h-48"
+                    isError={chatMessagesMutation.isError}
+                  />
+                </div>
+              ) : null}
               {isEmptyState ? <EmptyMessage /> : null}
               {chat.messages.map((msg) => (
                 <Message key={msg.id} role={msg.role} message={msg} />
@@ -234,9 +261,10 @@ function App() {
                     }}
                     children={(field) => (
                       <UserSearch
-                        placeholder="Select session"
+                        placeholder="Select student"
                         data={searchedStudents}
                         onSearch={field.handleChange}
+                        isLoading={searchStudentMutation.isPending}
                         onSelect={(user) => {
                           queryClient.setQueryData(
                             orpc.user.display.queryKey({

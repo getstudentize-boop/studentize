@@ -24,10 +24,12 @@ function RouteComponent() {
           <div className="flex items-center justify-between p-2.5">
             <div>Advisors</div>
           </div>
-          <div className="border border-bzinc bg-white rounded-lg flex-1 text-left">
+          <div className="border border-bzinc bg-white rounded-lg flex-1 text-left overflow-hidden">
             <AdvisorTable
               data={advisors}
               currentAdvisorUserId={params?.userId}
+              isLoading={advisorsQuery.isLoading}
+              isError={advisorsQuery.isError}
             />
           </div>
         </div>

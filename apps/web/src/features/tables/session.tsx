@@ -56,7 +56,15 @@ const columns = [
   }),
 ];
 
-export const SessionTable = ({ data }: { data: Session[] }) => {
+export const SessionTable = ({
+  data,
+  isError,
+  isLoading,
+}: {
+  data: Session[];
+  isLoading?: boolean;
+  isError: boolean;
+}) => {
   const { handleRef, tableHeight } = useTableHeight();
 
   const table = useReactTable({
@@ -71,7 +79,9 @@ export const SessionTable = ({ data }: { data: Session[] }) => {
         className="overflow-y-auto no-scrollbar"
         style={{ height: tableHeight ? tableHeight - 10 : undefined }}
       >
-        {tableHeight ? <DataTable table={table} /> : null}
+        {tableHeight ? (
+          <DataTable table={table} isLoading={isLoading} isError={isError} />
+        ) : null}
       </div>
     </div>
   );

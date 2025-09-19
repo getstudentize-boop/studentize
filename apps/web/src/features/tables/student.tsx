@@ -128,9 +128,13 @@ const columns = [
 export const StudentTable = ({
   data,
   currentStudentUserId,
+  isError,
+  isLoading,
 }: {
   data: Student[];
   currentStudentUserId?: string;
+  isError: boolean;
+  isLoading?: boolean;
 }) => {
   const { handleRef, tableHeight } = useTableHeight();
 
@@ -150,6 +154,8 @@ export const StudentTable = ({
         <DataTable
           table={table}
           isRowSelected={(row) => row.original.userId === currentStudentUserId}
+          isLoading={isLoading}
+          isError={isError}
         />
       ) : null}
     </div>

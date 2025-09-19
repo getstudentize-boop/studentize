@@ -5,6 +5,8 @@ import {
   DropdownTrigger,
   DropdownItem,
 } from "@/components/dropdown";
+import { Loader } from "@/components/loader";
+import { Repeat } from "@/components/repeat";
 import { cn } from "@/utils/cn";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import Avvatar from "avvvatars-react";
@@ -22,6 +24,7 @@ export const UserSearch = ({
   trigger,
   side,
   className,
+  isLoading,
 }: {
   placeholder: string;
   onSelect?: (user: User) => void;
@@ -32,6 +35,7 @@ export const UserSearch = ({
   user?: User;
   trigger?: (user: User | undefined) => React.ReactNode;
   className?: string;
+  isLoading?: boolean;
 }) => {
   return (
     <DropdownRoot>
@@ -72,7 +76,21 @@ export const UserSearch = ({
           </div>
           <div className="overflow-y-auto custom-scrollbar h-48">
             <div className="pb-10">
-              {data.length > 0
+              {isLoading ? (
+                <Repeat
+                  component={
+                    <div className="p-2.5 flex items-center gap-2">
+                      <Loader className="size-5 rounded-full" />
+                      <div>
+                        <Loader className="h-4 flex-1 rounded-lg w-32" />
+                      </div>
+                    </div>
+                  }
+                  times={3}
+                />
+              ) : null}
+
+              {!isLoading && data.length > 0
                 ? data.map((d) => (
                     <DropdownItem onSelect={() => onSelect?.(d)} key={d.userId}>
                       <Avvatar value={d.name ?? ""} size={20} style="shape" />

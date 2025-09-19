@@ -57,9 +57,13 @@ const columns = [
 export const AdvisorTable = ({
   data,
   currentAdvisorUserId,
+  isLoading,
+  isError,
 }: {
   data: Advisor[];
   currentAdvisorUserId?: string;
+  isLoading?: boolean;
+  isError?: boolean;
 }) => {
   const navigate = useNavigate();
 
@@ -73,6 +77,8 @@ export const AdvisorTable = ({
     <DataTable
       table={table}
       isRowSelected={(row) => row.original.userId === currentAdvisorUserId}
+      isLoading={isLoading}
+      isError={isError}
       onRowClick={(row) => {
         navigate({
           to: "/advisors/$userId",

@@ -51,14 +51,9 @@ function RouteComponent() {
           </div>
 
           <SessionTable
-            data={[
-              ...sessions,
-              ...sessions,
-              ...sessions,
-              ...sessions,
-              ...sessions,
-              ...sessions,
-            ]}
+            isLoading={listSessionsQuery.isLoading}
+            isError={listSessionsQuery.isError}
+            data={sessions}
           />
         </div>
       </div>

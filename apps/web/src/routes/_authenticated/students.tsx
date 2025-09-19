@@ -37,6 +37,8 @@ function RouteComponent() {
           <StudentTable
             data={students}
             currentStudentUserId={currentStudentUserId}
+            isError={studentsQuery.isError}
+            isLoading={studentsQuery.isLoading}
           />
         </div>
       </div>

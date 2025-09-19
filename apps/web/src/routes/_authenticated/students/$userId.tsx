@@ -161,6 +161,8 @@ function RouteComponent() {
     orpc.student.getOne.queryOptions({ input: { userId: params.userId } })
   );
 
+  const isLoading = studentQuery.isLoading;
+
   const updateStudentMutation = useMutation(
     orpc.student.update.mutationOptions()
   );
@@ -284,9 +286,19 @@ function RouteComponent() {
             Sessions
           </Link>
         </div>
-        {currentTab === "profile" ? <UserProfileTab form={form} /> : null}
+        {currentTab === "profile" ? (
+          <UserProfileTab
+            isLoading={isLoading}
+            isError={studentQuery.isError}
+            form={form}
+          />
+        ) : null}
         {currentTab === "extracurricular" ? (
-          <UserExtracurricularTab form={form} />
+          <UserExtracurricularTab
+            isError={studentQuery.isError}
+            isLoading={isLoading}
+            form={form}
+          />
         ) : null}
         {currentTab === "sessions" ? (
           <UserSessionsTab studentUserId={params.userId} />

@@ -1,4 +1,6 @@
 import { Button } from "@/components/button";
+import { Loader } from "@/components/loader";
+import { Repeat } from "@/components/repeat";
 import { Select } from "@/components/select";
 import {
   studentFormOpts,
@@ -173,9 +175,58 @@ const MultiSelect = ({
   );
 };
 
+const ProfileLoader = ({ isError }: { isError: boolean }) => {
+  return (
+    <div className="space-y-2 p-6">
+      <Loader className="w-40 mb-2" isError={isError} />
+      <Loader className="w-40 mb-2 mt-4" isError={isError} />
+
+      <Loader className="w-60 h-8 mb-2" isError={isError} />
+
+      <div className="flex gap-2 mt-4">
+        <Repeat
+          component={
+            <div className="flex-1">
+              <Loader className="w-36" isError={isError} />
+              <div className="mt-2">
+                <Repeat
+                  component={
+                    <>
+                      <Loader
+                        className="w-16 h-8 rounded-full inline-block mr-2"
+                        isError={isError}
+                      />
+                      <Loader
+                        className="w-20 h-8 rounded-full inline-block mr-2"
+                        isError={isError}
+                      />
+                    </>
+                  }
+                  times={2}
+                />
+              </div>
+            </div>
+          }
+          times={2}
+        />
+      </div>
+    </div>
+  );
+};
+
 export const UserProfileTab = withStudentForm({
   ...studentFormOpts,
-  render: ({ form }) => {
+  props: {
+    isLoading: false,
+    isError: false,
+  },
+  render: ({ form, isLoading, isError }) => {
+    const isLoadingOrError = isLoading || isError;
+
+    if (isLoadingOrError) {
+      return <ProfileLoader isError={isError} />;
+    }
+
     return (
       <div className="p-6">
         <div className="flex gap-2 font-semibold items-center">
