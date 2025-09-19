@@ -12,6 +12,7 @@ import { Button } from "@/components/button";
 import { session as workerSession } from "@student/worker/sdk";
 import { useAuth } from "@workos-inc/authkit-react";
 import { useAuthUser } from "@/routes/_authenticated";
+import { Switch } from "@/components/switch";
 
 type StudentOrAdvisor = { userId: string; name: string };
 
@@ -34,6 +35,7 @@ export const CreateSession = ({ onComplete }: { onComplete: () => void }) => {
       studentQuery: "",
       advisorQuery: "",
       transcription: "",
+      summarize: false,
     },
     validators: {
       onSubmit: z.object({
@@ -41,6 +43,7 @@ export const CreateSession = ({ onComplete }: { onComplete: () => void }) => {
         studentQuery: z.string(),
         advisorQuery: z.string(),
         transcription: z.string().min(1, "Transcription is required"),
+        summarize: z.boolean(),
       }),
     },
     onSubmit: async (vals) => {
@@ -71,10 +74,12 @@ export const CreateSession = ({ onComplete }: { onComplete: () => void }) => {
 
       await uploadFileToStorage(result.url, markdown);
 
-      const accessToken = await user.getAccessToken();
-      await workerSession.triggerSummaryUpdate(accessToken, {
-        sessionId: session.id,
-      });
+      if (vals.value.summarize) {
+        const accessToken = await user.getAccessToken();
+        await workerSession.triggerSummaryUpdate(accessToken, {
+          sessionId: session.id,
+        });
+      }
     },
   });
 
@@ -209,6 +214,11 @@ export const CreateSession = ({ onComplete }: { onComplete: () => void }) => {
           </div>
         )}
       />
+
+      <div className="text-left">
+        <div className="mb-2">Summarize</div>
+        <Switch />
+      </div>
 
       <form.Subscribe
         selector={(state) => [state.isSubmitting]}

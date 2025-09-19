@@ -48,7 +48,8 @@ const columns = [
   }),
   columnHelper.accessor("createdAt", {
     header: "Created At",
-    cell: (info) => format(info.getValue() ?? new Date(), "PPpp"),
+    cell: (info) =>
+      format(info.getValue() ?? new Date(), "MMM dd, yyyy HH:mm aa"),
   }),
   columnHelper.accessor("advisor", {
     header: "Advisor",

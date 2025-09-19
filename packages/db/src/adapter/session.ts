@@ -52,7 +52,8 @@ export const getSessions = async (data: { studentUserId?: string } = {}) => {
     })
     .from(schema.session)
     .innerJoin(studentUser, eq(schema.session.studentUserId, studentUser.id))
-    .innerJoin(advisorUser, eq(schema.session.advisorUserId, advisorUser.id));
+    .innerJoin(advisorUser, eq(schema.session.advisorUserId, advisorUser.id))
+    .orderBy(desc(schema.session.createdAt));
 
   const sessions = data.studentUserId
     ? await query.where(eq(schema.session.studentUserId, data.studentUserId))
