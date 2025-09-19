@@ -46,6 +46,6 @@ export const advisorChatMessageTool = pgTable("advisor_chat_message_tool", {
   messageId: text("message_id").notNull(),
   toolCallId: text("tool_call_id").notNull(),
   toolName: text("tool_name").notNull(),
-  input: jsonb("input").notNull().default({}),
-  output: jsonb("output").notNull().default({}),
+  input: jsonb("input").notNull().$type<Record<string, any>>().default({}),
+  output: jsonb("output").notNull().$type<Record<string, any>>().default({}),
 });

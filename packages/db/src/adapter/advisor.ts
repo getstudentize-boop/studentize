@@ -1,4 +1,4 @@
-import { db, InferSelectModel, InferInsertModel, eq, desc, and } from "..";
+import { db, InferSelectModel, InferInsertModel, eq, desc, and, sql } from "..";
 
 import * as schema from "../schema";
 import { createdAt } from "../schema/utils";
@@ -6,7 +6,13 @@ import { createdAt } from "../schema/utils";
 type AdvisorSelect = InferSelectModel<typeof schema.advisor>;
 type AdvisorInsert = InferInsertModel<typeof schema.advisor>;
 
-type AdvisorChatMessage = InferSelectModel<typeof schema.advisorChatMessage>;
+type AdvisorChatMessageSelect = InferSelectModel<
+  typeof schema.advisorChatMessage
+>;
+
+type AdvisorChatMessageToolSelect = InferSelectModel<
+  typeof schema.advisorChatMessageTool
+>;
 
 export const createBaseAdvisor = async (data: {
   userId: string;
@@ -185,7 +191,21 @@ export const getAdvisorChatMessages = async (input: {
     .from(schema.advisorChatMessage)
     .where(eq(schema.advisorChatMessage.chatId, input.chatId));
 
-  return messages;
+  // todo: for some reason the subquery way of fetching tools isn't working,
+  // the tools field is coming back as null, so doing it manually for now
+  const messageList = await Promise.all(
+    messages.map(async (m) => {
+      const tool = await db
+        .select()
+        .from(schema.advisorChatMessageTool)
+        .where(eq(schema.advisorChatMessageTool.messageId, m.id))
+        .orderBy(desc(schema.advisorChatMessageTool.createdAt));
+
+      return { ...m, tools: tool };
+    })
+  );
+
+  return messageList;
 };
 
 export const getAdvisorChatMessageToolByMessageId = async (input: {

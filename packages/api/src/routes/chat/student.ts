@@ -266,6 +266,8 @@ Always structure responses with bullet points for easy scanning, but use natural
             (part) => part.type === "tool-result"
           );
 
+          console.log("Tool result: ", t);
+
           if (toolResult) {
             const toolInput = toolCalls.find(
               (tc) => tc.toolCallId === toolResult.toolCallId

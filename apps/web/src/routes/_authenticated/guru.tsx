@@ -147,10 +147,20 @@ function App() {
     orpc.advisor.chatMessages.mutationOptions({
       onSuccess: (data) => {
         chat.setMessages(
-          data.messages.map((m) => ({
-            ...m,
-            parts: [{ type: "text", text: m.content }],
-          }))
+          data.messages.map((m) => {
+            const toolParts: any = m.tools.map((t) => ({
+              type: `tool-${t.toolName}`,
+              toolCallId: t.toolCallId,
+              input: t.input,
+              output: t.output,
+              state: "output-available",
+            }));
+
+            return {
+              ...m,
+              parts: [{ type: "text", text: m.content }, ...toolParts],
+            };
+          })
         );
       },
     })
@@ -206,6 +216,7 @@ function App() {
 
     if (isNewChat) {
       searchStudentMutation.mutate({ query: "" });
+      chat.setMessages([]);
     }
   }, [chatId, isNewChat]);
 
