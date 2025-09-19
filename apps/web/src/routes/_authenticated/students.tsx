@@ -34,12 +34,10 @@ function RouteComponent() {
             <div>Students</div>
             <NewStudentDialog />
           </div>
-          <div className="border border-bzinc bg-white rounded-lg flex-1 text-left">
-            <StudentTable
-              data={students}
-              currentStudentUserId={currentStudentUserId}
-            />
-          </div>
+          <StudentTable
+            data={students}
+            currentStudentUserId={currentStudentUserId}
+          />
         </div>
       </div>
       <Outlet />

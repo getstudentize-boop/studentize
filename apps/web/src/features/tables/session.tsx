@@ -9,6 +9,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { DataTable } from "../table";
+import { useTableHeight } from "@/hooks/use-table-height";
 
 const StudentCell = (props: { name: string }) => {
   return (
@@ -56,11 +57,22 @@ const columns = [
 ];
 
 export const SessionTable = ({ data }: { data: Session[] }) => {
+  const { handleRef, tableHeight } = useTableHeight();
+
   const table = useReactTable({
     columns,
     data,
     getCoreRowModel: getCoreRowModel(),
   });
 
-  return <DataTable table={table} />;
+  return (
+    <div className="flex-1" ref={handleRef}>
+      <div
+        className="overflow-y-auto no-scrollbar"
+        style={{ height: tableHeight ? tableHeight - 10 : undefined }}
+      >
+        {tableHeight ? <DataTable table={table} /> : null}
+      </div>
+    </div>
+  );
 };

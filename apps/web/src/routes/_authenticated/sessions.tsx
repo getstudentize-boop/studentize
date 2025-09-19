@@ -35,7 +35,7 @@ function RouteComponent() {
             <PlusIcon />
           </Button>
         </div>
-        <div className="flex-1 rounded-lg border border-bzinc text-left bg-white">
+        <div className="flex-1 flex flex-col rounded-lg border border-bzinc text-left bg-white">
           <div className="p-2 border-b border-bzinc">
             <div className="border border-zinc-200 rounded-lg inline-flex items-center">
               <div className="p-2 border-r border-zinc-200/80">
@@ -50,7 +50,16 @@ function RouteComponent() {
             </div>
           </div>
 
-          <SessionTable data={sessions} />
+          <SessionTable
+            data={[
+              ...sessions,
+              ...sessions,
+              ...sessions,
+              ...sessions,
+              ...sessions,
+              ...sessions,
+            ]}
+          />
         </div>
       </div>
       {isOpen ? <CreateSession onComplete={() => setIsOpen(false)} /> : null}

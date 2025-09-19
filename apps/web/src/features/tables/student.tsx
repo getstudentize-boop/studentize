@@ -9,6 +9,7 @@ import { DataTable } from "../table";
 import { RouterOutputs } from "orpc/client";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRightIcon } from "@phosphor-icons/react";
+import { useTableHeight } from "@/hooks/use-table-height";
 
 const StudentCell = (props: { name: string }) => {
   return (
@@ -131,7 +132,7 @@ export const StudentTable = ({
   data: Student[];
   currentStudentUserId?: string;
 }) => {
-  const navigate = useNavigate();
+  const { handleRef, tableHeight } = useTableHeight();
 
   const table = useReactTable({
     columns,
@@ -140,9 +141,17 @@ export const StudentTable = ({
   });
 
   return (
-    <DataTable
-      table={table}
-      isRowSelected={(row) => row.original.userId === currentStudentUserId}
-    />
+    <div
+      ref={handleRef}
+      className="border border-bzinc bg-white rounded-lg flex-1 text-left overflow-y-auto no-scrollbar"
+      style={{ height: tableHeight ? tableHeight - 32 : undefined }}
+    >
+      {tableHeight ? (
+        <DataTable
+          table={table}
+          isRowSelected={(row) => row.original.userId === currentStudentUserId}
+        />
+      ) : null}
+    </div>
   );
 };

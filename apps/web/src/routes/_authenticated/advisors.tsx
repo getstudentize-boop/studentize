@@ -1,4 +1,3 @@
-import { NewAdvisorDialog } from "@/features/dialogs/new-advisor";
 import { AdvisorTable } from "@/features/tables/advisor";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Outlet, useParams } from "@tanstack/react-router";

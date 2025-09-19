@@ -25,7 +25,7 @@ export const DataTable = ({
 }) => {
   return (
     <Table>
-      <TableHeader>
+      <TableHeader className="sticky top-0 bg-white border-b border-bzinc">
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
@@ -39,7 +39,7 @@ export const DataTable = ({
           </TableRow>
         ))}
       </TableHeader>
-      <TableBody>
+      <TableBody className="overflow-y-auto custom-scrollbar">
         {table.getRowModel().rows.map((row) => (
           <TableRow
             key={row.id}
