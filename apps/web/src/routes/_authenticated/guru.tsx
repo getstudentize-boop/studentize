@@ -29,6 +29,7 @@ import { ChatHistory } from "@/features/chat-history";
 import { AutosizeTextArea } from "@/features/autosize-text-area";
 import { Markdown } from "@/components/markdown";
 import { Loader } from "@/components/loader";
+import { Tool } from "@/features/tools";
 
 export const Route = createFileRoute("/_authenticated/guru")({
   component: App,
@@ -46,34 +47,6 @@ const EmptyMessage = () => {
       <div>Ask me questions about a user's sessions.</div>
     </>
   );
-};
-
-const Tool = ({ type }: { type: string }) => {
-  switch (type) {
-    case "tool-searchSessionTranscriptions":
-      return (
-        <div className="rounded-md shadow-sm outline outline-bzinc py-1 px-2 inline-flex gap-2 items-center">
-          <FileMagnifyingGlassIcon />
-          <div>Session Transcription</div>
-        </div>
-      );
-    case "tool-studentInfo":
-      return (
-        <div className="rounded-md shadow-sm outline outline-bzinc py-1 px-2 inline-flex gap-2 items-center">
-          <UserSquareIcon />
-          <div>Student Bio</div>
-        </div>
-      );
-    case "tool-sessionSummary":
-      return (
-        <div className="rounded-md shadow-sm outline outline-bzinc py-1 px-2 inline-flex gap-2 items-center">
-          <SubtitlesIcon />
-          <div>Session Summary</div>
-        </div>
-      );
-    default:
-      return null;
-  }
 };
 
 const Message = ({
@@ -106,7 +79,12 @@ const Message = ({
 
           <div className="space-x-2 space-y-2">
             {tools.map((t: any) => (
-              <Tool key={t.toolCallId} type={t.type} />
+              <Tool
+                input={t.input}
+                output={t.output}
+                key={t.toolCallId}
+                type={t.type}
+              />
             ))}
           </div>
         </>
