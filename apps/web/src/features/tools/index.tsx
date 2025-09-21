@@ -9,6 +9,7 @@ import {
 } from "@phosphor-icons/react";
 import { ReactNode } from "react";
 import { StudentBioTool } from "./student-bio";
+import { SessionTranscriptionTool } from "./session-transcription";
 
 const ToolDialog = ({
   children,
@@ -61,14 +62,7 @@ export const Tool = ({
 }) => {
   switch (type) {
     case "tool-searchSessionTranscriptions":
-      return (
-        <ToolDialog input={input} output={output}>
-          <ToolButton
-            icon={FileMagnifyingGlassIcon}
-            title="Session Transcription"
-          />
-        </ToolDialog>
-      );
+      return <SessionTranscriptionTool output={output} />;
     case "tool-studentInfo":
       return <StudentBioTool output={output} />;
     case "tool-sessionSummary":

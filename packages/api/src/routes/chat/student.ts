@@ -50,6 +50,8 @@ const createSearchSessionTranscriptions = (input: {
         },
       });
 
+      console.log("Search response: ", response);
+
       const sessionIds = response.result.data.map((item) => {
         const [_, sessionId] = item.filename.split("/");
         return sessionId.replace(".txt", "");

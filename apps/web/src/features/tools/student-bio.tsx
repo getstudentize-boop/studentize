@@ -1,8 +1,11 @@
 import { Button } from "@/components/button";
 import { Dialog } from "@/components/dialog";
 import { ArrowUpRightIcon, UserSquareIcon } from "@phosphor-icons/react";
+import { Link, useSearch } from "@tanstack/react-router";
 
 export const StudentBioTool = ({ output }: { output: any }) => {
+  const search = useSearch({ from: "/_authenticated/guru" });
+
   return (
     <Dialog
       trigger={
@@ -69,10 +72,17 @@ export const StudentBioTool = ({ output }: { output: any }) => {
           </div>
         </div>
 
-        <Button className="w-full rounded-md mt-2">
-          View User's Profile
-          <ArrowUpRightIcon className="size-4" />
-        </Button>
+        <Link
+          to="/students/$userId"
+          target="_blank"
+          rel="noopener noreferrer"
+          params={{ userId: search.userId ?? "" }}
+        >
+          <Button className="w-full rounded-md gap-4 mt-2 mb-4">
+            View User's Profile
+            <ArrowUpRightIcon className="size-4" />
+          </Button>
+        </Link>
       </div>
     </Dialog>
   );
