@@ -5,8 +5,10 @@ import {
   SubtitlesIcon,
   ArrowRightIcon,
   ArrowLeftIcon,
+  Icon,
 } from "@phosphor-icons/react";
 import { ReactNode } from "react";
+import { StudentBioTool } from "./student-bio";
 
 const ToolDialog = ({
   children,
@@ -37,6 +39,17 @@ const ToolDialog = ({
   );
 };
 
+const ToolButton = ({ icon, title }: { icon: Icon; title: string }) => {
+  const Component = icon;
+
+  return (
+    <button className="rounded-md shadow-sm outline outline-bzinc py-1 px-2 inline-flex gap-2 items-center cursor-pointer">
+      <Component />
+      <div>{title}</div>
+    </button>
+  );
+};
+
 export const Tool = ({
   type,
   input,
@@ -50,28 +63,18 @@ export const Tool = ({
     case "tool-searchSessionTranscriptions":
       return (
         <ToolDialog input={input} output={output}>
-          <button className="rounded-md shadow-sm outline outline-bzinc py-1 px-2 inline-flex gap-2 items-center cursor-pointer">
-            <FileMagnifyingGlassIcon />
-            <div>Session Transcription</div>
-          </button>
+          <ToolButton
+            icon={FileMagnifyingGlassIcon}
+            title="Session Transcription"
+          />
         </ToolDialog>
       );
     case "tool-studentInfo":
-      return (
-        <ToolDialog input={input} output={output}>
-          <button className="rounded-md shadow-sm outline outline-bzinc py-1 px-2 inline-flex gap-2 items-center cursor-pointer">
-            <UserSquareIcon />
-            <div>Student Bio</div>
-          </button>
-        </ToolDialog>
-      );
+      return <StudentBioTool output={output} />;
     case "tool-sessionSummary":
       return (
         <ToolDialog input={input} output={output}>
-          <button className="rounded-md shadow-sm outline outline-bzinc py-1 px-2 inline-flex gap-2 items-center cursor-pointer">
-            <SubtitlesIcon />
-            <div>Session Summary</div>
-          </button>
+          <ToolButton icon={SubtitlesIcon} title="Session Summary" />
         </ToolDialog>
       );
     default:

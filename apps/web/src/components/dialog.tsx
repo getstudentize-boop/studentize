@@ -78,7 +78,7 @@ export const Dialog = ({
 }) => {
   return (
     <DialogRoot open={isOpen} onOpenChange={onOpenChange}>
-      <DialogTrigger>{trigger}</DialogTrigger>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogPortal>
         <DialogOverlay />
         <DialogContent className={className}>{children}</DialogContent>
