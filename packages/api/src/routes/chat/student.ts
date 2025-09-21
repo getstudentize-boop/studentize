@@ -50,8 +50,6 @@ const createSearchSessionTranscriptions = (input: {
         },
       });
 
-      console.log("Search response: ", response);
-
       const sessionIds = response.result.data.map((item) => {
         const [_, sessionId] = item.filename.split("/");
         return sessionId.replace(".txt", "");
@@ -159,6 +157,7 @@ export const chatStudent = async (
   const result = streamText({
     model: openai("gpt-4.1"),
     tools: {
+      web_search_preview: openai.tools.webSearchPreview({}),
       searchSessionTranscriptions: createSearchSessionTranscriptions({
         studentUserId: input.studentUserId,
       }),
@@ -200,6 +199,13 @@ You have complete knowledge about this student through multiple information sour
    - Stated interests and extracurricular activities
    - Official profile data for context
 
+5. **web_search_preview** - Real-time web search for current information
+   - Use for up-to-date university information, admission requirements, deadlines
+   - Current scholarship opportunities, program changes, or new offerings
+   - Recent news about universities or programs the student is interested in
+   - Application process updates, visa requirements, or policy changes
+   - When student data might be outdated or you need current market information
+
 **Your Approach:**
 - **Write like you're briefing the advisor**: Use natural language they can easily reference or mirror in conversation
 - **Be conversational and flowing**: Avoid structured formats - write in a way that sounds natural to say
@@ -213,9 +219,18 @@ Write responses that are conversational and natural, but structured for easy sca
 
 **When an advisor asks you something:**
 1. **Get the current information** - Search recent sessions for up-to-date details
-2. **Write it naturally but structured** - Use bullet points with conversational language
-3. **Include essential context** - Weave in background naturally
-4. **Make it scannable and speakable** - Easy to read quickly and reference aloud
+2. **Supplement with web search when needed** - Use web search for current university info, deadlines, or policy changes
+3. **Write it naturally but structured** - Use bullet points with conversational language
+4. **Include essential context** - Weave in background naturally
+5. **Make it scannable and speakable** - Easy to read quickly and reference aloud
+
+**Use web search when:**
+- Advisor asks about current admission requirements, deadlines, or application processes
+- Questions about recent changes to university programs or policies
+- Need current scholarship or financial aid information
+- Student mentions specific universities and you need up-to-date details
+- Checking current visa requirements or international student policies
+- Verifying current tuition fees or program availability
 
 You should be able to naturally brief advisors like:
 - "What is this student planning to study?" → 
@@ -267,8 +282,6 @@ Always structure responses with bullet points for easy scanning, but use natural
           const toolResult = t.content.find(
             (part) => part.type === "tool-result"
           );
-
-          console.log("Tool result: ", t);
 
           if (toolResult) {
             const toolInput = toolCalls.find(

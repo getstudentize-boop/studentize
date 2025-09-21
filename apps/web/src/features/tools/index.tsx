@@ -6,6 +6,7 @@ import {
   ArrowRightIcon,
   ArrowLeftIcon,
   Icon,
+  ScrewdriverIcon,
 } from "@phosphor-icons/react";
 import { ReactNode } from "react";
 import { StudentBioTool } from "./student-bio";
@@ -72,6 +73,13 @@ export const Tool = ({
         </ToolDialog>
       );
     default:
-      return null;
+      return (
+        <ToolDialog input={input} output={output}>
+          <button className="rounded-md shadow-sm outline outline-bzinc py-1 px-2 inline-flex gap-2 items-center cursor-pointer">
+            <ScrewdriverIcon />
+            <div>{type.replace("tool-", "").replace(/([A-Z])/g, " $1")}</div>
+          </button>
+        </ToolDialog>
+      );
   }
 };

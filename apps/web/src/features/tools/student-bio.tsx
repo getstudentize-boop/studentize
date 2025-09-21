@@ -3,7 +3,7 @@ import { Dialog } from "@/components/dialog";
 import { ArrowUpRightIcon, UserSquareIcon } from "@phosphor-icons/react";
 import { Link, useSearch } from "@tanstack/react-router";
 
-export const StudentBioTool = ({ output }: { output: any }) => {
+export const StudentBioTool = ({ output = {} }: { output: any }) => {
   const search = useSearch({ from: "/_authenticated/guru" });
 
   return (
