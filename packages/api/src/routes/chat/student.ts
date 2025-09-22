@@ -63,7 +63,7 @@ const createSearchSessionTranscriptions = (input: {
   });
 };
 
-const createSessionOverviewTool = (input: { studentId: string }) => {
+const createSessionProgressTool = (input: { studentId: string }) => {
   return tool({
     description:
       "Get a comprehensive overview of the student's entire session history and academic progress. This provides a high-level summary of all sessions, key themes, progress made, and overall development over time.",
@@ -155,13 +155,18 @@ export const chatStudent = async (
   });
 
   const result = streamText({
-    model: openai("gpt-4.1"),
+    model: openai("gpt-5"),
+    providerOptions: {
+      openai: {
+        reasoning_effort: "low",
+      },
+    },
     tools: {
       web_search_preview: openai.tools.webSearchPreview({}),
       searchSessionTranscriptions: createSearchSessionTranscriptions({
         studentUserId: input.studentUserId,
       }),
-      sessionOverview: createSessionOverviewTool({
+      sessionProgress: createSessionProgressTool({
         studentId: input.studentUserId,
       }),
       sessionSummary: createSessionSummaryTool({

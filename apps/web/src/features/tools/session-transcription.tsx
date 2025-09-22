@@ -3,11 +3,21 @@ import { Dialog } from "@/components/dialog";
 import {
   ArrowUpRightIcon,
   FileMagnifyingGlassIcon,
+  MagnifyingGlassIcon,
 } from "@phosphor-icons/react";
 import { Link, useSearch } from "@tanstack/react-router";
+import Markdown from "react-markdown";
 
-export const SessionTranscriptionTool = ({ output }: { output: any }) => {
+export const SessionTranscriptionTool = ({
+  output = {},
+  input = {},
+}: {
+  output: any;
+  input: any;
+}) => {
   const search = useSearch({ from: "/_authenticated/guru" });
+
+  console.log("Session Transcription output", input);
 
   return (
     <Dialog
@@ -19,24 +29,24 @@ export const SessionTranscriptionTool = ({ output }: { output: any }) => {
       }
       className="p-0"
     >
-      <div className="px-4 py-2 border-bzinc border-b flex gap-4 items-center">
+      <div className="px-4 py-3 border-bzinc border-b flex gap-4 items-center">
         <FileMagnifyingGlassIcon />
         Session Transcription Tool Content
       </div>
-      <div className="px-4 py-2">
-        {JSON.stringify(output, null, 2)}
+      <div className="p-4 pt-2">
+        <div className="p-2 mb-1">
+          <div className="font-semibold mb-1">Query</div>
+          {input.query}
+        </div>
 
-        <Link
-          to="/students/$userId"
-          target="_blank"
-          rel="noopener noreferrer"
-          params={{ userId: search.userId ?? "" }}
-        >
-          <Button className="w-full rounded-md gap-4 mt-2 mb-4">
-            View User's Profile
-            <ArrowUpRightIcon className="size-4" />
-          </Button>
-        </Link>
+        <div className="rounded-lg border border-cyan-100 bg-gradient-to-b from-cyan-50 to-white">
+          <div className="px-4 py-2 font-semibold border-b border-cyan-100">
+            Response
+          </div>
+          <div className="p-4">
+            <Markdown>{output.response}</Markdown>
+          </div>
+        </div>
       </div>
     </Dialog>
   );

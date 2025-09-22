@@ -16,7 +16,7 @@ export const StudentBioTool = ({ output = {} }: { output: any }) => {
       }
       className="p-0"
     >
-      <div className="px-4 py-2 border-bzinc border-b flex gap-4 items-center">
+      <div className="px-4 py-3 border-bzinc border-b flex gap-4 items-center">
         <UserSquareIcon />
         Student Bio Tool Content
       </div>
@@ -44,7 +44,7 @@ export const StudentBioTool = ({ output = {} }: { output: any }) => {
             <div>
               <div className="font-semibold mb-2">Area's of interest</div>
               <div className="-translate-x-1">
-                {output.areasOfInterest.map((area: any) => (
+                {output.areasOfInterest?.map((area: any) => (
                   <Button
                     key={area}
                     className="inline-block mr-2 mb-2"

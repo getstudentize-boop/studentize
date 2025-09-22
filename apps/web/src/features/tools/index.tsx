@@ -63,7 +63,7 @@ export const Tool = ({
 }) => {
   switch (type) {
     case "tool-searchSessionTranscriptions":
-      return <SessionTranscriptionTool output={output} />;
+      return <SessionTranscriptionTool output={output} input={input} />;
     case "tool-studentInfo":
       return <StudentBioTool output={output} />;
     case "tool-sessionSummary":
