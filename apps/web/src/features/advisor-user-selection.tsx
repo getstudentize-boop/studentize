@@ -59,19 +59,21 @@ export const AdvisorUserSelection = ({
           placeholder="Student name or email"
         />
       </div>
-      {studentsList.map((student) => (
-        <User
-          key={student.email}
-          name={student.name ?? "Unknown"}
-          email={student.email}
-          onCheckChange={(isChecked) =>
-            handleUserCheckChange(student.userId, isChecked)
-          }
-          isChecked={selectedUsers.some(
-            (user) => user.userId === student.userId
-          )}
-        />
-      ))}
+      <div className="h-[19rem] custom-scrollbar overflow-y-auto">
+        {studentsList.map((student) => (
+          <User
+            key={student.email}
+            name={student.name ?? "Unknown"}
+            email={student.email}
+            onCheckChange={(isChecked) =>
+              handleUserCheckChange(student.userId, isChecked)
+            }
+            isChecked={selectedUsers.some(
+              (user) => user.userId === student.userId
+            )}
+          />
+        ))}
+      </div>
     </div>
   );
 };
