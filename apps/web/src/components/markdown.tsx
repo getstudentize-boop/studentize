@@ -9,18 +9,30 @@ export const Markdown = ({
   className?: string;
 }) => {
   return (
-    <div className={cn("whitespace-pre-wrap break-words", className)}>
+    <div className={cn("break-words", className)}>
       <ReactMarkdown
         components={{
           ul: (props) => (
-            <ul {...props} className="list-inside list-disc -my-5" />
+            <ul {...props} className="list-outside list-disc ml-4 space-y-1" />
           ),
           ol: (props) => (
-            <ol {...props} className="list-inside list-decimal -my-5" />
+            <ol
+              {...props}
+              className="list-outside list-decimal ml-4 space-y-1"
+            />
+          ),
+          li: (props) => (
+            <li {...props} className="whitespace-normal pl-2 my-2.5" />
           ),
           strong: (props) => <strong {...props} className="font-semibold" />,
           em: (props) => <em {...props} className="italic" />,
           u: (props) => <u {...props} className="underline" />,
+          a: (props) => (
+            <a
+              {...props}
+              className="text-cyan-600 hover:underline font-semibold"
+            />
+          ),
         }}
       >
         {children}
