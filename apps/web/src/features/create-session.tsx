@@ -74,6 +74,7 @@ export const CreateSession = ({ onComplete }: { onComplete: () => void }) => {
 
       await uploadFileToStorage(result.url, markdown);
 
+      // trigger the summary generation
       if (vals.value.summarize) {
         const accessToken = await user.getAccessToken();
         await workerSession.triggerSummaryUpdate(accessToken, {
@@ -217,7 +218,16 @@ export const CreateSession = ({ onComplete }: { onComplete: () => void }) => {
 
       <div className="text-left">
         <div className="mb-2">Summarize</div>
-        <Switch />
+
+        <form.Field
+          name="summarize"
+          children={(field) => (
+            <Switch
+              onCheckedChange={field.handleChange}
+              checked={field.state.value}
+            />
+          )}
+        />
       </div>
 
       <form.Subscribe
