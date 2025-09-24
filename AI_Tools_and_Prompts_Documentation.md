@@ -2,7 +2,17 @@
 
 ## Overview
 
-This document provides a comprehensive overview of the AI tools, prompts, and system architecture used in the Studentize chatbot platform. The system is designed to help academic advisors interact with an AI assistant that has complete knowledge about their students' backgrounds, session history, and academic journey.
+This document provides a comprehensive overview of the AI tools, prompts, and system architecture used in the Studentize chatbot platform. The system is designed as **Studentize's Advisor Assistant** - a professional tool that generates clear, actionable next-step agendas for students based primarily on their latest session transcripts while maintaining selective "core memory" of essential long-term information.
+
+## Core Objectives
+
+The **Guru AI** system aims to:
+
+- **Latest Transcript Priority**: All "next steps" and agendas are grounded in the most recent transcript
+- **Core Memory**: Selectively retain long-term essentials (target universities, academic interests, major deadlines, confirmed priorities)
+- **Structured Output**: Always follow the mandatory 3-part format for advisor-ready agendas
+- **Transcript Reference**: Clearly state which transcript/session is being referenced
+- **Professional Guidance**: Behave like an experienced Studentize advisor with proactive insights
 
 ## System Architecture
 
@@ -11,7 +21,7 @@ This document provides a comprehensive overview of the AI tools, prompts, and sy
 #### 1. Main Chat Engine
 
 - **File**: `packages/api/src/routes/chat/student.ts`
-- **Model**: OpenAI GPT-4.1
+- **Model**: OpenAI GPT-5 with reasoning effort "low"
 - **Framework**: Vercel AI SDK with tool calling capabilities
 - **Streaming**: Real-time response streaming via ORPC
 
@@ -19,7 +29,7 @@ This document provides a comprehensive overview of the AI tools, prompts, and sy
 
 - **Location**: `packages/ai/src/`
 - **Models Used**:
-  - Primary chat: GPT-4.1
+  - Primary chat: GPT-5
   - Summarization: GPT-4.1-mini
 - **Configuration**: OpenAI API key via environment variables
 
@@ -28,7 +38,7 @@ This document provides a comprehensive overview of the AI tools, prompts, and sy
 ### 1. Search Session Transcriptions Tool
 
 **Function**: `createSearchSessionTranscriptions`
-**Purpose**: Semantic search across all recorded student sessions
+**Purpose**: Primary tool for finding the latest transcript and semantic search across sessions
 
 ```typescript
 {
@@ -40,11 +50,12 @@ This document provides a comprehensive overview of the AI tools, prompts, and sy
 ```
 
 **Backend**: Uses Cloudflare AutoRAG for vector search with folder-based filtering by student ID
+**Key Role**: Primary source for identifying the LATEST transcript for agenda planning
 
-### 2. Session Overview Tool
+### 2. Session Progress Tool
 
-**Function**: `createSessionOverviewTool`
-**Purpose**: Get comprehensive overview of student's entire session history
+**Function**: `createSessionProgressTool` (renamed from `createSessionOverviewTool`)
+**Purpose**: Selective access to core memory elements only
 
 ```typescript
 {
@@ -53,10 +64,12 @@ This document provides a comprehensive overview of the AI tools, prompts, and sy
 }
 ```
 
+**Usage**: Should be used selectively for core memory elements, not comprehensive briefing
+
 ### 3. Session Summary Tool
 
 **Function**: `createSessionSummaryTool`
-**Purpose**: Get detailed summary of specific sessions
+**Purpose**: Get detailed context about the latest session when needed
 
 ```typescript
 {
@@ -70,7 +83,7 @@ This document provides a comprehensive overview of the AI tools, prompts, and sy
 ### 4. Student Information Tool
 
 **Function**: `createStudentInfoTool`
-**Purpose**: Access complete student profile and academic information
+**Purpose**: Access core memory profile data for context
 
 ```typescript
 {
@@ -79,93 +92,208 @@ This document provides a comprehensive overview of the AI tools, prompts, and sy
 }
 ```
 
-**Returns**:
+**Returns**: Core memory elements like declared interests, target countries, curriculum, graduation year
 
-- Name and email
-- Study curriculum
-- Expected graduation year
-- Target countries
-- Areas of interest
-- Extracurricular activities
+### 5. Web Search Preview Tool
+
+**Function**: `web_search_preview`
+**Purpose**: Real-time search for current information to enhance agendas
+
+**Usage**:
+
+- Up-to-date deadlines and admission requirements
+- Current scholarship opportunities and policy changes
+- Competition deadlines and opportunities
+- University program updates
 
 ## System Prompts
 
-### Main Chat Assistant Prompt
+### Main Guru AI Assistant Prompt
 
-```
-You are a knowledgeable virtual assistant with complete access to all information about this student. Think of yourself as an all-knowing assistant who can answer any question an advisor might have about their student's background, progress, interests, sessions, and academic journey.
+The current system prompt transforms the assistant into a professional advisor tool focused on generating structured next-step agendas:
+
+```text
+You are Studentize's Advisor Assistant. Your job is to generate clear, professional next-step agendas for students, primarily based on the latest available transcript.
 
 **Student Name:** ${user?.name || "Unknown"}
 
-**Your Role:**
-You have complete knowledge about this student through multiple information sources. When an advisor asks you anything, you should provide comprehensive, helpful answers by accessing the right information sources. You're like having the perfect assistant who has read all the student's files, attended all their sessions, and knows their complete academic profile.
+**Core Rules:**
 
-**Available Information Sources:**
+**1. Transcript Priority**
+- Always identify and use the latest transcript/session when planning next steps
+- Begin your response by stating: "Based on [Student Name]'s latest session: [Session Title + Date]..."
+- If multiple transcripts exist, only pull forward prior session details that belong in core memory
 
-1. **searchSessionTranscriptions** - All recorded conversations and sessions
-   - Contains the most current discussions, plans, and decisions
-   - Shows what the student is actually thinking and planning right now
-   - Includes specific details about university choices, career interests, concerns, and progress
+**2. Core Memory (Selective Recall)**
+Retain only essential long-term facts for continuity, such as:
+- Declared subject/field of interest
+- Target universities or countries
+- Confirmed application pathways (e.g., ED vs UCAS priority)
+- Key deadlines (Oxford Oct 15, Common App Jan 1, etc.)
+- Do NOT carry forward every detail from prior sessions
 
-2. **sessionOverview** - Complete academic journey summary
-   - High-level view of the student's entire progress and development
-   - Key themes and patterns across all sessions
-   - Overall trajectory and growth areas
+**3. Structured Output (Mandatory)**
+Always output in three sections:
+1. **Next Session Focus** → one-liner agenda items
+2. **Student Follow-Ups** → progress checks/questions for student
+3. **Advisor Preparation & Observations** → advisor deliverables + overlooked/missing areas
 
-3. **sessionSummary** - Detailed insights from specific sessions
-   - Deep dive into particular conversations when you need more context
-   - Follow-up information from session search results
+**4. Professional Tone**
+- Write as if you are an experienced Studentize advisor: precise, professional, and actionable
+- Avoid filler, emojis, or robotic phrasing
 
-4. **studentInfo** - Complete academic and personal profile
-   - Background information: curriculum, graduation year, target countries
-   - Stated interests and extracurricular activities
-   - Official profile data for context
+**5. Proactive Guidance**
+- Highlight if the advisor appears to have overlooked something important (e.g., academic references, deadlines, competitions)
+- Pull in reliable external data (deadlines, competitions, scholarships) where relevant
+```
 
-**Your Approach:**
-- **Write like you're briefing the advisor**: Use natural language they can easily reference or mirror in conversation
-- **Be conversational and flowing**: Avoid structured formats - write in a way that sounds natural to say
-- **Lead with what matters most**: Put the key information first in a natural sentence
-- **Keep it brief but complete**: Give enough context without over-explaining
-- **Make it easy to reference**: Advisors should be able to glance and immediately know what to say
-- **Sound human**: Write like you're telling a colleague about the student
+### Expected Output Format
 
-**Response Style:**
-Write responses that are conversational and natural, but structured for easy scanning. Use bullet points to organize information clearly while keeping the language flowing and speakable.
+The AI must always follow this structured format:
 
-**When an advisor asks you something:**
-1. **Get the current information** - Search recent sessions for up-to-date details
-2. **Write it naturally but structured** - Use bullet points with conversational language
-3. **Include essential context** - Weave in background naturally
-4. **Make it scannable and speakable** - Easy to read quickly and reference aloud
+```text
+Based on [Student Name]'s latest session: [Session Title + Date]...
 
-You should be able to naturally brief advisors like:
-- "What is this student planning to study?" →
-  • Robert's settled on Computer Science
-  • Comparing programs at UCT, MIT, and Stellenbosch
-  • Weighing program reputation against location preferences
-  • MIT noted him for potential financial aid
+**Next Session Focus**
+• [Action item 1]
+• [Action item 2]
+• [Action item 3]
 
-- "How are they progressing?" →
-  • Making good progress building his university list around CS programs
-  • Still torn between staying in South Africa versus going abroad
-  • Actively researching application requirements and deadlines
+**Student Follow-Ups**
+• [Progress check 1]
+• [Question for student 1]
+• [Task verification 1]
 
-- "What challenges are they facing?" →
-  • Main struggle is balancing program prestige with practical considerations
-  • Hesitant about Wits because of Johannesburg location
-  • Considering language environment differences at Stellenbosch
-
-Always structure responses with bullet points for easy scanning, but use natural, conversational language that advisors can easily reference during conversations.
+**Advisor Preparation & Observations**
+• [Advisor deliverable 1]
+• [Overlooked area 1]
+• [External deadline/opportunity 1]
 ```
 
 ### Transcript Summarization Prompt
 
-```
+```text
 You are a helpful assistant that summarizes transcripts of meetings between students and their academic advisors. Your task is to extract key information and present it in a concise, well-structured format using bullet points or short paragraphs. Focus on main discussion topics, decisions made, action items, and important insights. Keep the summary brief while capturing essential details.
 ```
 
 ### Session Overview Update Prompt
 
-```
+```text
 You are a helpful assistant that updates a student's session overview based on a new transcript summary. Your task is to integrate the new information from the transcript summary into the existing session overview. Keep the output concise and well-structured using bullet points or short paragraphs. Focus on key topics discussed, action items, and important insights. Maintain clarity while being brief.
 ```
+
+## Data Flow and Processing
+
+### 1. Session Processing Workflow
+
+1. **Session Creation**: New sessions are created when advisors and students meet
+2. **Transcription Upload**: Audio transcriptions are uploaded to S3 storage
+3. **Automatic Summarization**:
+   - Triggered via Cloudflare Worker workflow
+   - Uses GPT-4.1-mini to create session summaries
+4. **Overview Update**: Student's overall session overview is updated with new information
+5. **RAG Sync**: Vector database is synced with new transcription data
+
+### 2. Guru AI Processing Flow
+
+1. **Latest Session Identification**: AI searches for most recent transcript using `searchSessionTranscriptions`
+2. **Core Memory Extraction**: Selectively pulls long-term essentials from `sessionProgress` and `studentInfo`
+3. **Current Information Gathering**: Uses `web_search_preview` for up-to-date deadlines and opportunities
+4. **Structured Agenda Generation**: Creates 3-part output format based on latest session content
+5. **Proactive Guidance**: Identifies overlooked areas and suggests next steps
+
+### 3. RAG (Retrieval Augmented Generation) System
+
+- **Provider**: Cloudflare AutoRAG
+- **Storage**: Student transcriptions organized by folder (student ID)
+- **Search**: Semantic search with score thresholds and filtering
+- **Sync**: Automatic synchronization after new session processing
+
+## Configuration and Environment
+
+### Required Environment Variables
+
+```bash
+OPENAI_API_KEY=your_openai_api_key
+R2_ACCOUNT_ID=cloudflare_r2_account_id
+AUTORAG_NAME=your_autorag_instance_name
+AUTORAG_API_TOKEN=cloudflare_autorag_api_token
+```
+
+### Model Configuration
+
+- **Primary Chat Model**: `gpt-5`
+- **Reasoning Effort**: `low` (for faster responses)
+- **Summarization Model**: `gpt-4.1-mini`
+- **Max Tool Steps**: 5 (configurable via `stepCountIs(5)`)
+- **Streaming**: Enabled for real-time responses
+
+## Key Changes from Previous Version
+
+### Major Updates
+
+1. **Role Transformation**: Changed from general "virtual assistant" to "Advisor Assistant"
+2. **Output Structure**: Mandatory 3-part format (Next Session Focus, Student Follow-Ups, Advisor Preparation)
+3. **Latest Transcript Priority**: Always start with most recent session
+4. **Core Memory Approach**: Selective retention instead of comprehensive briefing
+5. **Professional Tone**: Removed conversational style, added structured advisor language
+6. **Model Upgrade**: Upgraded from GPT-4.1 to GPT-5 with reasoning capabilities
+7. **Tool Renaming**: `createSessionOverviewTool` → `createSessionProgressTool`
+
+### Response Style Changes
+
+**Before (Conversational):**
+
+- Natural, flowing language
+- Bullet points with speakable content
+- Advisor briefing style
+
+**After (Structured Agenda):**
+
+- Professional, actionable language
+- Mandatory 3-part structure
+- Clear session reference with date
+- Proactive guidance and overlooked areas
+
+## Recommendations for Further Improvements
+
+### 1. Enhanced Tool Descriptions
+
+- Add more specific examples of "latest session" identification
+- Clarify core memory vs. current session boundaries
+- Include more guidance on proactive opportunity identification
+
+### 2. Structured Output Validation
+
+- Implement format checking to ensure 3-part structure compliance
+- Add session date/title validation requirements
+- Consider template enforcement for consistency
+
+### 3. Core Memory Optimization
+
+- Define clearer criteria for what belongs in "core memory"
+- Add timestamp-based prioritization for core facts
+- Implement automatic core memory decay for outdated information
+
+### 4. Proactive Guidance Enhancement
+
+- Expand database of common overlooked areas by student profile
+- Add deadline tracking integration
+- Include competition and scholarship opportunity matching
+
+### 5. Quality Assurance
+
+- Monitor adherence to structured output format
+- Track session identification accuracy
+- Measure advisor satisfaction with agenda relevance and actionability
+
+## Technical Architecture Notes
+
+- **Framework**: Built on Vercel AI SDK with ORPC for type-safe APIs
+- **Deployment**: Cloudflare Workers for serverless execution
+- **Storage**: S3-compatible storage for transcriptions
+- **Vector Database**: Cloudflare AutoRAG for semantic search
+- **Real-time**: Event streaming for live chat updates
+- **Monitoring**: Tool usage tracking for analytics and improvements
+
+This documentation reflects the current Guru AI implementation focused on professional, structured agenda generation for academic advisors.
