@@ -3,9 +3,11 @@ import {
   BrainIcon,
   ChalkboardTeacherIcon,
   HeadsetIcon,
+  SignOutIcon,
   StudentIcon,
 } from "@phosphor-icons/react";
-import { Link, useMatchRoute } from "@tanstack/react-router";
+import { Link, useMatchRoute, useNavigate } from "@tanstack/react-router";
+import { useAuth } from "@workos-inc/authkit-react";
 import { RouterOutputs } from "orpc/client";
 import { ReactNode } from "react";
 
@@ -19,6 +21,9 @@ export const Header = ({
   userType: UserType;
 }) => {
   const route = useMatchRoute();
+  const navigate = useNavigate();
+
+  const { signOut } = useAuth();
 
   const isGuru = route({ to: "/guru" });
   const isSessions = route({ to: "/sessions" });
@@ -27,11 +32,13 @@ export const Header = ({
 
   const icons: any = [
     { to: "/guru", icon: <BrainIcon className="size-4" />, isActive: isGuru },
-    {
-      to: "/sessions",
-      icon: <HeadsetIcon className="size-4" />,
-      isActive: isSessions,
-    },
+    userType === "ADMIN"
+      ? {
+          to: "/sessions",
+          icon: <HeadsetIcon className="size-4" />,
+          isActive: isSessions,
+        }
+      : null,
     {
       to: "/students",
       icon: <StudentIcon className="size-4" />,
@@ -68,6 +75,16 @@ export const Header = ({
             {icon}
           </Link>
         ))}
+
+        <button
+          onClick={() => {
+            signOut();
+            navigate({ to: "/" });
+          }}
+          className="rounded-md bg-zinc-100 p-2 shadow-sm outline outline-bzinc/80 mt-auto"
+        >
+          <SignOutIcon />
+        </button>
       </div>
       {children}
     </div>
