@@ -30,6 +30,7 @@ import { AutosizeTextArea } from "@/features/autosize-text-area";
 import { Markdown } from "@/components/markdown";
 import { Loader } from "@/components/loader";
 import { Tool } from "@/features/tools";
+import { LoadingIndicator } from "@/components/loading-indicator";
 
 export const Route = createFileRoute("/_authenticated/guru")({
   component: App,
@@ -72,6 +73,11 @@ const Message = ({
       )}
     >
       <Markdown>{content}</Markdown>
+      {!content ? (
+        <div className="flex gap-2">
+          <LoadingIndicator />
+        </div>
+      ) : null}
 
       {tools.length ? (
         <>
