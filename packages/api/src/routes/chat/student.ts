@@ -259,7 +259,10 @@ Based on [Student Name]'s latest session: [Session Title + Date]...
 • [Overlooked area 1]
 • [External deadline/opportunity 1]`,
     messages: convertToModelMessages(input.messages),
-    stopWhen: stepCountIs(5),
+    stopWhen: stepCountIs(10),
+    onError: async (error) => {
+      console.error("Error in chatStudent stream:", error);
+    },
     onFinish: async (result) => {
       const resultMessages = result.response.messages;
 
