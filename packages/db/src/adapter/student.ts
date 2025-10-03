@@ -4,6 +4,7 @@ import {
   InferInsertModel,
   eq,
   getTableColumns,
+  desc,
 } from "..";
 
 import * as schema from "../schema";
@@ -121,6 +122,22 @@ export const updateStudentSessionOverview = async (input: {
     .update(schema.student)
     .set({ sessionOverview: input.sessionOverview })
     .where(eq(schema.student.userId, input.studentUserId));
+
+  return student;
+};
+
+export const getStudentSessionHistory = async (input: {
+  studentUserId: string;
+}) => {
+  const student = await db
+    .select({
+      createdAt: schema.session.createdAt,
+      title: schema.session.title,
+      id: schema.session.id,
+    })
+    .from(schema.session)
+    .where(eq(schema.session.studentUserId, input.studentUserId))
+    .orderBy(desc(schema.session.createdAt));
 
   return student;
 };

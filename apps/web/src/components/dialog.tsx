@@ -30,7 +30,7 @@ export const DialogContent = forwardRef<
     ref={ref}
     {...props}
     className={cn(
-      "fixed overflow-hidden top-1/2 left-1/2 max-h-[85vh] w-[90vw] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-md bg-white p-6 shadow-lg focus:outline-none data-[state=open]:animate-contentShow data-[state=closed]:animate-contentHide",
+      "fixed overflow-hidden top-1/2 left-1/2 max-h-[85vh] w-[90vw] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl bg-white p-6 shadow-lg focus:outline-none data-[state=open]:animate-contentShow data-[state=closed]:animate-contentHide",
       props.className
     )}
   />

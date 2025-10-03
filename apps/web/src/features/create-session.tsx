@@ -10,15 +10,15 @@ import { convertStringToFile, uploadFileToStorage } from "@/utils/s3";
 import { Button } from "@/components/button";
 
 import { session as workerSession } from "@student/worker/sdk";
-import { useAuth } from "@workos-inc/authkit-react";
 import { useAuthUser } from "@/routes/_authenticated";
 import { Switch } from "@/components/switch";
+import { useSessionSummary } from "@/hooks/use-session-summary";
 
 type StudentOrAdvisor = { userId: string; name: string };
 
 export const CreateSession = ({ onComplete }: { onComplete: () => void }) => {
-  const user = useAuth();
   const currentUser = useAuthUser();
+  const { startSessionSummaryGeneration } = useSessionSummary();
 
   const utils = useQueryClient();
 
@@ -76,10 +76,7 @@ export const CreateSession = ({ onComplete }: { onComplete: () => void }) => {
 
       // trigger the summary generation
       if (vals.value.summarize) {
-        const accessToken = await user.getAccessToken();
-        await workerSession.triggerSummaryUpdate(accessToken, {
-          sessionId: session.id,
-        });
+        await startSessionSummaryGeneration({ sessionId: session.id });
       }
     },
   });

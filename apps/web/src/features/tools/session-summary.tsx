@@ -1,0 +1,71 @@
+import { Button } from "@/components/button";
+import { Dialog } from "@/components/dialog";
+import { useSessionSummary } from "@/hooks/use-session-summary";
+import { SparkleIcon } from "@phosphor-icons/react";
+import { useState } from "react";
+import Markdown from "react-markdown";
+
+export const SessionSummaryTool = ({
+  output = {},
+  input = {},
+}: {
+  output: any;
+  input: any;
+}) => {
+  const [isGenerationCalled, setIsGenerationCalled] = useState(false);
+
+  const { startSessionSummaryGeneration } = useSessionSummary();
+
+  const startSessionGeneration = async () => {
+    await startSessionSummaryGeneration({ sessionId: input.sessionId });
+    setIsGenerationCalled(true);
+  };
+
+  return (
+    <Dialog
+      trigger={
+        <button className="rounded-md shadow-sm outline outline-bzinc py-1 px-2 inline-flex gap-2 items-center cursor-pointer">
+          <SparkleIcon />
+          <div>Session Summary</div>
+        </button>
+      }
+      className="p-0"
+    >
+      <div className="px-4 py-3 border-bzinc border-b flex gap-4 items-center">
+        <SparkleIcon />
+        Key insights from a specific session
+      </div>
+      <div className="p-4">
+        {output ? (
+          <div className="rounded-lg border border-zinc-200">
+            <div className="px-4 py-2 font-semibold border-b border-zinc-200 flex justify-between items-center">
+              <div>Summary</div>
+              <div>ID: {input.sessionId}</div>
+            </div>
+            <div className="p-4">
+              <Markdown>{output}</Markdown>
+            </div>
+          </div>
+        ) : null}
+
+        {!output && !isGenerationCalled ? (
+          <Button
+            variant="primaryLight"
+            className="rounded-md mx-auto my-4"
+            onClick={() => startSessionGeneration()}
+          >
+            Generate a session summary
+          </Button>
+        ) : null}
+
+        {!output && isGenerationCalled ? (
+          <div className="text-center text-sm text-zinc-500 italic my-4">
+            A generation request has been sent. You will need to send another
+            message to see the summary once it is ready (Note: generation may
+            take up to a minute).
+          </div>
+        ) : null}
+      </div>
+    </Dialog>
+  );
+};

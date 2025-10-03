@@ -1,7 +1,5 @@
 import { Dialog } from "@/components/dialog";
 import {
-  FileMagnifyingGlassIcon,
-  UserSquareIcon,
   SubtitlesIcon,
   ArrowRightIcon,
   ArrowLeftIcon,
@@ -10,7 +8,8 @@ import {
 } from "@phosphor-icons/react";
 import { ReactNode } from "react";
 import { StudentBioTool } from "./student-bio";
-import { SessionTranscriptionTool } from "./session-transcription";
+import { SearchTranscriptionsTool } from "./search-transcriptions";
+import { SessionSummaryTool } from "./session-summary";
 
 const ToolDialog = ({
   children,
@@ -22,7 +21,10 @@ const ToolDialog = ({
   output: any;
 }) => {
   return (
-    <Dialog trigger={children} className="flex flex-col gap-4">
+    <Dialog
+      trigger={<button>{children}</button>}
+      className="flex flex-col gap-4"
+    >
       <div className="rounded-md border-bzinc border">
         <div className="border-b border-bzinc px-4 py-2 flex gap-2 items-center justify-between">
           Input
@@ -63,15 +65,11 @@ export const Tool = ({
 }) => {
   switch (type) {
     case "tool-searchSessionTranscriptions":
-      return <SessionTranscriptionTool output={output} input={input} />;
+      return <SearchTranscriptionsTool output={output} input={input} />;
     case "tool-studentInfo":
       return <StudentBioTool output={output} />;
     case "tool-sessionSummary":
-      return (
-        <ToolDialog input={input} output={output}>
-          <ToolButton icon={SubtitlesIcon} title="Session Summary" />
-        </ToolDialog>
-      );
+      return <SessionSummaryTool output={output} input={input} />;
     default:
       return (
         <ToolDialog input={input} output={output}>

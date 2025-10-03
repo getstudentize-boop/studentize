@@ -9,6 +9,8 @@ import {
   getUserName,
   getStudentByUserId,
   createAdvisorChatMessageTools,
+  getStudentSessionHistory,
+  getSessionById,
 } from "@student/db";
 import {
   convertToModelMessages,
@@ -19,12 +21,67 @@ import {
   UIMessage,
 } from "ai";
 import z from "zod";
-import { AuthContext } from "@/utils/middleware";
+import { AuthContext } from "../../utils/middleware";
+import { createTranscriptionObjectKey, readFile } from "../../utils/s3";
 
 export type ChatStudentInput = {
   studentUserId: string;
   chatId: string;
   messages: UIMessage[];
+};
+
+const createListStudentSessionsTool = (input: { studentUserId: string }) => {
+  return tool({
+    description:
+      "Gets a log history of all sessions for a student. Date;title;session ID.",
+    inputSchema: z.object({}),
+    execute: async ({}) => {
+      console.log("Tool: calling listStudentSessions");
+      const history = await getStudentSessionHistory({
+        studentUserId: input.studentUserId,
+      });
+
+      return history.map(
+        (session) => `${session.createdAt};${session.title};${session.id};`
+      );
+    },
+  });
+};
+
+const createReadFullSessionTranscriptTool = (input: {
+  studentUserId: string;
+}) => {
+  return tool({
+    description: "Reads the full transcription of a specific session.",
+    inputSchema: z.object({
+      sessionId: z.string().describe("The specific session ID to read."),
+    }),
+    execute: async ({ sessionId }) => {
+      console.log("Tool: calling readFullSessionTranscript");
+      const session = await getSessionById({
+        sessionId: sessionId,
+      });
+
+      if (session?.studentUserId !== input.studentUserId) {
+        return "Session not found for this student.";
+      }
+
+      try {
+        const data = await readFile({
+          bucket: "transcription",
+          key: createTranscriptionObjectKey({
+            ext: "txt",
+            sessionId,
+            studentUserId: input.studentUserId,
+          }),
+        });
+
+        return data ?? "No transcription found.";
+      } catch (error) {
+        return "Error fetching transcription.";
+      }
+    },
+  });
 };
 
 const createSearchSessionTranscriptions = (input: {
@@ -104,7 +161,6 @@ const createStudentInfoTool = (input: { studentUserId: string }) => {
       "Get comprehensive information about the student including their academic background, areas of interest, extracurricular activities, study curriculum, target countries, and other profile details. Use this to provide detailed context about the student's academic profile, interests, and background when advisors ask profile-related questions.",
     inputSchema: z.object({}),
     execute: async ({}) => {
-      console.log("Tool: calling getStudentByUserId");
       const student = await getStudentByUserId(input.studentUserId);
       if (!student) {
         return "No student information found.";
@@ -175,6 +231,12 @@ export const chatStudent = async (
       studentInfo: createStudentInfoTool({
         studentUserId: input.studentUserId,
       }),
+      listStudentSessions: createListStudentSessionsTool({
+        studentUserId: input.studentUserId,
+      }),
+      readFullSessionTranscript: createReadFullSessionTranscriptTool({
+        studentUserId: input.studentUserId,
+      }),
     },
     system: `You are Studentize's Advisor Assistant. Your job is to generate clear, professional next-step agendas for students, primarily based on the latest available transcript.
 
@@ -211,19 +273,19 @@ Always output in three sections:
 
 **Available Information Sources:**
 
-1. **searchSessionTranscriptions** - All recorded conversations and sessions
-   - Use to find the LATEST transcript for primary planning
-   - Contains current discussions, plans, and decisions
-   - Shows what the student is actually thinking and planning right now
+1. **searchSessionTranscriptions** - Searches through all the student's session transcriptions to find revelant information based on a query.
+    - Use to find specific information discussed in past sessions
+    - Contains actual conversations with the student
+    - Provides context and details from previous interactions
 
-2. **sessionOverview** - Complete academic journey summary
-   - Use selectively for core memory elements only
-   - High-level view of established priorities and long-term goals
+2. **sessionProgress** - Overview of student progress and engagement
+    - Use for a comprehensive summary of all sessions and overall development
+    - Provides a high-level summary of key themes and progress over time
 
-3. **sessionSummary** - Detailed insights from specific sessions
-   - Use when you need more context about the latest session
-   - Follow-up information from session search results
-
+3. **sessionSummary** - Detailed insights from a specific session
+   - Use when you need more context about a particular session identified in search results or when an advisor asks about a specific session
+   - Provides detailed information and context from that session
+    
 4. **studentInfo** - Complete academic and personal profile
    - Background information: curriculum, graduation year, target countries
    - Stated interests and extracurricular activities
@@ -234,15 +296,30 @@ Always output in three sections:
    - Current university information and policy changes
    - Competition deadlines and opportunities
 
+6. **listStudentSessions** - Log history of all sessions for the student
+   - Use to identify past sessions by date, title, and session ID
+   - Helps locate specific sessions for follow-up or context
+   - Use this tool to find the most recent session ID for follow-up
+
+7. **readFullSessionTranscript** - Reads the full transcription of a specific session
+   - Use to get complete details from a particular session when needed
+   - Provides verbatim conversation for accuracy and context
+
 **Response Process:**
-1. **Identify the latest session** - Search for the most recent transcript
+1. **Identify the latest session** - ALWAYS start by using \`listStudentSessions\` to get the most recent session ID, or use \`searchSessionTranscriptions\` to find relevant session IDs
 2. **Extract core memory** - Pull only essential long-term facts from prior sessions
-3. **Plan next steps** - Base agenda on latest session content
-4. **Structure output** - Always use the 3-part format
+3. **Plan next steps** - Base agenda on latest session content using the session ID you obtained
+4. **Structure output** - Always use the 3-part format with session ID reference
 5. **Add proactive guidance** - Highlight missed opportunities or overlooked areas
 
+**IMPORTANT: Session ID Requirement**
+- You MUST always have a session ID to reference in your response
+- Use \`listStudentSessions\` first to get the most recent session ID
+- If that doesn't work, use \`searchSessionTranscriptions\` to find relevant session IDs
+- Never provide a response without referencing a specific session ID
+
 **Example Output Format:**
-Based on [Student Name]'s latest session: [Session Title + Date]...
+Based on [Student Name]'s latest session: [Session Title + Date] (Session ID: [sessionId])...
 
 **Next Session Focus**
 • [Action item 1]
