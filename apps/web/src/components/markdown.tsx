@@ -12,6 +12,9 @@ export const Markdown = ({
     <div className={cn("break-words", className)}>
       <ReactMarkdown
         components={{
+          p: (props) => (
+            <p {...props} className="my-2.5 first:mt-0 last:mb-0" />
+          ),
           ul: (props) => (
             <ul {...props} className="list-outside list-disc ml-4 space-y-1" />
           ),

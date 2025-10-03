@@ -14,11 +14,17 @@ export const SessionSummaryTool = ({
 }) => {
   const [isGenerationCalled, setIsGenerationCalled] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const { startSessionSummaryGeneration } = useSessionSummary();
 
   const startSessionGeneration = async () => {
+    setIsLoading(true);
+
     await startSessionSummaryGeneration({ sessionId: input.sessionId });
     setIsGenerationCalled(true);
+
+    setIsLoading(false);
   };
 
   return (
@@ -53,6 +59,7 @@ export const SessionSummaryTool = ({
             variant="primaryLight"
             className="rounded-md mx-auto my-4"
             onClick={() => startSessionGeneration()}
+            isLoading={isLoading}
           >
             Generate a session summary
           </Button>
