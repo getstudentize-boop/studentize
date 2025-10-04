@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useParams } from "@tanstack/react-router";
 
 import { PlusIcon } from "@phosphor-icons/react";
 
@@ -16,6 +16,11 @@ export const Route = createFileRoute("/_authenticated/sessions")({
 });
 
 function RouteComponent() {
+  const params = useParams({
+    from: "/_authenticated/sessions/$sessionId",
+    shouldThrow: false,
+  });
+
   const [isOpen, setIsOpen] = useState(false);
 
   const listSessionsQuery = useQuery(
@@ -54,6 +59,7 @@ function RouteComponent() {
             isLoading={listSessionsQuery.isLoading}
             isError={listSessionsQuery.isError}
             data={sessions}
+            currentSessionId={params?.sessionId}
           />
         </div>
       </div>

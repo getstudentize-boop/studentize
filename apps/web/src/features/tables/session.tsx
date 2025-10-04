@@ -62,10 +62,12 @@ export const SessionTable = ({
   data,
   isError,
   isLoading,
+  currentSessionId,
 }: {
   data: Session[];
   isLoading?: boolean;
   isError: boolean;
+  currentSessionId?: string;
 }) => {
   const { handleRef, tableHeight } = useTableHeight();
   const navigate = useNavigate();
@@ -87,6 +89,7 @@ export const SessionTable = ({
             table={table}
             isLoading={isLoading}
             isError={isError}
+            isRowSelected={(row) => row.original.sessionId === currentSessionId}
             onRowClick={(row) => {
               navigate({
                 to: "/sessions/$sessionId",
