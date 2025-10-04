@@ -66,6 +66,10 @@ const SummarizeAction = ({
 
   const { startSessionSummaryGeneration } = useSessionSummary();
 
+  useEffect(() => {
+    setIsGenerationCalled(false);
+  }, [sessionId]);
+
   return (
     <div className="border-t border-bzinc text-left p-4">
       <div className="border border-bzinc rounded-lg bg-gradient-to-t to-zinc-100 white-white">
