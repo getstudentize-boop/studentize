@@ -2,7 +2,6 @@ import { Button } from "@/components/button";
 import { useSessionSummary } from "@/hooks/use-session-summary";
 import { SparkleIcon } from "@phosphor-icons/react";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/icons/ArrowLeft";
-import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -101,7 +100,7 @@ const SummarizeAction = ({
               A generation request has been sent. It may take up to a minute to
               complete.{" "}
               <button
-                className="font-semibold underline hover:no-underline cursor"
+                className="font-semibold underline hover:no-underline cursor-pointer"
                 onClick={() => onRefresh()}
               >
                 Refresh
