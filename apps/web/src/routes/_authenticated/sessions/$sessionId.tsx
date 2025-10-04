@@ -71,6 +71,7 @@ const SummarizeAction = ({
       <div className="border border-bzinc rounded-lg bg-gradient-to-t to-zinc-100 white-white">
         <div className="px-4 py-2 border-b border-bzinc">Summary</div>
         <div className="p-4">
+          {summary}
           {!summary && !isGenerationCalled ? (
             <div className="h-14 flex items-center justify-center">
               <div>
@@ -91,7 +92,7 @@ const SummarizeAction = ({
               </div>
             </div>
           ) : null}
-          {isGenerationCalled ? (
+          {!summary && isGenerationCalled ? (
             <div className="text-center text-zinc-600 px-4">
               A generation request has been sent. It may take up to a minute to
               complete.{" "}
