@@ -3,7 +3,7 @@ import z from "zod";
 import { getSessions } from "@student/db";
 
 export const ListSessionInputSchema = z.object({
-  studentId: z.string().optional(),
+  studentUserId: z.string().optional(),
 });
 
 export const listSessions = async (
@@ -12,6 +12,7 @@ export const listSessions = async (
   const sessions = await getSessions(data);
 
   return sessions.map((s) => ({
+    sessionId: s.id,
     student: s.student?.name ?? "",
     createdAt: s.createdAt,
     title: s.title,

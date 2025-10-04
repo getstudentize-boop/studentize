@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-table";
 import { DataTable } from "../table";
 import { useTableHeight } from "@/hooks/use-table-height";
+import { useNavigate } from "@tanstack/react-router";
 
 const StudentCell = (props: { name: string }) => {
   return (
@@ -67,6 +68,7 @@ export const SessionTable = ({
   isError: boolean;
 }) => {
   const { handleRef, tableHeight } = useTableHeight();
+  const navigate = useNavigate();
 
   const table = useReactTable({
     columns,
@@ -81,7 +83,17 @@ export const SessionTable = ({
         style={{ height: tableHeight ? tableHeight - 10 : undefined }}
       >
         {tableHeight ? (
-          <DataTable table={table} isLoading={isLoading} isError={isError} />
+          <DataTable
+            table={table}
+            isLoading={isLoading}
+            isError={isError}
+            onRowClick={(row) => {
+              navigate({
+                to: "/sessions/$sessionId",
+                params: { sessionId: row.original.sessionId },
+              });
+            }}
+          />
         ) : null}
       </div>
     </div>

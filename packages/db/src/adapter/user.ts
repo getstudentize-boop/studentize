@@ -140,3 +140,13 @@ export const updateUserEmail = async (
 
   return user;
 };
+
+export const getUserById = (input: { userId: string }) => {
+  return db.query.user.findFirst({
+    columns: {
+      name: true,
+      id: true,
+    },
+    where: eq(schema.user.id, input.userId),
+  });
+};

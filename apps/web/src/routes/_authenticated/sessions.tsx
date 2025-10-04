@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 import { PlusIcon } from "@phosphor-icons/react";
 
@@ -57,7 +57,14 @@ function RouteComponent() {
           />
         </div>
       </div>
-      {isOpen ? <CreateSession onComplete={() => setIsOpen(false)} /> : null}
+      {isOpen ? (
+        <CreateSession
+          onBack={() => setIsOpen(false)}
+          onComplete={() => setIsOpen(false)}
+        />
+      ) : (
+        <Outlet />
+      )}
     </>
   );
 }

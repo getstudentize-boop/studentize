@@ -1,6 +1,6 @@
 import { Input } from "@/components/input";
 import { UserSearch } from "./user-search";
-import { SubtitlesIcon, XIcon } from "@phosphor-icons/react";
+import { ArrowLeftIcon, SubtitlesIcon, XIcon } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import { useForm } from "@tanstack/react-form";
@@ -9,14 +9,19 @@ import { z } from "zod";
 import { convertStringToFile, uploadFileToStorage } from "@/utils/s3";
 import { Button } from "@/components/button";
 
-import { session as workerSession } from "@student/worker/sdk";
 import { useAuthUser } from "@/routes/_authenticated";
 import { Switch } from "@/components/switch";
 import { useSessionSummary } from "@/hooks/use-session-summary";
 
 type StudentOrAdvisor = { userId: string; name: string };
 
-export const CreateSession = ({ onComplete }: { onComplete: () => void }) => {
+export const CreateSession = ({
+  onComplete,
+  onBack,
+}: {
+  onComplete: () => void;
+  onBack: () => void;
+}) => {
   const currentUser = useAuthUser();
   const { startSessionSummaryGeneration } = useSessionSummary();
 
@@ -128,113 +133,131 @@ export const CreateSession = ({ onComplete }: { onComplete: () => void }) => {
         await form.handleSubmit();
         form.reset();
       }}
-      className="w-[500px] border-l border-bzinc flex flex-col gap-4 p-4 py-7 bg-white"
+      className="w-[500px] border-l border-bzinc bg-white"
     >
-      <form.Field
-        name="title"
-        children={(field) => (
-          <Input
-            label="Title"
-            placeholder="e.g: Advisory Session"
-            onChange={(ev) => field.handleChange(ev.target.value)}
-            value={field.state.value}
-          />
-        )}
-      />
-
-      <div className="flex gap-4">
-        <form.Field
-          name="studentQuery"
-          asyncDebounceMs={300}
-          listeners={{
-            onChange: ({ value }) => {
-              searchStudentsMutation.mutate({ query: value });
-            },
-          }}
-          children={(field) => (
-            <div className="flex-1">
-              <label className="mb-2 mx-1 flex justify-between">Student</label>
-              <UserSearch
-                placeholder="Search student"
-                data={students}
-                onSelect={setStudent}
-                user={student}
-                onSearch={field.handleChange}
-              />
-            </div>
-          )}
-        />
-        <form.Field
-          name="advisorQuery"
-          asyncDebounceMs={300}
-          listeners={{
-            onChange: ({ value }) => {
-              searchAdvisorsMutation.mutate({ query: value });
-            },
-          }}
-          children={(field) => (
-            <div className="flex-1">
-              <label className="mb-2 mx-1 flex justify-between">Advisor</label>
-              <UserSearch
-                align="end"
-                placeholder="Search advisor"
-                data={advisors}
-                onSelect={setAdvisor}
-                user={advisor}
-                onSearch={field.handleChange}
-              />
-            </div>
-          )}
-        />
+      <div className="flex gap-4 items-center px-4 pt-7 pb-4 border-b border-bzinc">
+        <button onClick={() => onBack()}>
+          <ArrowLeftIcon />
+        </button>
+        <div>
+          <div className="font-semibold">New Session</div>
+        </div>
       </div>
-      <form.Field
-        name="transcription"
-        children={(field) => (
-          <div>
-            <label className="mb-2 mx-1 flex justify-between">
-              Transcription
-            </label>
-            <div className="border border-bzinc rounded-md">
-              <textarea
-                className="w-full h-32 p-2 outline-none"
-                rows={10}
-                onChange={(ev) => field.handleChange(ev.target.value)}
-                value={field.state.value}
-              />
-              <div className="border-t border-bzinc p-2 text-left flex justify-between items-center">
-                <SubtitlesIcon size={18} />
-                <div className="flex gap-2 items-center">
-                  Count: {field.state.value.length} chars
-                  <XIcon size={18} />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      />
-
-      <div className="text-left">
-        <div className="mb-2">Summarize</div>
-
+      <div className="flex flex-col gap-4 p-4">
         <form.Field
-          name="summarize"
+          name="title"
           children={(field) => (
-            <Switch
-              onCheckedChange={field.handleChange}
-              checked={field.state.value}
+            <Input
+              label="Title"
+              placeholder="e.g: Advisory Session"
+              onChange={(ev) => field.handleChange(ev.target.value)}
+              value={field.state.value}
             />
           )}
         />
-      </div>
 
-      <form.Subscribe
-        selector={(state) => [state.isSubmitting]}
-        children={([isSubmitting]) => (
-          <Button className="mt-auto" type="submit" isLoading={isSubmitting}>
-            Upload
-          </Button>
-        )}
-      />
+        <div className="flex gap-4">
+          <form.Field
+            name="studentQuery"
+            asyncDebounceMs={300}
+            listeners={{
+              onChange: ({ value }) => {
+                searchStudentsMutation.mutate({ query: value });
+              },
+            }}
+            children={(field) => (
+              <div className="flex-1">
+                <label className="mb-2 mx-1 flex justify-between">
+                  Student
+                </label>
+                <UserSearch
+                  placeholder="Search student"
+                  data={students}
+                  onSelect={setStudent}
+                  user={student}
+                  onSearch={field.handleChange}
+                />
+              </div>
+            )}
+          />
+          <form.Field
+            name="advisorQuery"
+            asyncDebounceMs={300}
+            listeners={{
+              onChange: ({ value }) => {
+                searchAdvisorsMutation.mutate({ query: value });
+              },
+            }}
+            children={(field) => (
+              <div className="flex-1">
+                <label className="mb-2 mx-1 flex justify-between">
+                  Advisor
+                </label>
+                <UserSearch
+                  align="end"
+                  placeholder="Search advisor"
+                  data={advisors}
+                  onSelect={setAdvisor}
+                  user={advisor}
+                  onSearch={field.handleChange}
+                />
+              </div>
+            )}
+          />
+        </div>
+        <form.Field
+          name="transcription"
+          children={(field) => (
+            <div>
+              <label className="mb-2 mx-1 flex justify-between">
+                Transcription
+              </label>
+              <div className="border border-bzinc rounded-md">
+                <textarea
+                  className="w-full h-32 p-2 outline-none"
+                  rows={10}
+                  onChange={(ev) => field.handleChange(ev.target.value)}
+                  value={field.state.value}
+                />
+                <div className="border-t border-bzinc p-2 text-left flex justify-between items-center">
+                  <SubtitlesIcon size={18} />
+                  <div className="flex gap-2 items-center">
+                    Count: {field.state.value.length} chars
+                    <XIcon size={18} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        />
+
+        <div className="text-left">
+          <div className="mb-2">Summarize</div>
+
+          <form.Field
+            name="summarize"
+            children={(field) => (
+              <Switch
+                onCheckedChange={field.handleChange}
+                checked={field.state.value}
+              />
+            )}
+          />
+        </div>
+
+        <form.Subscribe
+          selector={(state) => [state.isSubmitting]}
+          children={([isSubmitting]) => (
+            <Button
+              className="mt-auto rounded-lg"
+              type="submit"
+              isLoading={isSubmitting}
+            >
+              Upload
+            </Button>
+          )}
+        />
+      </div>
     </form>
   );
 };

@@ -20,6 +20,16 @@ import {
   SummarizeStudentOverviewInputSchema,
 } from "./summarize-student-overview";
 
+import { getOne, GetOneInputSchema } from "./get-one";
+import { updateSession, UpdateSessionInputSchema } from "./update";
+
+export const sessionGetOneHandler = privateRoute
+  .input(GetOneInputSchema)
+  .handler(async ({ input }) => {
+    const session = await getOne({ sessionId: input.sessionId });
+    return session;
+  });
+
 export const sessionListHandler = privateRoute
   .input(ListSessionInputSchema)
   .handler(async ({ input }) => {
@@ -59,5 +69,12 @@ export const sessionSummarizeStudentOverviewHandler = privateRoute
   .input(SummarizeStudentOverviewInputSchema)
   .handler(async ({ context, input }) => {
     const result = await summarizeStudentOverview(context, input);
+    return result;
+  });
+
+export const sessionUpdateHandler = privateRoute
+  .input(UpdateSessionInputSchema)
+  .handler(async ({ input }) => {
+    const result = await updateSession(input);
     return result;
   });

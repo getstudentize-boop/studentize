@@ -30,6 +30,8 @@ export const getSessionById = (input: { sessionId: string }) => {
       advisorUserId: true,
       studentUserId: true,
       summary: true,
+      title: true,
+      createdAt: true,
     },
   });
 };
@@ -101,4 +103,13 @@ export const getLatestSessionSummaryByStudent = async (input: {
     orderBy: [desc(schema.session.createdAt)],
     columns: { summary: true, createdAt: true, title: true },
   });
+};
+
+export const updateSessionById = async (
+  input: { sessionId: string } & Partial<SessionInsert>
+) => {
+  return db
+    .update(schema.session)
+    .set(input)
+    .where(eq(schema.session.id, input.sessionId));
 };

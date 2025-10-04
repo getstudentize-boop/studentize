@@ -5,6 +5,8 @@ import {
   sessionSummarizeTranscriptionHandler,
   sessionSummaryListHandler,
   sessionSummarizeStudentOverviewHandler,
+  sessionGetOneHandler,
+  sessionUpdateHandler,
 } from "./routes/session";
 
 import { student } from "./routes/student";
@@ -23,7 +25,11 @@ import {
 
 import { chatStudentHandler, chatNewIdHandler } from "./routes/chat";
 
-import { userDisplayHandler, userCurrentHandler } from "./routes/user";
+import {
+  userDisplayHandler,
+  userCurrentHandler,
+  userGetOneHandler,
+} from "./routes/user";
 
 export const router = {
   session: {
@@ -33,6 +39,8 @@ export const router = {
     summarizeTranscription: sessionSummarizeTranscriptionHandler,
     summaryList: sessionSummaryListHandler,
     summarizeStudentOverview: sessionSummarizeStudentOverviewHandler,
+    getOne: sessionGetOneHandler,
+    update: sessionUpdateHandler,
   },
   student,
   advisor: {
@@ -51,6 +59,7 @@ export const router = {
   user: {
     display: userDisplayHandler,
     current: userCurrentHandler,
+    getOne: userGetOneHandler,
   },
   chat: {
     student: chatStudentHandler,
