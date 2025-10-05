@@ -25,9 +25,6 @@ function App() {
         <Button className="rounded-md w-52" onClick={() => signIn()}>
           Login
         </Button>
-        <Button className="rounded-md w-52" variant="neutral">
-          Sign up as advisor
-        </Button>
       </div>
       <div className="flex-1 p-2 flex">
         <img
