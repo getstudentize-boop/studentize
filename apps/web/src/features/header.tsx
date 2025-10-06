@@ -1,3 +1,4 @@
+import { Tooltip } from "@/components/tooltip";
 import { cn } from "@/utils/cn";
 import {
   BrainIcon,
@@ -60,20 +61,33 @@ export const Header = ({
       })}
     >
       <div className="border-r border-zinc-100 px-3.5 py-6 gap-2 flex flex-col items-center bg-white">
+        <div className="mb-2.5">
+          <img src="/logo.png" alt="Studentize Logo" className="w-6" />
+        </div>
+
         {icons.map(({ to, icon, isActive }) => (
-          <Link
-            to={to}
-            key={to}
-            className={cn(
-              "p-2 bg-linear-to-br from-zinc-800 to-zinc-700 text-white rounded-xl",
-              {
-                "bg-linear-to-br from-white to-white text-zinc-800": !isActive,
-              }
-            )}
-            activeProps={{ className: "bg-white" }}
+          <Tooltip
+            side="right"
+            className="p-1 border-zinc-950 px-2.5 text-sm shadow bg-zinc-800 text-white rounded-xl"
+            trigger={
+              <Link
+                to={to}
+                key={to}
+                className={cn(
+                  "p-2 bg-linear-to-br from-zinc-800 to-zinc-700 text-white rounded-xl",
+                  {
+                    "bg-linear-to-br from-white to-white text-zinc-800":
+                      !isActive,
+                  }
+                )}
+                activeProps={{ className: "bg-white" }}
+              >
+                {icon}
+              </Link>
+            }
           >
-            {icon}
-          </Link>
+            {to.slice(1)}
+          </Tooltip>
         ))}
 
         <button
