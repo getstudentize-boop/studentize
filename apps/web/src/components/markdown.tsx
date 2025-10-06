@@ -25,12 +25,15 @@ export const Markdown = ({
             />
           ),
           ul: (props) => (
-            <ul {...props} className="list-outside list-disc ml-4 space-y-1" />
+            <ul
+              {...props}
+              className="list-outside list-disc ml-4 space-y-1 leading-normal"
+            />
           ),
           ol: (props) => (
             <ol
               {...props}
-              className="list-outside list-decimal ml-4 space-y-1"
+              className="list-outside list-decimal ml-4 space-y-1 leading-normal"
             />
           ),
           li: (props) => (

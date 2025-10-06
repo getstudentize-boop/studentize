@@ -22,16 +22,27 @@ function App() {
   return (
     <div className="flex h-screen flex-1">
       <div className="flex-1 flex flex-col justify-center items-center gap-4">
+        <img src="/logo.png" alt="Studentize Logo" className="w-20" />
+        <div className="w-[14rem] text-center">
+          All-in-One Admissions Solution, Powered by Real Mentors.
+        </div>
         <Button className="rounded-md w-52" onClick={() => signIn()}>
           Login
         </Button>
       </div>
       <div className="flex-1 p-2 flex">
-        <img
+        <div className="w-full h-full border overflow-hidden border-bzinc rounded-lg bg-gradient-to-b from-zinc-100 to-white relative">
+          <img
+            src="/screenshot.png"
+            alt=""
+            className="w-full scale-150 absolute bottom-16 left-96 rounded-md"
+          />
+        </div>
+        {/* <img
           src="https://images.unsplash.com/photo-1622397333309-3056849bc70b?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           alt=""
           className="h-full w-full flex-1 rounded-lg"
-        />
+        /> */}
       </div>
     </div>
   );
