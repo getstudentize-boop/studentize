@@ -75,7 +75,9 @@ export const Tool = ({
         <ToolDialog input={input} output={output}>
           <button className="rounded-md shadow-sm outline outline-bzinc py-1 px-2 inline-flex gap-2 items-center cursor-pointer">
             <ScrewdriverIcon />
-            <div>{type.replace("tool-", "").replace(/([A-Z])/g, " $1")}</div>
+            <div className="capitalize">
+              {type.replace("tool-", "").replace(/([A-Z])/g, " $1")}
+            </div>
           </button>
         </ToolDialog>
       );
