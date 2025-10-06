@@ -1,7 +1,6 @@
 import { Tooltip } from "@/components/tooltip";
 import { cn } from "@/utils/cn";
 import {
-  ArrowCounterClockwiseIcon,
   BrainIcon,
   ChalkboardTeacherIcon,
   CircleNotchIcon,
