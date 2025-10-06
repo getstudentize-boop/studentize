@@ -3,6 +3,7 @@ import { Dialog } from "@/components/dialog";
 import { useSessionSummary } from "@/hooks/use-session-summary";
 import { SparkleIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { orpc } from "orpc/client";
 import { useState } from "react";
 import Markdown from "react-markdown";
@@ -36,7 +37,7 @@ export const SessionSummaryTool = ({
     setIsLoading(false);
   };
 
-  const summary = output ?? sessionQuery.data?.summary;
+  const summary = output || sessionQuery.data?.summary;
 
   return (
     <Dialog
@@ -51,13 +52,32 @@ export const SessionSummaryTool = ({
       <div className="px-4 py-3 border-bzinc border-b flex gap-4 items-center">
         <SparkleIcon />
         Key insights from a specific session
+        {!summary ? (
+          <Link
+            to="/sessions/$sessionId"
+            params={{ sessionId: input.sessionId }}
+            className="font-semibold hover:underline"
+            target="_blank"
+          >
+            ({input.sessionId})
+          </Link>
+        ) : null}
       </div>
       <div className="p-4">
         {summary ? (
-          <div className="rounded-lg border border-zinc-200">
+          <div className="rounded-lg border border-zinc-200 bg-gradient-to-b from-zinc-100 to-white">
             <div className="px-4 py-2 font-semibold border-b border-zinc-200 flex justify-between items-center">
               <div>Summary</div>
-              <div>ID: {input.sessionId}</div>
+              <div>
+                ID:{" "}
+                <Link
+                  to="/sessions/$sessionId"
+                  params={{ sessionId: input.sessionId }}
+                  className="hover:underline"
+                >
+                  {input.sessionId}
+                </Link>
+              </div>
             </div>
             <div className="p-4">
               <Markdown>{summary}</Markdown>

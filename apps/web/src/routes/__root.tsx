@@ -35,6 +35,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       ],
     }),
     shellComponent: RootDocument,
+    errorComponent: ({ error }) => (
+      <div>
+        <h1>App Error</h1>
+        <pre>{error.message}</pre>
+      </div>
+    ),
     notFoundComponent: () => <div>404 - Not Found</div>,
     pendingComponent: () => (
       <div className="flex h-screen items-center justify-center">
