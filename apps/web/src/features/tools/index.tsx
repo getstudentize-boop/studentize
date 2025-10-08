@@ -1,9 +1,7 @@
 import { Dialog } from "@/components/dialog";
 import {
-  SubtitlesIcon,
   ArrowRightIcon,
   ArrowLeftIcon,
-  Icon,
   ScrewdriverIcon,
 } from "@phosphor-icons/react";
 import { ReactNode } from "react";
@@ -11,6 +9,7 @@ import { StudentBioTool } from "./student-bio";
 import { SearchTranscriptionsTool } from "./search-transcriptions";
 import { SessionSummaryTool } from "./session-summary";
 import { ListStudentSessionsTool } from "./list-student-sessions";
+import { ReadSessionTranscription } from "./read-session-transcription";
 
 const ToolDialog = ({
   children,
@@ -44,17 +43,6 @@ const ToolDialog = ({
   );
 };
 
-const ToolButton = ({ icon, title }: { icon: Icon; title: string }) => {
-  const Component = icon;
-
-  return (
-    <button className="rounded-md shadow-sm outline outline-bzinc py-1 px-2 inline-flex gap-2 items-center cursor-pointer">
-      <Component />
-      <div>{title}</div>
-    </button>
-  );
-};
-
 export const Tool = ({
   type,
   input,
@@ -73,6 +61,8 @@ export const Tool = ({
       return <SessionSummaryTool output={output} input={input} />;
     case "tool-listStudentSessions":
       return <ListStudentSessionsTool output={output} input={input} />;
+    case "tool-readFullSessionTranscript":
+      return <ReadSessionTranscription output={output} input={input} />;
     default:
       return (
         <ToolDialog input={input} output={output}>
