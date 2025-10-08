@@ -22,6 +22,10 @@ import {
 
 import { getOne, GetOneInputSchema } from "./get-one";
 import { updateSession, UpdateSessionInputSchema } from "./update";
+import {
+  ReadSessionTranscriptionInputSchema,
+  readSessionTranscription,
+} from "./read-transcription";
 
 export const sessionGetOneHandler = privateRoute
   .input(GetOneInputSchema)
@@ -76,5 +80,12 @@ export const sessionUpdateHandler = privateRoute
   .input(UpdateSessionInputSchema)
   .handler(async ({ input }) => {
     const result = await updateSession(input);
+    return result;
+  });
+
+export const sessionReadTranscriptionHandler = privateRoute
+  .input(ReadSessionTranscriptionInputSchema)
+  .handler(async ({ context, input }) => {
+    const result = await readSessionTranscription(context, input);
     return result;
   });
