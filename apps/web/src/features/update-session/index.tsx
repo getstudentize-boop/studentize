@@ -147,7 +147,7 @@ export const UpdateSession = ({ sessionId }: { sessionId: string }) => {
   }, [session?.createdAt]);
 
   return (
-    <>
+    <div className="h-[calc(100vh-100px)] overflow-y-auto custom-scrollbar">
       <div className="flex flex-col gap-4 p-4 text-left">
         <div className="flex flex-col gap-2">
           <div className="font-semibold">Title</div>
@@ -195,6 +195,6 @@ export const UpdateSession = ({ sessionId }: { sessionId: string }) => {
           });
         }}
       />
-    </>
+    </div>
   );
 };

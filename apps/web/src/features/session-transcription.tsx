@@ -12,7 +12,7 @@ export const SessionTranscription = ({ sessionId }: { sessionId: string }) => {
   }
 
   return (
-    <div className="text-left p-4">
+    <div className="text-left p-4 h-[calc(100vh-100px)] overflow-y-auto custom-scrollbar">
       <Markdown>
         {sessionQuery.data?.content || "No transcription available."}
       </Markdown>
