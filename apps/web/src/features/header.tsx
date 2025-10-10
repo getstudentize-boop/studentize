@@ -1,12 +1,15 @@
 import { Tooltip } from "@/components/tooltip";
 import { cn } from "@/utils/cn";
 import {
+  AddressBookTabsIcon,
   BrainIcon,
   ChalkboardTeacherIcon,
   CircleNotchIcon,
   HeadsetIcon,
   SignOutIcon,
   StudentIcon,
+  VideoCameraIcon,
+  VideoConferenceIcon,
 } from "@phosphor-icons/react";
 import { Link, useMatchRoute, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@workos-inc/authkit-react";
@@ -30,29 +33,37 @@ export const Header = ({
   const { signOut } = useAuth();
 
   const isGuru = route({ to: "/guru" });
-  const isSessions = route({ to: "/sessions" });
-  const isStudents = route({ to: "/students" });
-  const isAdvisors = route({ to: "/advisors" });
 
   const icons: any = [
-    { to: "/guru", icon: <BrainIcon className="size-4" />, isActive: isGuru },
+    {
+      to: "/guru",
+      icon: <BrainIcon className="size-4" />,
+      isActive: route({ to: "/guru" }),
+    },
     userType === "ADMIN"
       ? {
           to: "/sessions",
           icon: <HeadsetIcon className="size-4" />,
-          isActive: isSessions,
+          isActive: route({ to: "/sessions" }),
+        }
+      : null,
+    userType === "ADMIN"
+      ? {
+          to: "/schedule",
+          icon: <VideoCameraIcon className="size-4" />,
+          isActive: route({ to: "/schedule" }),
         }
       : null,
     {
       to: "/students",
       icon: <StudentIcon className="size-4" />,
-      isActive: isStudents,
+      isActive: route({ to: "/students" }),
     },
     userType === "ADMIN"
       ? {
           to: "/advisors",
           icon: <ChalkboardTeacherIcon className="size-4" />,
-          isActive: isAdvisors,
+          isActive: route({ to: "/advisors" }),
         }
       : null,
   ].filter(Boolean);
@@ -68,7 +79,7 @@ export const Header = ({
           <img src="/logo.png" alt="Studentize Logo" className="w-6" />
         </div>
 
-        {icons.map(({ to, icon, isActive }) => (
+        {icons.map(({ to, icon, isActive }: any) => (
           <Tooltip
             side="right"
             className="p-1 border-zinc-950 px-2.5 text-sm shadow bg-zinc-800 text-white rounded-xl"
