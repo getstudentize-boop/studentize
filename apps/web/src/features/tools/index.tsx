@@ -11,14 +11,17 @@ import { SessionSummaryTool } from "./session-summary";
 import { ListStudentSessionsTool } from "./list-student-sessions";
 import { ReadSessionTranscription } from "./read-session-transcription";
 
+export type ToolInput = Record<string, any>;
+export type ToolOutput = Record<string, any> | string | number | undefined;
+
 const ToolDialog = ({
   children,
   input,
   output,
 }: {
   children: ReactNode;
-  input: Record<string, any>;
-  output: any;
+  input: ToolInput;
+  output: ToolOutput;
 }) => {
   return (
     <Dialog

@@ -44,7 +44,7 @@ export const StudentBioTool = ({ output = {} }: { output: any }) => {
             <div>
               <div className="font-semibold mb-2">Area's of interest</div>
               <div className="-translate-x-1">
-                {output.areasOfInterest?.map((area: any) => (
+                {output.areasOfInterest?.map?.((area: any) => (
                   <Button
                     key={area}
                     className="inline-block mr-2 mb-2"
@@ -58,7 +58,7 @@ export const StudentBioTool = ({ output = {} }: { output: any }) => {
             <div className="mt-2">
               <div className="font-semibold mb-2">Target Universities</div>
               <div className="-translate-x-1">
-                {output.targetCountries?.map((university: any) => (
+                {output.targetCountries?.map?.((university: any) => (
                   <Button
                     key={university}
                     className="inline-block mr-2 mb-2"

@@ -25,7 +25,7 @@ export const ListStudentSessionsTool = ({
         Session Log History
       </div>
       <div className="p-4">
-        {output?.map((o: any) => {
+        {output?.map?.((o: any) => {
           const [date, title, sessionId] = o.split(";");
 
           return (

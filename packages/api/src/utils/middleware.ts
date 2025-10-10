@@ -1,4 +1,4 @@
-import { ORPCError, os } from "@orpc/server";
+import { onError, ORPCError, os } from "@orpc/server";
 import { findOrCreateUser } from "@student/db";
 
 export type Context = {
@@ -26,8 +26,12 @@ export const defaultMiddleware = os.middleware(
 
 export const serverRoute = os
   .$context<Context>()
-  // @ts-ignore
-  .use(os.middleware(defaultMiddleware));
+  .use(defaultMiddleware)
+  .use(
+    onError((err) => {
+      console.error("Error in route:", err);
+    })
+  );
 
 export const privateRoute = serverRoute.use(
   os.middleware(({ context, next, path }) => {

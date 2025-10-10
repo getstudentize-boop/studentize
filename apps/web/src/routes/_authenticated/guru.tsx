@@ -151,7 +151,7 @@ function App() {
   );
 
   const chat = useChat({
-    id: !userId ? "select" : (chatId ?? "new"),
+    id: !userId ? "select" : (chatId ?? "new") + userId,
     onFinish: async () => {
       if (isNewChat) {
         await queryClient.invalidateQueries({
