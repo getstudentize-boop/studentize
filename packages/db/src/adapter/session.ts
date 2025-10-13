@@ -1,6 +1,14 @@
 import * as schema from "../schema";
 
-import { InferInsertModel, InferSelectModel, db, desc, eq } from "..";
+import {
+  InferInsertModel,
+  InferSelectModel,
+  and,
+  db,
+  desc,
+  eq,
+  isNull,
+} from "..";
 import { alias } from "drizzle-orm/pg-core";
 
 type SessionInsert = InferInsertModel<typeof schema.session>;
@@ -40,7 +48,7 @@ export const getSessions = async (data: { studentUserId?: string } = {}) => {
   const advisorUser = alias(schema.user, "advisor_user");
   const studentUser = alias(schema.user, "student_user");
 
-  const query = db
+  const sessions = await db
     .select({
       id: schema.session.id,
       title: schema.session.title,
@@ -55,11 +63,15 @@ export const getSessions = async (data: { studentUserId?: string } = {}) => {
     .from(schema.session)
     .innerJoin(studentUser, eq(schema.session.studentUserId, studentUser.id))
     .innerJoin(advisorUser, eq(schema.session.advisorUserId, advisorUser.id))
-    .orderBy(desc(schema.session.createdAt));
-
-  const sessions = data.studentUserId
-    ? await query.where(eq(schema.session.studentUserId, data.studentUserId))
-    : await query;
+    .orderBy(desc(schema.session.createdAt))
+    .where(
+      and(
+        isNull(schema.session.deletedAt),
+        ...(data.studentUserId
+          ? [eq(schema.session.studentUserId, data.studentUserId)]
+          : [])
+      )
+    );
 
   return sessions;
 };
@@ -111,5 +123,12 @@ export const updateSessionById = async (
   return db
     .update(schema.session)
     .set(input)
+    .where(eq(schema.session.id, input.sessionId));
+};
+
+export const deleteSessionById = async (input: { sessionId: string }) => {
+  return db
+    .update(schema.session)
+    .set({ deletedAt: new Date() })
     .where(eq(schema.session.id, input.sessionId));
 };

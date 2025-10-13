@@ -1,4 +1,4 @@
-import { pgTable, text } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 import { createdAt, id } from "./utils";
 
@@ -9,4 +9,5 @@ export const session = pgTable("session", {
   advisorUserId: text("advisor_user_id").notNull(),
   title: text("title").notNull(),
   summary: text("summary").default(""),
+  deletedAt: timestamp("deleted_at"),
 });

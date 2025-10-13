@@ -27,6 +27,15 @@ import {
   readSessionTranscription,
 } from "./read-transcription";
 
+import { deleteSession, DeleteSessionInputSchema } from "./delete";
+
+export const sessionDeleteHandler = privateRoute
+  .input(DeleteSessionInputSchema)
+  .handler(async ({ context, input }) => {
+    const result = await deleteSession(context, input);
+    return result;
+  });
+
 export const sessionGetOneHandler = privateRoute
   .input(GetOneInputSchema)
   .handler(async ({ input }) => {
