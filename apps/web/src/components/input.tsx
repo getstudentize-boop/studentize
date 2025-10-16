@@ -2,17 +2,19 @@ import { cn } from "@/utils/cn";
 import { ComponentProps } from "react";
 
 type InputProps = ComponentProps<"input"> & {
-  label: string;
+  label?: string;
   error?: string;
 };
 
 export const Input = ({ label, error, ...props }: InputProps) => {
   return (
     <div>
-      <label className="mb-2 mx-1 flex justify-between">
-        {label}
-        {error ? <span className="text-rose-700"> [{error}]</span> : null}
-      </label>
+      {label ? (
+        <label className="mb-2 mx-1 flex justify-between">
+          {label}
+          {error ? <span className="text-rose-700"> [{error}]</span> : null}
+        </label>
+      ) : null}
       <input
         type="text"
         {...props}

@@ -11,3 +11,15 @@ export const session = pgTable("session", {
   summary: text("summary").default(""),
   deletedAt: timestamp("deleted_at"),
 });
+
+export const scheduledSession = pgTable("scheduled_session", {
+  id,
+  createdAt,
+  doneAt: timestamp("done_at"),
+  deletedAt: timestamp("deleted_at"),
+  scheduledAt: timestamp("scheduled_at").notNull(),
+  advisorUserId: text("advisor_user_id").notNull(),
+  studentUserId: text("student_user_id").notNull(),
+  meetingLink: text("meeting_link").notNull(),
+  title: text("title").notNull(),
+});

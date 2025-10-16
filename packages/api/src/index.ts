@@ -32,6 +32,7 @@ import {
   userCurrentHandler,
   userGetOneHandler,
 } from "./routes/user";
+import { scheduledSession } from "./routes/scheduled-session";
 
 export const router = {
   session: {
@@ -46,6 +47,7 @@ export const router = {
     readTranscription: sessionReadTranscriptionHandler,
     delete: sessionDeleteHandler,
   },
+  scheduledSession,
   student,
   advisor: {
     create: advisorCreateHandler,

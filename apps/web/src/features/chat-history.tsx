@@ -44,53 +44,56 @@ export const ChatHistory = () => {
         </div>
       ) : null}
 
-      {chats.map((c, idx) => {
-        const prevChat = chats[idx - 1];
-        const isDifferentDay = prevChat
-          ? !isSameDay(
-              c.createdAt ?? new Date(),
-              prevChat.createdAt ?? new Date()
-            )
-          : true; // First chat is always a different "day"
+      <div className="h-[calc(100vh-5rem)] overflow-y-auto no-scrollbar pr-1">
+        {chats.map((c, idx) => {
+          const prevChat = chats[idx - 1];
+          const isDifferentDay = prevChat
+            ? !isSameDay(
+                c.createdAt ?? new Date(),
+                prevChat.createdAt ?? new Date()
+              )
+            : true; // First chat is always a different "day"
 
-        const isTitle = isDifferentDay;
+          const isTitle = isDifferentDay;
 
-        const now = new Date();
-        const yesterday = subDays(now, 1);
-        const chatDate = c.createdAt ?? new Date();
+          const now = new Date();
+          const yesterday = subDays(now, 1);
+          const chatDate = c.createdAt ?? new Date();
 
-        const title = isTitle
-          ? isSameDay(chatDate, now)
-            ? "Today"
-            : isSameDay(chatDate, yesterday)
-              ? "Yesterday"
-              : format(chatDate, "E dd MMM")
-          : undefined;
+          const title = isTitle
+            ? isSameDay(chatDate, now)
+              ? "Today"
+              : isSameDay(chatDate, yesterday)
+                ? "Yesterday"
+                : format(chatDate, "E dd MMM")
+            : undefined;
 
-        return (
-          <>
-            {title ? (
-              <div
-                className={cn("text-zinc-400 mb-2.5", {
-                  "mt-2": title !== "Today",
+          return (
+            <>
+              {title ? (
+                <div
+                  className={cn("text-zinc-400 mb-2.5", {
+                    "mt-2": title !== "Today",
+                  })}
+                >
+                  {title}
+                </div>
+              ) : null}
+              <Link
+                to="/guru"
+                search={{ chatId: c.id, userId: c.studentUserId }}
+                className={cn("mb-2.5", {
+                  "font-semibold text-cyan-600 transition-transform":
+                    c.id === searchParams.chatId,
                 })}
               >
-                {title}
-              </div>
-            ) : null}
-            <Link
-              to="/guru"
-              search={{ chatId: c.id, userId: c.studentUserId }}
-              className={cn("truncate mb-2.5", {
-                "font-semibold text-cyan-600 transition-transform":
-                  c.id === searchParams.chatId,
-              })}
-            >
-              {c.title}
-            </Link>
-          </>
-        );
-      })}
+                <div className="w-52 truncate">{c.title}</div>
+              </Link>
+              <div className="mb-2.5" />
+            </>
+          );
+        })}
+      </div>
     </div>
   );
 };

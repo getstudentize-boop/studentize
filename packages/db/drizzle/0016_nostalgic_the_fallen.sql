@@ -1,0 +1,1 @@
+ALTER TABLE "scheduled_session" ADD COLUMN "title" text NOT NULL;

@@ -9,6 +9,26 @@ export type AuthContext = {
   user: NonNullable<Context["user"]>;
 };
 
+import { z } from "zod";
+
+type Input = z.ZodType | Record<string, any>;
+
+export const createRouteHelper = <I extends Input, O extends any = unknown>({
+  execute,
+  inputSchema,
+}: {
+  inputSchema?: I;
+  execute: (data: {
+    ctx: AuthContext;
+    input: I extends z.ZodType ? z.infer<I> : I;
+  }) => Promise<O> | O;
+}) => {
+  return (data: {
+    input: I extends z.ZodType ? z.infer<I> : I;
+    context: AuthContext;
+  }) => execute({ ctx: data.context, input: data.input });
+};
+
 export const defaultMiddleware = os.middleware(
   async ({ next, context, path }) => {
     const { user } = context as any;

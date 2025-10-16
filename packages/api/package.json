@@ -19,6 +19,8 @@
     "@ai-sdk/openai": "^2.0.19",
     "@aws-sdk/client-s3": "^3.882.0",
     "@aws-sdk/s3-request-presigner": "^3.882.0",
+    "@google-apps/meet": "^0.7.1",
+    "@google-cloud/local-auth": "2.1.0",
     "@orpc/server": "1.8.1",
     "@student/ai": "workspace:*",
     "@student/db": "workspace:*",
@@ -27,6 +29,9 @@
     "jose": "^6.1.0",
     "wrangler": "^4.32.0",
     "zod": "^4.0.10"
+  },
+  "imports": {
+    "@/*": "./src/*"
   },
   "exports": {
     ".": "./src/index.ts"
