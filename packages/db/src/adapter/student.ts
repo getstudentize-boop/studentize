@@ -40,7 +40,6 @@ export const getStudentByUserId = async (userId: string) => {
   const [student] = await db
     .select({
       ...getTableColumns(schema.student),
-      email: schema.user.email,
       name: schema.user.name,
     })
     .from(schema.student)
@@ -86,7 +85,6 @@ export const getAdvisorStudentList = async (input: {
   const students = await db
     .select({
       userId: schema.user.id,
-      email: schema.user.email,
       name: schema.user.name,
       studyCurriculum: schema.student.studyCurriculum,
       targetCountries: schema.student.targetCountries,

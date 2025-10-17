@@ -25,6 +25,7 @@ export const UserSearch = ({
   side,
   className,
   isLoading,
+  isTriggerDisabled,
 }: {
   placeholder: string;
   onSelect?: (user: User) => void;
@@ -36,10 +37,11 @@ export const UserSearch = ({
   trigger?: (user: User | undefined) => React.ReactNode;
   className?: string;
   isLoading?: boolean;
+  isTriggerDisabled?: boolean;
 }) => {
   return (
     <DropdownRoot>
-      <DropdownTrigger disabled={!onSelect} asChild>
+      <DropdownTrigger disabled={!onSelect || isTriggerDisabled} asChild>
         {trigger ? (
           trigger(user)
         ) : (

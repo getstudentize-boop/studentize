@@ -204,7 +204,7 @@ function RouteComponent() {
 
         <div className="flex gap-4 items-center">
           <StudentSettingsDialog
-            email={student?.email ?? ""}
+            email=""
             location={student?.location ?? ""}
             userId={params.userId}
             isOpen={isUserSettingsOpen}
@@ -235,10 +235,6 @@ function RouteComponent() {
           <div className="flex-1">
             <div className="font-semibold">{student?.name}</div>
             <div className="flex mt-2 gap-8">
-              <div>
-                <div>Email</div>
-                <div className="font-semibold">{student?.email}</div>
-              </div>
               <div>
                 <div>Location</div>
                 <div className="font-semibold">

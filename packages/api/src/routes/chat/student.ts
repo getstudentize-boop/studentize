@@ -168,7 +168,6 @@ const createStudentInfoTool = (input: { studentUserId: string }) => {
 
       return {
         name: student.name,
-        email: student.email,
         studyCurriculum: student.studyCurriculum,
         expectedGraduationYear: student.expectedGraduationYear,
         targetCountries: student.targetCountries,

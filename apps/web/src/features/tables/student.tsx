@@ -29,10 +29,6 @@ const columns = [
     header: "Students",
     cell: (info) => <StudentCell name={info.getValue() ?? "n/a"} />,
   }),
-  columnHelper.accessor("email", {
-    header: "Email",
-    cell: (info) => info.getValue() ?? "n/a",
-  }),
   columnHelper.accessor("studyCurriculum", {
     header: "Curriculum",
     cell: (info) => {

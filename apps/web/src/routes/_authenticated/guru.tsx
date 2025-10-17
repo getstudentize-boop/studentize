@@ -5,13 +5,7 @@ import {
   CaretDownIcon,
   SparkleIcon,
   CaretCircleRightIcon,
-  MagnifyingGlassIcon,
-  PlusIcon,
   ExportIcon,
-  FileMagnifyingGlassIcon,
-  UserIcon,
-  UserSquareIcon,
-  SubtitlesIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
 import { UserSearch } from "@/features/user-search";
@@ -193,6 +187,8 @@ function App() {
     chat.messages.length === 0 &&
     (chatMessagesMutation.isPending || chatMessagesMutation.isError);
 
+  const isUserSelectionDisabled = chat.messages.length > 0;
+
   useEffect(() => {
     if (!isNewChat && chatId) {
       chatMessagesMutation.mutate({ chatId });
@@ -307,6 +303,7 @@ function App() {
                         data={searchedStudents}
                         onSearch={field.handleChange}
                         isLoading={searchStudentMutation.isPending}
+                        isTriggerDisabled={isUserSelectionDisabled}
                         onSelect={(user) => {
                           queryClient.setQueryData(
                             orpc.user.display.queryKey({
@@ -334,7 +331,9 @@ function App() {
                         trigger={(user) => (
                           <Button variant="neutral" className="rounded-lg">
                             {user ? user.name : "Select a student"}
-                            <CaretDownIcon weight="bold" />
+                            {isUserSelectionDisabled ? null : (
+                              <CaretDownIcon weight="bold" />
+                            )}
                           </Button>
                         )}
                       />
