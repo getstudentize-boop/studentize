@@ -35,6 +35,7 @@ export const getScheduledSessionList = async () => {
       studentUserId: true,
       scheduledAt: true,
       meetingLink: true,
+      title: true,
       id: true,
     },
   });

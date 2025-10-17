@@ -9,12 +9,11 @@ import {
   SignOutIcon,
   StudentIcon,
   VideoCameraIcon,
-  VideoConferenceIcon,
 } from "@phosphor-icons/react";
 import { Link, useMatchRoute, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@workos-inc/authkit-react";
 import { RouterOutputs } from "orpc/client";
-import { ReactNode, useState } from "react";
+import { ReactNode, useTransition } from "react";
 
 type UserType = RouterOutputs["user"]["current"]["type"];
 
@@ -25,7 +24,7 @@ export const Header = ({
   children: ReactNode;
   userType: UserType;
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, startTransition] = useTransition();
 
   const route = useMatchRoute();
   const navigate = useNavigate();
@@ -106,15 +105,10 @@ export const Header = ({
 
         <button
           onClick={async () => {
-            try {
-              setIsLoading(true);
+            startTransition(async () => {
               await signOut({ navigate: false });
               navigate({ to: "/" });
-            } catch (e) {
-              console.log(e);
-            } finally {
-              setIsLoading(false);
-            }
+            });
           }}
           className="rounded-md bg-zinc-100 p-2 shadow-sm outline outline-bzinc/80 mt-auto"
           disabled={isLoading}

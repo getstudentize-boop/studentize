@@ -6,7 +6,7 @@ import {
   ClockIcon,
   VideoCameraIcon,
 } from "@phosphor-icons/react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { orpc } from "orpc/client";
 import { useEffect, useState } from "react";
@@ -45,12 +45,25 @@ function RouteComponent() {
   const [selectedStudent, setSelectedStudent] = useState<StudentOrAdvisor>();
   const [scheduledAt, setScheduledAt] = useState<string>();
 
+  const [isLinkRequired, setIsLinkRequired] = useState(false);
+  const [meetingLink, setMeetingLink] = useState<string>("");
+
+  const utils = useQueryClient();
+  const sessionListQuery = useQuery(orpc.scheduledSession.list.queryOptions());
+
+  const sessionList = sessionListQuery.data ?? [];
+
   const createSessionMutation = useMutation(
     orpc.scheduledSession.create.mutationOptions({
       onSuccess: async () => {
         setSelectedAdvisor(undefined);
         setSelectedStudent(undefined);
         setScheduledAt(undefined);
+        setIsLinkRequired(false);
+
+        return utils.invalidateQueries({
+          queryKey: orpc.scheduledSession.list.queryKey(),
+        });
       },
     })
   );
@@ -66,15 +79,25 @@ function RouteComponent() {
   const availableStudents = searchStudentsMutation.data ?? [];
   const availableAdvisors = searchAdvisorsMutation.data ?? [];
 
-  const handleCreateSession = () => {
+  const handleCreateSession = async () => {
     if (!selectedAdvisor || !selectedStudent || !scheduledAt) {
       return;
     }
 
-    createSessionMutation.mutateAsync({
+    if (!isLinkRequired) {
+      setIsLinkRequired(true);
+      return;
+    }
+
+    if (!meetingLink) {
+      return;
+    }
+
+    createSessionMutation.mutate({
       advisorUserId: selectedAdvisor.userId,
       studentUserId: selectedStudent.userId,
       scheduledAt: new Date(scheduledAt).toISOString(),
+      meetingLink,
     });
   };
 
@@ -83,47 +106,60 @@ function RouteComponent() {
     searchAdvisorsMutation.mutate({ query: "" });
   }, []);
 
+  const Settings = () => (
+    <div className="p-4 flex gap-4 text-left">
+      <div className="flex-1">
+        <div className="font-semibold mx-0.5 mb-1">Advisor</div>
+        <UserSearch
+          data={availableAdvisors}
+          placeholder="Advisor"
+          onSelect={setSelectedAdvisor}
+          user={selectedAdvisor}
+          onSearch={(query) => searchAdvisorsMutation.mutateAsync({ query })}
+        />
+      </div>
+      <div className="flex-1">
+        <div className="font-semibold mx-0.5 mb-1">Students</div>
+        <UserSearch
+          data={availableStudents}
+          placeholder="Student"
+          onSelect={setSelectedStudent}
+          user={selectedStudent}
+          onSearch={(query) => searchStudentsMutation.mutateAsync({ query })}
+        />
+      </div>
+      <div className="flex-1">
+        <div className="font-semibold mx-0.5 mb-1">Session Start Time</div>
+        <Input
+          type="datetime-local"
+          onChange={(ev) => setScheduledAt(ev.target.value)}
+          value={scheduledAt}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <div className="flex flex-1 flex-col items-center justify-center">
       <div className="max-w-2xl w-full overflow-hidden bg-white rounded-xl shadow-xs outline outline-bzinc">
-        <div className="p-4 flex gap-4 text-left">
-          <div className="flex-1">
-            <div className="font-semibold mx-0.5 mb-1">Advisor</div>
-            <UserSearch
-              data={availableAdvisors}
-              placeholder="Advisor"
-              onSelect={setSelectedAdvisor}
-              user={selectedAdvisor}
-              onSearch={async (query) => {
-                return searchAdvisorsMutation.mutateAsync({ query });
-              }}
-            />
-          </div>
-          <div className="flex-1">
-            <div className="font-semibold mx-0.5 mb-1">Students</div>
-            <UserSearch
-              data={availableStudents}
-              placeholder="Student"
-              onSelect={setSelectedStudent}
-              user={selectedStudent}
-              onSearch={(query) => {
-                return searchStudentsMutation.mutateAsync({ query });
-              }}
-            />
-          </div>
-          <div className="flex-1">
-            <div className="font-semibold mx-0.5 mb-1">Session Start Time</div>
+        {!isLinkRequired ? <Settings /> : null}
+
+        {isLinkRequired ? (
+          <div className="p-4 text-left">
             <Input
-              type="datetime-local"
-              onChange={(ev) => setScheduledAt(ev.target.value)}
-              value={scheduledAt}
+              placeholder="https://meet.google.com/qbt-kaqz-nho"
+              label="Paste meeting link"
+              className="w-full"
+              value={meetingLink}
+              onChange={(ev) => setMeetingLink(ev.target.value)}
             />
           </div>
-        </div>
+        ) : null}
+
         <div className="p-8 border-t border-bzinc bg-zinc-100 flex items-center justify-center">
           <Button
             className="rounded-md"
-            variant="primary"
+            variant={isLinkRequired ? "primary" : "secondary"}
             isLoading={createSessionMutation.isPending}
             onClick={handleCreateSession}
           >
@@ -133,9 +169,9 @@ function RouteComponent() {
         </div>
       </div>
       <div className="mt-4 max-w-2xl w-full grid-cols-2 grid gap-4 text-left">
-        <Schedule title="Khaya x Andrew" />
-        <Schedule title="Khaya x Test User" />
-        <Schedule title="Khaya x New User" />
+        {sessionList.map((session) => (
+          <Schedule key={session.id} title={session.title} />
+        ))}
       </div>
     </div>
   );
