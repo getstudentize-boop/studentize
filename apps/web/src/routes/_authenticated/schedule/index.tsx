@@ -4,36 +4,76 @@ import { UserSearch } from "@/features/user-search";
 import {
   CalendarBlankIcon,
   ClockIcon,
+  RobotIcon,
   VideoCameraIcon,
 } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { orpc } from "orpc/client";
+import { orpc, RouterOutputs } from "orpc/client";
 import { useEffect, useState } from "react";
+
+import { format as _format } from "date-fns";
+import { fromZonedTime } from "date-fns-tz";
 
 export const Route = createFileRoute("/_authenticated/schedule/")({
   component: RouteComponent,
 });
 
-const Schedule = ({ title }: { title: string }) => {
-  return (
-    <div className="rounded-lg bg-white outline outline-bzinc p-4">
-      <div className="font-semibold text-lg px-2">{title}</div>
+const Schedule = ({
+  session,
+}: {
+  session: RouterOutputs["scheduledSession"]["list"][number];
+}) => {
+  const utils = useQueryClient();
 
-      <div className="mt-4 mb-6 space-y-2 px-2">
-        <div className="flex gap-2 items-center">
-          <CalendarBlankIcon className="size-4 text-zinc-500" />
-          <div>Tuesday, June 18, 2024</div>
+  return (
+    <div className="rounded-lg bg-white outline outline-bzinc">
+      <div className="p-4">
+        <div className="font-semibold text-lg px-2 truncate">
+          {session.title}
         </div>
-        <div className="flex gap-2 items-center">
-          <ClockIcon className="size-4 text-zinc-500" />
-          <div>4:00 PM - 5:00 PM</div>
+
+        <div className="mt-4 space-y-2 px-2">
+          <div className="flex gap-2 items-center">
+            <CalendarBlankIcon className="size-4 text-zinc-500" />
+            <div>
+              {_format(new Date(session.scheduledAt), "eeee MMMM d, yyyy")}
+            </div>
+          </div>
+          <div className="flex gap-2 items-center">
+            <ClockIcon className="size-4 text-zinc-500" />
+            <div>{_format(new Date(session.scheduledAt), "h:mm a")}</div>
+          </div>
         </div>
       </div>
 
-      <Button variant="neutral" className="rounded-md w-full">
-        Join Session
-      </Button>
+      <div className="flex gap-2 items-center p-4 border-t border-bzinc">
+        <button
+          className="p-2 rounded-md border border-bzinc bg-zinc-50 transition-colors"
+          onClick={() => {
+            utils.invalidateQueries({
+              queryKey: orpc.scheduledSession.list.queryKey(),
+            });
+          }}
+        >
+          <RobotIcon
+            size={18}
+            className={session.botId ? "text-indigo-600" : ""}
+          />
+        </button>
+        <Button
+          variant="neutral"
+          className="rounded-md w-full"
+          onClick={() => {
+            window.open(
+              `https://meet.google.com/${session.meetingCode}`,
+              "_blank"
+            );
+          }}
+        >
+          Join Meeting
+        </Button>
+      </div>
     </div>
   );
 };
@@ -46,7 +86,7 @@ function RouteComponent() {
   const [scheduledAt, setScheduledAt] = useState<string>();
 
   const [isLinkRequired, setIsLinkRequired] = useState(false);
-  const [meetingLink, setMeetingLink] = useState<string>("");
+  const [meetingCode, setmeetingCode] = useState<string>("");
 
   const utils = useQueryClient();
   const sessionListQuery = useQuery(orpc.scheduledSession.list.queryOptions());
@@ -56,14 +96,14 @@ function RouteComponent() {
   const createSessionMutation = useMutation(
     orpc.scheduledSession.create.mutationOptions({
       onSuccess: async () => {
+        await utils.invalidateQueries({
+          queryKey: orpc.scheduledSession.list.queryKey(),
+        });
+
         setSelectedAdvisor(undefined);
         setSelectedStudent(undefined);
         setScheduledAt(undefined);
         setIsLinkRequired(false);
-
-        return utils.invalidateQueries({
-          queryKey: orpc.scheduledSession.list.queryKey(),
-        });
       },
     })
   );
@@ -89,15 +129,17 @@ function RouteComponent() {
       return;
     }
 
-    if (!meetingLink) {
+    if (!meetingCode) {
       return;
     }
+
+    const ukTime = fromZonedTime(scheduledAt, "Europe/London");
 
     createSessionMutation.mutate({
       advisorUserId: selectedAdvisor.userId,
       studentUserId: selectedStudent.userId,
-      scheduledAt: new Date(scheduledAt).toISOString(),
-      meetingLink,
+      scheduledAt: ukTime.toISOString(),
+      meetingCode,
     });
   };
 
@@ -129,7 +171,7 @@ function RouteComponent() {
         />
       </div>
       <div className="flex-1">
-        <div className="font-semibold mx-0.5 mb-1">Session Start Time</div>
+        <div className="font-semibold mx-0.5 mb-1">Session Date/Time (UK)</div>
         <Input
           type="datetime-local"
           onChange={(ev) => setScheduledAt(ev.target.value)}
@@ -150,8 +192,8 @@ function RouteComponent() {
               placeholder="https://meet.google.com/qbt-kaqz-nho"
               label="Paste meeting link"
               className="w-full"
-              value={meetingLink}
-              onChange={(ev) => setMeetingLink(ev.target.value)}
+              value={meetingCode}
+              onChange={(ev) => setmeetingCode(ev.target.value)}
             />
           </div>
         ) : null}
@@ -170,7 +212,7 @@ function RouteComponent() {
       </div>
       <div className="mt-4 max-w-2xl w-full grid-cols-2 grid gap-4 text-left">
         {sessionList.map((session) => (
-          <Schedule key={session.id} title={session.title} />
+          <Schedule key={session.id} session={session} />
         ))}
       </div>
     </div>

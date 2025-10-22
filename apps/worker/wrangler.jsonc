@@ -9,6 +9,11 @@
       "binding": "SUMMARIZE_SESSION_WORKFLOW",
       "class_name": "SummarizeSessionWorkflow",
     },
+    {
+      "name": "auto-join-session",
+      "binding": "AUTO_JOIN_SESSION_WORKFLOW",
+      "class_name": "AutoJoinSessionWorkflow",
+    },
   ],
   "compatibility_flags": ["nodejs_compat"],
   // "vars": {

@@ -7,8 +7,8 @@
   "license": "ISC",
   "description": "",
   "scripts": {
-    "generate": "drizzle-kit generate",
-    "migrate:dev": "drizzle-kit migrate"
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.8",

@@ -33,8 +33,10 @@ import {
   userGetOneHandler,
 } from "./routes/user";
 import { scheduledSession } from "./routes/scheduled-session";
+import { admin } from "./routes/admin";
 
 export const router = {
+  admin,
   session: {
     list: sessionListHandler,
     create: sessionCreateHandler,

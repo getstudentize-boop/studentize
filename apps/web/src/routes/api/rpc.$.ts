@@ -9,11 +9,14 @@ async function handle({ request }: { request: Request }) {
   const [_, accessToken] =
     request.headers.get("Authorization")?.split(" ") ?? [];
 
-  const authResponse = await getUserAuth(accessToken);
+  const authResponse =
+    accessToken === process.env.ADMIN_TOKEN
+      ? null
+      : await getUserAuth(accessToken);
 
   const { response } = await handler.handle(request, {
     prefix: "/api/rpc",
-    context: { user: authResponse as any },
+    context: { user: authResponse as any, accessToken: accessToken },
   });
 
   return response ?? new Response("Not Found", { status: 404 });

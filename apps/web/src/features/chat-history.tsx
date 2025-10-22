@@ -35,6 +35,15 @@ export const ChatHistory = () => {
 
       <hr className="border-bzinc border-b border-t-0 mb-4" />
 
+      {/* <div className="flex mb-2 gap-2">
+        <button className="border bg-zinc-50 border-zinc-200 rounded-full px-2.5 py-1 text-xs">
+          By Created At
+        </button>
+        <button className="border bg-zinc-50 border-zinc-200 rounded-full px-2.5 py-1 text-xs">
+          By Student
+        </button>
+      </div> */}
+
       {chatsQuery.isLoading ? (
         <div>
           <div className="h-5 bg-zinc-200 animate-pulse rounded-sm w-14 mb-4" />

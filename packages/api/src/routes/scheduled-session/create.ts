@@ -1,3 +1,4 @@
+import { WorkerService } from "../../services/worker";
 import { createRouteHelper } from "../../utils/middleware";
 import { ORPCError } from "@orpc/server";
 import { createScheduleSession, getUserById } from "@student/db";
@@ -12,7 +13,7 @@ export const CreateScheduleSessionInputSchema = z.object({
     .transform((date) => new Date(date)),
   advisorUserId: z.string(),
   studentUserId: z.string(),
-  meetingLink: z.string(),
+  meetingCode: z.string(),
 });
 
 export const createScheduleSessionRoute = createRouteHelper({
@@ -31,14 +32,29 @@ export const createScheduleSessionRoute = createRouteHelper({
       throw new ORPCError("BAD_REQUEST", { message: "User not found" });
     }
 
+    const workerService = new WorkerService();
+
     const title = `${advisor.name} x ${student.name}`;
+
+    // get code from the link if a link is provided
+    const meetingCode = input.meetingCode.startsWith("http")
+      ? input.meetingCode.split("/").pop()
+      : input.meetingCode;
+
+    if (!meetingCode) {
+      throw new ORPCError("BAD_REQUEST", { message: "Invalid meeting code" });
+    }
 
     const data = await createScheduleSession({
       scheduledAt: input.scheduledAt,
       advisorUserId: input.advisorUserId,
       studentUserId: input.studentUserId,
-      meetingLink: input.meetingLink,
+      meetingCode,
       title,
+    });
+
+    await workerService.triggerAutoJoinMeeting({
+      scheduledSessionId: data.scheduledSessionId,
     });
 
     return data;

@@ -20,6 +20,7 @@ export const scheduledSession = pgTable("scheduled_session", {
   scheduledAt: timestamp("scheduled_at").notNull(),
   advisorUserId: text("advisor_user_id").notNull(),
   studentUserId: text("student_user_id").notNull(),
-  meetingLink: text("meeting_link").notNull(),
+  meetingCode: text("meeting_code").notNull(),
+  botId: text("bot_id"),
   title: text("title").notNull(),
 });

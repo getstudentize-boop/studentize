@@ -57,3 +57,16 @@ export const readFile = async (input: { bucket: Bucket; key: string }) => {
   const { Body } = await S3.send(command);
   return Body?.transformToString();
 };
+
+export const uploadTextFile = async (input: {
+  uploadUrl: string;
+  content: string;
+}) => {
+  const blob = new Blob([input.content], { type: "text/plain" });
+  const file = new File([blob], "transcription.txt", { type: "text/plain" });
+
+  await fetch(input.uploadUrl, {
+    method: "PUT",
+    body: file,
+  });
+};

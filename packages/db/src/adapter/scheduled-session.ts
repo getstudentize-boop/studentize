@@ -1,16 +1,16 @@
-import { db, schema } from "..";
+import { db, eq, schema } from "..";
 
 export const createScheduleSession = async ({
   scheduledAt,
   advisorUserId,
   studentUserId,
-  meetingLink,
+  meetingCode,
   title,
 }: {
   scheduledAt: Date;
   advisorUserId: string;
   studentUserId: string;
-  meetingLink: string;
+  meetingCode: string;
   title: string;
 }) => {
   const [session] = await db
@@ -19,7 +19,7 @@ export const createScheduleSession = async ({
       scheduledAt,
       advisorUserId,
       studentUserId,
-      meetingLink,
+      meetingCode,
       title,
     })
     .returning({ id: schema.scheduledSession.id });
@@ -34,9 +34,74 @@ export const getScheduledSessionList = async () => {
       advisorUserId: true,
       studentUserId: true,
       scheduledAt: true,
-      meetingLink: true,
+      meetingCode: true,
+      title: true,
+      id: true,
+      botId: true,
+    },
+  });
+};
+
+export const getScheduledSessionById = async (input: {
+  scheduledSessionId: string;
+}) => {
+  return db.query.scheduledSession.findFirst({
+    where: (session, { eq }) => eq(session.id, input.scheduledSessionId),
+    columns: {
+      advisorUserId: true,
+      studentUserId: true,
+      scheduledAt: true,
+      meetingCode: true,
       title: true,
       id: true,
     },
   });
+};
+
+export const getScheduledSessionByBotId = async (input: { botId: string }) => {
+  return db.query.scheduledSession.findFirst({
+    where: (scheduledSession, { eq }) =>
+      eq(scheduledSession.botId, input.botId),
+    columns: {
+      advisorUserId: true,
+      studentUserId: true,
+      scheduledAt: true,
+      meetingCode: true,
+      title: true,
+      id: true,
+    },
+  });
+};
+
+export const getScheduledSessionTimeById = async (input: {
+  scheduledSessionId: string;
+}) => {
+  const session = await db.query.scheduledSession.findFirst({
+    where: (session, { eq }) => eq(session.id, input.scheduledSessionId),
+    columns: {
+      scheduledAt: true,
+    },
+  });
+
+  return session;
+};
+
+export const updateScheduledSessionBotId = async (input: {
+  scheduledSessionId: string;
+  botId: string;
+}) => {
+  await db
+    .update(schema.scheduledSession)
+    .set({ botId: input.botId })
+    .where(eq(schema.scheduledSession.id, input.scheduledSessionId));
+};
+
+export const updateScheduledSessionDoneAt = async (input: {
+  scheduledSessionId: string;
+  doneAt: Date;
+}) => {
+  await db
+    .update(schema.scheduledSession)
+    .set({ doneAt: input.doneAt })
+    .where(eq(schema.scheduledSession.id, input.scheduledSessionId));
 };

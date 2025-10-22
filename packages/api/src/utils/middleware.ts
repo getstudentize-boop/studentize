@@ -3,6 +3,7 @@ import { findOrCreateUser } from "@student/db";
 
 export type Context = {
   user?: Awaited<ReturnType<typeof findOrCreateUser>> | null;
+  accessToken?: string;
 };
 
 export type AuthContext = {
@@ -29,40 +30,55 @@ export const createRouteHelper = <I extends Input, O extends any = unknown>({
   }) => execute({ ctx: data.context, input: data.input });
 };
 
-export const defaultMiddleware = os.middleware(
-  async ({ next, context, path }) => {
-    const { user } = context as any;
-    const userEmail = user?.email;
+export const createAdminRouteHelper = <
+  I extends Input,
+  O extends any = unknown,
+>({
+  execute,
+  inputSchema,
+}: {
+  inputSchema?: I;
+  execute: (data: {
+    input: I extends z.ZodType ? z.infer<I> : I;
+  }) => Promise<O> | O;
+}) => {
+  return (data: { input: I extends z.ZodType ? z.infer<I> : I }) =>
+    execute({ input: data.input });
+};
 
-    const u = userEmail ? await findOrCreateUser({ email: userEmail }) : null;
-
-    return await next({
-      context: {
-        user: u,
-      },
-    });
-  }
+export const serverRoute = os.$context<Context>().use(
+  onError((err) => {
+    console.error("Error in route:", err);
+  })
 );
 
-export const serverRoute = os
-  .$context<Context>()
-  .use(defaultMiddleware)
-  .use(
-    onError((err) => {
-      console.error("Error in route:", err);
-    })
-  );
+export const adminRoute = serverRoute.use(
+  os.middleware(({ context, next }) => {
+    const { accessToken } = context as Context;
+
+    const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
+
+    if (accessToken !== ADMIN_TOKEN) {
+      throw new ORPCError("FORBIDDEN", { message: "Admin access required" });
+    }
+
+    return next();
+  })
+);
 
 export const privateRoute = serverRoute.use(
-  os.middleware(({ context, next, path }) => {
-    const data = context as Context;
+  os.middleware(async ({ context, next }) => {
+    const { user } = context as any;
 
-    if (!data.user) {
+    if (!user) {
       throw new ORPCError("UNAUTHORIZED");
     }
 
+    const userEmail = user?.email;
+    const u = userEmail ? await findOrCreateUser({ email: userEmail }) : null;
+
     return next({
-      context: data as AuthContext,
+      context: { user: u } as AuthContext,
     });
   })
 );
