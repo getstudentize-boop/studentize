@@ -16,9 +16,9 @@
     },
   ],
   "compatibility_flags": ["nodejs_compat"],
-  // "vars": {
-  //   "MY_VAR": "my-variable"
-  // },
+  "vars": {
+    "API_URL": "my-variable",
+  },
   // "kv_namespaces": [
   //   {
   //     "binding": "MY_KV_NAMESPACE",
