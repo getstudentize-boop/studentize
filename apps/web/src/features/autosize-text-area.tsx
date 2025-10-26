@@ -26,7 +26,7 @@ export const AutosizeTextArea = ({
       {...props}
       ref={textAreaRef}
       className={cn(
-        "w-full outline-none resize-none min-h-10",
+        "w-full outline-none resize-none min-h-10 max-h-52",
         props.className
       )}
       onChange={handleChange}

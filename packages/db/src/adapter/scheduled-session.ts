@@ -27,7 +27,6 @@ export const createScheduleSession = async ({
   return { scheduledSessionId: session.id };
 };
 
-// todo assume its an admin
 export const getScheduledSessionList = async () => {
   return db.query.scheduledSession.findMany({
     where: isNull(schema.scheduledSession.doneAt),
