@@ -35,9 +35,11 @@ app.post("/session/done", async (c) => {
 
   const payload = await c.req.json();
 
+  const { data } = payload;
+
   await client.admin.saveScheduledSession(
     {
-      botId: payload.botId,
+      botId: data.bot.id,
     },
     { context: { accessToken } }
   );
