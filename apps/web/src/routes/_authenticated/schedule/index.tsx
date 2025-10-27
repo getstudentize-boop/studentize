@@ -71,7 +71,7 @@ const Schedule = ({
             );
           }}
         >
-          Join Meeting ({session.id})
+          Join Meeting
         </Button>
       </div>
     </div>
