@@ -30,6 +30,7 @@ export const advisorChat = pgTable("advisor_chat", {
   createdAt,
   userId: text("user_id").notNull(),
   studentId: text("student_id").notNull(),
+  tools: jsonb("tools").notNull().$type<Tool[]>().default([]),
 });
 
 export const advisorChatMessage = pgTable("advisor_chat_message", {

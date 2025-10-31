@@ -60,8 +60,11 @@ export const getScheduledSessionById = async (input: {
 
 export const getScheduledSessionByBotId = async (input: { botId: string }) => {
   return db.query.scheduledSession.findFirst({
-    where: (scheduledSession, { eq }) =>
-      eq(scheduledSession.botId, input.botId),
+    where: (scheduledSession, { eq, isNull, and }) =>
+      and(
+        eq(scheduledSession.botId, input.botId),
+        isNull(scheduledSession.doneAt)
+      ),
     columns: {
       advisorUserId: true,
       studentUserId: true,

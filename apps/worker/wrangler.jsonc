@@ -17,7 +17,7 @@
   ],
   "compatibility_flags": ["nodejs_compat"],
   "vars": {
-    "API_URL": "my-variable",
+    "API_URL": "https://app.studentize.com/api/rpc",
   },
   // "kv_namespaces": [
   //   {
