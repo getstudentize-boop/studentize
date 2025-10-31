@@ -57,7 +57,7 @@ export const saveScheduledSession = createAdminRouteHelper({
     const newSession = await createSession({
       studentUserId: scheduledSession.studentUserId,
       advisorUserId: scheduledSession.advisorUserId,
-      title: `${scheduledSession.title} (${_format(new Date(), "MMMM do, yyyy")})`,
+      title: `${scheduledSession.title} (${_format(new Date(), "MMM do, yyyy")})`,
     });
 
     const transcriptText = transcriptionData
