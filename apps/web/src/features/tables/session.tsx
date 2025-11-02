@@ -31,6 +31,7 @@ const AdvisorCell = (props: { name: string }) => {
 };
 
 type Session = {
+  sessionId: string;
   student: string;
   title: string;
   createdAt: Date | null;

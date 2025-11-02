@@ -1,4 +1,4 @@
-import { jsonb, pgTable, text, unique } from "drizzle-orm/pg-core";
+import { jsonb, pgTable, text } from "drizzle-orm/pg-core";
 
 import { createdAt, id } from "./utils";
 
@@ -30,7 +30,6 @@ export const advisorChat = pgTable("advisor_chat", {
   createdAt,
   userId: text("user_id").notNull(),
   studentId: text("student_id").notNull(),
-  tools: jsonb("tools").notNull().$type<Tool[]>().default([]),
 });
 
 export const advisorChatMessage = pgTable("advisor_chat_message", {
