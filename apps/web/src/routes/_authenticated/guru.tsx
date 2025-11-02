@@ -190,8 +190,8 @@ function App() {
   const isUserSelectionDisabled = chat.messages.length > 0;
 
   useEffect(() => {
-    if (!isNewChat && chatId) {
-      chatMessagesMutation.mutate({ chatId });
+    if (!isNewChat && searchParams.chatId) {
+      chatMessagesMutation.mutate({ chatId: searchParams.chatId });
     }
 
     if (isNewChat) {
