@@ -42,7 +42,7 @@ export const SearchTranscriptionsTool = ({
 
         <div className="mt-4 space-x-2 space-y-2">
           <div className="font-semibold px-1 mb-2">Sessions used in search</div>
-          {output.sessionIds.map((id: any) => (
+          {output?.sessionIds?.map((id: any) => (
             <div className="inline-block mb-2.5">
               <Link
                 key={id}
