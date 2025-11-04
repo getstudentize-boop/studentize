@@ -104,7 +104,8 @@ const createSearchSessionTranscriptions = (input: {
         filter: {
           type: "and",
           filters: [
-            { type: "eq", key: "folder", value: `${input.studentUserId}/` },
+            // { type: "eq", key: "folder", value: `${input.studentUserId}/` },
+            { type: "eq", key: "prefix", value: `${input.studentUserId}/` },
           ],
         },
       });
