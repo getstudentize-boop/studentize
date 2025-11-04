@@ -1,5 +1,8 @@
 import { Dialog } from "@/components/dialog";
-import { FileMagnifyingGlassIcon } from "@phosphor-icons/react";
+import {
+  ArrowUpRightIcon,
+  FileMagnifyingGlassIcon,
+} from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
 import Markdown from "react-markdown";
 
@@ -25,7 +28,7 @@ export const SearchTranscriptionsTool = ({
         <FileMagnifyingGlassIcon />
         Search through session transcriptions
       </div>
-      <div className="p-4 pt-2">
+      <div className="p-4 pt-2 overflow-y-auto max-h-[70vh] custom-scrollbar">
         <div className="p-2 mb-1">
           <div className="font-semibold mb-1">Query String</div>
           {input.query}
@@ -50,9 +53,11 @@ export const SearchTranscriptionsTool = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 params={{ sessionId: id }}
-                className="px-2 py-0.5 border-zinc-200 border rounded-md"
+                className="px-2 py-1 border-zinc-200 border rounded-md flex gap-2 items-center"
               >
                 {id}
+
+                <ArrowUpRightIcon />
               </Link>
             </div>
           ))}
