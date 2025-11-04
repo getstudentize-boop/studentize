@@ -34,7 +34,7 @@ type Filter = {
 
 export const autoRag = async (
   query: string,
-  options: { ranking_options?: { score_threshold: number }; filter: Filter }
+  options: { ranking_options?: { score_threshold: number }; filters: Filter }
 ) => {
   const res = await fetch(
     `https://api.cloudflare.com/client/v4/accounts/${process.env.R2_ACCOUNT_ID}/autorag/rags/${process.env.AUTORAG_NAME}/ai-search`,

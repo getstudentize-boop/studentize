@@ -101,11 +101,10 @@ const createSearchSessionTranscriptions = (input: {
       console.log("Tool: calling search session transcriptions");
       const response = await autoRag(query, {
         ranking_options: { score_threshold: 0 },
-        filter: {
+        filters: {
           type: "and",
           filters: [
-            // { type: "eq", key: "folder", value: `${input.studentUserId}/` },
-            { type: "eq", key: "prefix", value: `${input.studentUserId}/` },
+            { type: "eq", key: "folder", value: `${input.studentUserId}/` },
           ],
         },
       });
