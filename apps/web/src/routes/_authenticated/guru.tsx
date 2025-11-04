@@ -98,6 +98,7 @@ function App() {
   const navigate = Route.useNavigate();
 
   const submitRef = useRef<HTMLButtonElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
   const [input, setInput] = useState("");
 
   const userId = searchParams.userId;
@@ -200,6 +201,10 @@ function App() {
     }
   }, [chatId, isNewChat]);
 
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chat.messages.length]);
+
   return (
     <>
       <ChatHistory />
@@ -258,6 +263,7 @@ function App() {
               {chat.messages.map((msg) => (
                 <Message key={msg.id} role={msg.role} message={msg} />
               ))}
+              <div className="h-1" ref={bottomRef} />
             </div>
             <form
               className={cn(

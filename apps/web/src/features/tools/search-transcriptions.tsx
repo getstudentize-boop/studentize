@@ -1,5 +1,6 @@
 import { Dialog } from "@/components/dialog";
 import { FileMagnifyingGlassIcon } from "@phosphor-icons/react";
+import { Link } from "@tanstack/react-router";
 import Markdown from "react-markdown";
 
 export const SearchTranscriptionsTool = ({
@@ -9,6 +10,7 @@ export const SearchTranscriptionsTool = ({
   output: any;
   input: any;
 }) => {
+  console.log("SearchTranscriptionsTool output:", output);
   return (
     <Dialog
       trigger={
@@ -36,6 +38,24 @@ export const SearchTranscriptionsTool = ({
           <div className="p-4">
             <Markdown>{output.response}</Markdown>
           </div>
+        </div>
+
+        <div className="mt-4 space-x-2 space-y-2">
+          <div className="font-semibold px-1 mb-2">Sessions used in search</div>
+          {output.sessionIds.map((id: any) => (
+            <div className="inline-block mb-2.5">
+              <Link
+                key={id}
+                to="/sessions/$sessionId"
+                target="_blank"
+                rel="noopener noreferrer"
+                params={{ sessionId: id }}
+                className="px-2 py-0.5 border-zinc-200 border rounded-md"
+              >
+                {id}
+              </Link>
+            </div>
+          ))}
         </div>
       </div>
     </Dialog>
