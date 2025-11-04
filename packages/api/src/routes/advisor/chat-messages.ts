@@ -15,7 +15,7 @@ export const chatMessages = async (
 
   const chat = await getAdvisorChatTitle({
     chatId: input.chatId,
-    userId,
+    userId: ctx.user.type === "ADMIN" ? undefined : userId,
   });
 
   if (!chat) {

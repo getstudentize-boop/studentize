@@ -103,7 +103,9 @@ const createSearchSessionTranscriptions = (input: {
         ranking_options: { score_threshold: 0 },
         filter: {
           type: "and",
-          filters: [{ type: "eq", key: "folder", value: input.studentUserId }],
+          filters: [
+            { type: "eq", key: "folder", value: `${input.studentUserId}/` },
+          ],
         },
       });
 

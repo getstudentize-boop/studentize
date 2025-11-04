@@ -160,7 +160,7 @@ export const getAdvisorChatHistory = async (input: {
 
 export const getAdvisorChatTitle = async (input: {
   chatId: string;
-  userId: string;
+  userId?: string;
 }) => {
   const [chat] = await db
     .select({
@@ -170,7 +170,7 @@ export const getAdvisorChatTitle = async (input: {
     .where(
       and(
         eq(schema.advisorChat.id, input.chatId),
-        eq(schema.advisorChat.userId, input.userId)
+        input.userId ? eq(schema.advisorChat.userId, input.userId) : undefined
       )
     );
 
