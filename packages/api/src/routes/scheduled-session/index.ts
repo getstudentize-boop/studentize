@@ -8,6 +8,11 @@ import {
 import { listScheduledSessionsRoute } from "./list";
 
 import {
+  DeleteScheduledSessionInputSchema,
+  deleteScheduledSessionRoute,
+} from "./delete-session";
+
+import {
   sendBotToMeetingRoute,
   SendBotToMeetingInputSchema,
 } from "./send-bot-meeting";
@@ -20,4 +25,7 @@ export const scheduledSession = {
   sendBotToMeeting: privateRoute
     .input(SendBotToMeetingInputSchema)
     .handler(sendBotToMeetingRoute),
+  delete: privateRoute
+    .input(DeleteScheduledSessionInputSchema)
+    .handler(deleteScheduledSessionRoute),
 };

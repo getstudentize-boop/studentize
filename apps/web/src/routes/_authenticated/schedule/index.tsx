@@ -1,82 +1,19 @@
 import { Button } from "@/components/button";
 import { Input } from "@/components/input";
 import { UserSearch } from "@/features/user-search";
-import {
-  CalendarBlankIcon,
-  ClockIcon,
-  RobotIcon,
-  VideoCameraIcon,
-} from "@phosphor-icons/react";
+import { VideoCameraIcon } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { orpc, RouterOutputs } from "orpc/client";
+import { orpc } from "orpc/client";
 import { useEffect, useState } from "react";
 
 import { format as _format } from "date-fns";
 import { fromZonedTime } from "date-fns-tz";
+import { ScheduleCard } from "@/features/schedule-card";
 
 export const Route = createFileRoute("/_authenticated/schedule/")({
   component: RouteComponent,
 });
-
-const Schedule = ({
-  session,
-}: {
-  session: RouterOutputs["scheduledSession"]["list"][number];
-}) => {
-  const utils = useQueryClient();
-
-  return (
-    <div className="rounded-lg bg-white outline outline-bzinc">
-      <div className="p-4">
-        <div className="font-semibold text-lg px-2 truncate">
-          {session.title}
-        </div>
-
-        <div className="mt-4 space-y-2 px-2">
-          <div className="flex gap-2 items-center">
-            <CalendarBlankIcon className="size-4 text-zinc-500" />
-            <div>
-              {_format(new Date(session.scheduledAt), "eeee MMMM d, yyyy")}
-            </div>
-          </div>
-          <div className="flex gap-2 items-center">
-            <ClockIcon className="size-4 text-zinc-500" />
-            <div>{_format(new Date(session.scheduledAt), "h:mm a")}</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex gap-2 items-center p-4 border-t border-bzinc">
-        <button
-          className="p-2 rounded-md border border-bzinc bg-zinc-50 transition-colors"
-          onClick={() => {
-            utils.invalidateQueries({
-              queryKey: orpc.scheduledSession.list.queryKey(),
-            });
-          }}
-        >
-          <RobotIcon
-            size={18}
-            className={session.botId ? "text-indigo-600" : ""}
-          />
-        </button>
-        <Button
-          variant="neutral"
-          className="rounded-md w-full"
-          onClick={() => {
-            window.open(
-              `https://meet.google.com/${session.meetingCode}`,
-              "_blank"
-            );
-          }}
-        >
-          Join Meeting
-        </Button>
-      </div>
-    </div>
-  );
-};
 
 type StudentOrAdvisor = { userId: string; name: string | null } | undefined;
 
@@ -212,7 +149,7 @@ function RouteComponent() {
       </div>
       <div className="mt-4 max-w-2xl w-full grid-cols-2 grid gap-4 text-left">
         {sessionList.map((session) => (
-          <Schedule key={session.id} session={session} />
+          <ScheduleCard key={session.id} session={session} />
         ))}
       </div>
     </div>

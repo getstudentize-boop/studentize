@@ -2,7 +2,12 @@ import { cn } from "@/utils/cn";
 import { ComponentProps } from "react";
 
 type ButtonProps = ComponentProps<"button"> & {
-  variant?: "primary" | "primaryLight" | "secondary" | "neutral";
+  variant?:
+    | "primary"
+    | "primaryLight"
+    | "secondary"
+    | "neutral"
+    | "destructive";
   isLoading?: boolean;
 };
 
@@ -24,6 +29,8 @@ export const Button = ({
             variant === "primary",
           "bg-violet-100 border-b-violet-500 border-violet-200 font-semibold text-violet-950":
             variant === "primaryLight",
+          "bg-rose-600 border-b-rose-700 border-rose-700 text-white":
+            variant === "destructive",
         },
         props.className
       )}

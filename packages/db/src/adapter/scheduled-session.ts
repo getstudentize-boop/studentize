@@ -1,4 +1,4 @@
-import { db, eq, isNull, schema } from "..";
+import { and, db, eq, isNull, schema } from "..";
 
 export const createScheduleSession = async ({
   scheduledAt,
@@ -29,7 +29,10 @@ export const createScheduleSession = async ({
 
 export const getScheduledSessionList = async () => {
   return db.query.scheduledSession.findMany({
-    where: isNull(schema.scheduledSession.doneAt),
+    where: and(
+      isNull(schema.scheduledSession.doneAt),
+      isNull(schema.scheduledSession.deletedAt)
+    ),
     columns: {
       advisorUserId: true,
       studentUserId: true,
@@ -46,7 +49,8 @@ export const getScheduledSessionById = async (input: {
   scheduledSessionId: string;
 }) => {
   return db.query.scheduledSession.findFirst({
-    where: (session, { eq }) => eq(session.id, input.scheduledSessionId),
+    where: (session, { eq }) =>
+      and(eq(session.id, input.scheduledSessionId), isNull(session.deletedAt)),
     columns: {
       advisorUserId: true,
       studentUserId: true,
@@ -63,7 +67,8 @@ export const getScheduledSessionByBotId = async (input: { botId: string }) => {
     where: (scheduledSession, { eq, isNull, and }) =>
       and(
         eq(scheduledSession.botId, input.botId),
-        isNull(scheduledSession.doneAt)
+        isNull(scheduledSession.doneAt),
+        isNull(scheduledSession.deletedAt)
       ),
     columns: {
       advisorUserId: true,
@@ -106,5 +111,13 @@ export const updateScheduledSessionDoneAt = async (input: {
   await db
     .update(schema.scheduledSession)
     .set({ doneAt: input.doneAt })
+    .where(eq(schema.scheduledSession.id, input.scheduledSessionId));
+};
+
+export const deleteScheduledSessionById = async (input: {
+  scheduledSessionId: string;
+}) => {
+  await db
+    .delete(schema.scheduledSession)
     .where(eq(schema.scheduledSession.id, input.scheduledSessionId));
 };
