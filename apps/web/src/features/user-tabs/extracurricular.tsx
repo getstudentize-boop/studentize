@@ -35,8 +35,9 @@ export const UserExtracurricularTab = withStudentForm({
   props: {
     isLoading: false,
     isError: false,
+    isDisabled: false,
   },
-  render: ({ form, isError, isLoading }) => {
+  render: ({ form, isError, isLoading, isDisabled }) => {
     const isLoadingOrError = isLoading || isError;
 
     return (
@@ -59,7 +60,9 @@ export const UserExtracurricularTab = withStudentForm({
                         <ActivityCard
                           state="update"
                           defaultValues={subField.state.value}
-                          onChange={(value) => subField.handleChange(value)}
+                          onChange={(value) =>
+                            !isDisabled && subField.handleChange(value)
+                          }
                         />
                       )}
                     />

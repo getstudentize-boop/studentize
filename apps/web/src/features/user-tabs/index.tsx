@@ -178,8 +178,8 @@ export const UserOverviewTab = ({
           <ArrowLeftIcon />
         </Link>
 
-        <div className="flex gap-4 items-center">
-          {isSettingsDisabled ? (
+        {!isSettingsDisabled ? (
+          <div className="flex gap-4 items-center">
             <StudentSettingsDialog
               email=""
               location={student?.location ?? ""}
@@ -187,25 +187,25 @@ export const UserOverviewTab = ({
               isOpen={isUserSettingsOpen}
               onOpenChange={setIsUserSettingsOpen}
             />
-          ) : null}
-          <form.Subscribe
-            selector={(val) => [val.isDirty, val.isSubmitting]}
-            children={([isDirty, isSubmitting]) =>
-              isDirty ? (
-                <Button
-                  variant="primary"
-                  isLoading={isSubmitting}
-                  onClick={async () => {
-                    await form.handleSubmit();
-                    form.reset();
-                  }}
-                >
-                  <FloppyDiskIcon /> Save
-                </Button>
-              ) : null
-            }
-          />
-        </div>
+            <form.Subscribe
+              selector={(val) => [val.isDirty, val.isSubmitting]}
+              children={([isDirty, isSubmitting]) =>
+                isDirty ? (
+                  <Button
+                    variant="primary"
+                    isLoading={isSubmitting}
+                    onClick={async () => {
+                      await form.handleSubmit();
+                      form.reset();
+                    }}
+                  >
+                    <FloppyDiskIcon /> Save
+                  </Button>
+                ) : null
+              }
+            />
+          </div>
+        ) : null}
       </div>
       <div className="flex-1 overflow-auto custom-scrollbar">
         <div className="flex p-4 gap-4">
@@ -260,6 +260,7 @@ export const UserOverviewTab = ({
           <UserProfileTab
             isLoading={isLoading}
             isError={studentQuery.isError}
+            isDisabled={!!isSettingsDisabled}
             form={form}
           />
         ) : null}
@@ -267,6 +268,7 @@ export const UserOverviewTab = ({
           <UserExtracurricularTab
             isError={studentQuery.isError}
             isLoading={isLoading}
+            isDisabled={!!isSettingsDisabled}
             form={form}
           />
         ) : null}

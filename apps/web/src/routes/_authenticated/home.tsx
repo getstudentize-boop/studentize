@@ -254,6 +254,7 @@ function RouteComponent() {
           className="flex-1 border border-zinc-200 rounded-lg"
           isHeaderFixedHeightDisabled
           goBack="/home"
+          isSettingsDisabled
           search={{ studentUserId: search.studentUserId }}
         />
       ) : (

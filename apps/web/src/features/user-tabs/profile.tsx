@@ -216,8 +216,9 @@ export const UserProfileTab = withStudentForm({
   props: {
     isLoading: false,
     isError: false,
+    isDisabled: false,
   },
-  render: ({ form, isLoading, isError }) => {
+  render: ({ form, isLoading, isError, isDisabled }) => {
     const isLoadingOrError = isLoading || isError;
 
     if (isLoadingOrError) {
@@ -239,7 +240,7 @@ export const UserProfileTab = withStudentForm({
                 label="Expected Graduation Year"
                 className="-translate-x-1"
                 value={field.state.value}
-                onValueChange={(val) => field.handleChange(val)}
+                onValueChange={(val) => !isDisabled && field.handleChange(val)}
                 options={[
                   { value: "2027", label: "2027" },
                   { value: "2028", label: "2028" },
@@ -272,7 +273,7 @@ export const UserProfileTab = withStudentForm({
               children={(field) => (
                 <MultiSelect
                   values={field.state.value}
-                  onChange={(val) => field.handleChange(val)}
+                  onChange={(val) => !isDisabled && field.handleChange(val)}
                   fields={targetCountries}
                 />
               )}
@@ -290,7 +291,7 @@ export const UserProfileTab = withStudentForm({
           children={(field) => (
             <MultiSelect
               values={field.state.value}
-              onChange={(val) => field.handleChange(val)}
+              onChange={(val) => !isDisabled && field.handleChange(val)}
               fields={areasOfInterest}
             />
           )}
