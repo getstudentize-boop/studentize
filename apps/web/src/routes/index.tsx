@@ -21,14 +21,20 @@ function App() {
 
   return (
     <div className="flex h-screen flex-1">
-      <div className="flex-1 flex flex-col justify-center items-center gap-4">
+      <div className="flex-1 flex flex-col justify-center items-center gap-4 relative">
         <img src="/logo.png" alt="Studentize Logo" className="w-20" />
         <div className="w-[14rem] text-center">
           All-in-One Admissions Solution, Powered by Real Mentors.
         </div>
         <Button className="rounded-md w-52" onClick={() => signIn()}>
-          Login
+          Sign up / Login
         </Button>
+
+        <div className="absolute bottom-0 w-full p-8 text-center">
+          <a href="" className="underline">
+            Apply to be an Advisor?
+          </a>
+        </div>
       </div>
       <div className="flex-1 p-2 flex">
         <div className="w-full h-full border overflow-hidden border-bzinc rounded-lg bg-gradient-to-b from-zinc-100 to-white relative">

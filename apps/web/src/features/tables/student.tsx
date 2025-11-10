@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-table";
 import { DataTable } from "../table";
 import { RouterOutputs } from "orpc/client";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { ArrowRightIcon } from "@phosphor-icons/react";
 import { useTableHeight } from "@/hooks/use-table-height";
 

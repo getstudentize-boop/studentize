@@ -1,11 +1,11 @@
 import { Tooltip } from "@/components/tooltip";
 import { cn } from "@/utils/cn";
 import {
-  AddressBookTabsIcon,
   BrainIcon,
   ChalkboardTeacherIcon,
   CircleNotchIcon,
   HeadsetIcon,
+  HouseIcon,
   SignOutIcon,
   StudentIcon,
   VideoCameraIcon,
@@ -34,6 +34,13 @@ export const Header = ({
   const isGuru = route({ to: "/guru" });
 
   const icons: any = [
+    userType === "STUDENT"
+      ? {
+          to: "/student",
+          icon: <HouseIcon className="size-4" />,
+          isActive: route({ to: "/student" }),
+        }
+      : null,
     {
       to: "/guru",
       icon: <BrainIcon className="size-4" />,
@@ -53,11 +60,13 @@ export const Header = ({
           isActive: route({ to: "/schedule" }),
         }
       : null,
-    {
-      to: "/students",
-      icon: <StudentIcon className="size-4" />,
-      isActive: route({ to: "/students" }),
-    },
+    userType !== "STUDENT"
+      ? {
+          to: "/students",
+          icon: <StudentIcon className="size-4" />,
+          isActive: route({ to: "/students" }),
+        }
+      : null,
     userType === "ADMIN"
       ? {
           to: "/advisors",
