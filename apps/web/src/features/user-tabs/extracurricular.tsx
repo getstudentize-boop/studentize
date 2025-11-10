@@ -1,7 +1,4 @@
-import {
-  studentFormOpts,
-  withStudentForm,
-} from "@/routes/_authenticated/students/$userId";
+import { studentFormOpts, withStudentForm } from "./form";
 import { ActivityCard } from "./activity-card";
 import { Loader } from "@/components/loader";
 import { Repeat } from "@/components/repeat";

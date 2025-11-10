@@ -1,4 +1,12 @@
-import { db, InferSelectModel, InferInsertModel, eq, desc, and, sql } from "..";
+import {
+  db,
+  InferSelectModel,
+  InferInsertModel,
+  eq,
+  desc,
+  and,
+  count,
+} from "..";
 
 import * as schema from "../schema";
 import { createdAt } from "../schema/utils";
@@ -270,4 +278,56 @@ export const getOneStudentAccess = async (data: {
   });
 
   return studentAccess;
+};
+
+export const getOverviewByUserId = async (input: { advisorUserId: string }) => {
+  const [advisor] = await db
+    .select({
+      id: schema.advisor.id,
+      createdAt: schema.advisor.createdAt,
+      university: schema.advisor.universityName,
+      courseMajor: schema.advisor.courseMajor,
+      user: {
+        name: schema.user.name,
+        email: schema.user.email,
+      },
+    })
+    .from(schema.advisor)
+    .innerJoin(schema.user, eq(schema.user.id, schema.advisor.userId))
+    .where(eq(schema.advisor.userId, input.advisorUserId));
+
+  return advisor;
+};
+
+export const getOverviewStats = async (input: { advisorUserId: string }) => {
+  const [students] = await db
+    .select({ count: count() })
+    .from(schema.advisorStudentAccess)
+    .where(eq(schema.advisorStudentAccess.advisorUserId, input.advisorUserId));
+
+  const [sessions] = await db
+    .select({ count: count() })
+    .from(schema.session)
+    .where(eq(schema.session.advisorUserId, input.advisorUserId));
+
+  return { totalStudents: students.count, totalSessions: sessions.count };
+};
+
+export const getStudentList = async (input: { advisorUserId: string }) => {
+  return db
+    .select({
+      studentUserId: schema.advisorStudentAccess.studentUserId,
+      name: schema.user.name,
+      curriculum: schema.student.studyCurriculum,
+    })
+    .from(schema.advisorStudentAccess)
+    .innerJoin(
+      schema.user,
+      eq(schema.user.id, schema.advisorStudentAccess.studentUserId)
+    )
+    .innerJoin(
+      schema.student,
+      eq(schema.student.userId, schema.advisorStudentAccess.studentUserId)
+    )
+    .where(eq(schema.advisorStudentAccess.advisorUserId, input.advisorUserId));
 };

@@ -1,4 +1,4 @@
-import { and, db, eq, isNull, schema } from "..";
+import { and, db, eq, gte, isNull, lt, schema } from "..";
 
 export const createScheduleSession = async ({
   scheduledAt,
@@ -120,4 +120,27 @@ export const deleteScheduledSessionById = async (input: {
   await db
     .delete(schema.scheduledSession)
     .where(eq(schema.scheduledSession.id, input.scheduledSessionId));
+};
+
+export const getAdvisorsSessions = (input: {
+  advisorUserId: string;
+  today: Date;
+  timePeriod: "past" | "upcoming";
+}) => {
+  const ltOrGt = input.timePeriod === "past" ? lt : gte;
+
+  return db
+    .select({
+      scheduledSessionId: schema.scheduledSession.id,
+      title: schema.scheduledSession.title,
+      scheduledAt: schema.scheduledSession.scheduledAt,
+      meetingCode: schema.scheduledSession.meetingCode,
+    })
+    .from(schema.scheduledSession)
+    .where(
+      and(
+        eq(schema.scheduledSession.advisorUserId, input.advisorUserId),
+        ltOrGt(schema.scheduledSession.createdAt, input.today)
+      )
+    );
 };

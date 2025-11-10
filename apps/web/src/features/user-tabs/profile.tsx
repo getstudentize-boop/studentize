@@ -2,10 +2,7 @@ import { Button } from "@/components/button";
 import { Loader } from "@/components/loader";
 import { Repeat } from "@/components/repeat";
 import { Select } from "@/components/select";
-import {
-  studentFormOpts,
-  withStudentForm,
-} from "@/routes/_authenticated/students/$userId";
+import { studentFormOpts, withStudentForm } from "./form";
 import { GraduationCapIcon, HeartIcon } from "@phosphor-icons/react";
 
 const curriculum = [

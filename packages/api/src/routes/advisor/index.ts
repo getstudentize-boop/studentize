@@ -1,3 +1,5 @@
+import { privateRoute } from "../../utils/middleware";
+
 import { createAdvisor, CreateAdvisorInputSchema } from "./create";
 import { listAdvisors } from "./lists";
 import { searchAdvisors, SearchAdvisorsInputSchema } from "./search";
@@ -12,7 +14,12 @@ import {
 import { advisorChatHistory } from "./chat-history";
 import { chatMessages, ChatMessagesInputSchema } from "./chat-messages";
 
-import { privateRoute } from "../../utils/middleware";
+import { getOverviewRoute } from "./get-overview";
+import { getStudentListRoute } from "./student-list";
+import {
+  getScheduledSessionsRoute,
+  GetScheduledSessionsInputSchema,
+} from "./get-scheduled-sessions";
 
 export const advisorCreateHandler = privateRoute
   .input(CreateAdvisorInputSchema)
@@ -74,3 +81,12 @@ export const advisorStudentAccessUpdateHandler = privateRoute
     const result = await updateAdvisorStudentAccessList(input);
     return result;
   });
+
+// todo: move all the routes above to this format.
+export const advisor = {
+  getOverview: privateRoute.handler(getOverviewRoute),
+  getStudentList: privateRoute.handler(getStudentListRoute),
+  getScheduledSessions: privateRoute
+    .input(GetScheduledSessionsInputSchema)
+    .handler(getScheduledSessionsRoute),
+};
