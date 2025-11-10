@@ -1,4 +1,5 @@
 import {
+  ArrowRightIcon,
   MagnifyingGlassIcon,
   PlusIcon,
   SparkleIcon,
@@ -12,7 +13,18 @@ import { format, isSameDay, subDays } from "date-fns";
 import { Link, useSearch } from "@tanstack/react-router";
 import { cn } from "@/utils/cn";
 
-export const ChatHistory = () => {
+const ChatLoader = () => {
+  return (
+    <div>
+      <div className="h-5 bg-zinc-200 animate-pulse rounded-sm w-14 mb-4" />
+      {Array.from({ length: 5 }).map((_, idx) => (
+        <div className="h-5 bg-zinc-200 animate-pulse w-full rounded-sm mb-2" />
+      ))}
+    </div>
+  );
+};
+
+const ChatList = () => {
   const chatsQuery = useQuery(orpc.advisor.chatHistory.queryOptions());
 
   const searchParams = useSearch({ from: "/_authenticated/guru" });
@@ -20,39 +32,8 @@ export const ChatHistory = () => {
   const chats = chatsQuery.data ?? [];
 
   return (
-    <div className="border-r border-zinc-100 w-56 flex flex-col pr-4 py-[1.7rem] text-left">
-      <div className="flex justify-between items-center">
-        <div>Chat</div>
-        <MagnifyingGlassIcon className="size-3.5 text-zinc-600" weight="bold" />
-      </div>
-      <Link to="/guru">
-        <Button className="my-4 w-full">
-          <PlusIcon />
-          New Chat
-          <SparkleIcon weight="fill" />
-        </Button>
-      </Link>
-
-      <hr className="border-bzinc border-b border-t-0 mb-4" />
-
-      {/* <div className="flex mb-2 gap-2">
-        <button className="border bg-zinc-50 border-zinc-200 rounded-full px-2.5 py-1 text-xs">
-          By Created At
-        </button>
-        <button className="border bg-zinc-50 border-zinc-200 rounded-full px-2.5 py-1 text-xs">
-          By Student
-        </button>
-      </div> */}
-
-      {chatsQuery.isLoading ? (
-        <div>
-          <div className="h-5 bg-zinc-200 animate-pulse rounded-sm w-14 mb-4" />
-          {Array.from({ length: 5 }).map((_, idx) => (
-            <div className="h-5 bg-zinc-200 animate-pulse w-full rounded-sm mb-2" />
-          ))}
-        </div>
-      ) : null}
-
+    <>
+      {chatsQuery.isPending ? <ChatLoader /> : null}
       <div className="h-[calc(100vh-5rem)] overflow-y-auto no-scrollbar pr-1">
         {chats.map((c, idx) => {
           const prevChat = chats[idx - 1];
@@ -103,6 +84,62 @@ export const ChatHistory = () => {
           );
         })}
       </div>
+    </>
+  );
+};
+
+export const StudentList = () => {
+  const studentListQuery = useQuery(
+    orpc.advisor.getStudentList.queryOptions({})
+  );
+
+  const studentList = studentListQuery.data ?? [];
+
+  return (
+    <>
+      {studentListQuery.isPending ? <ChatLoader /> : null}
+      <div className="h-[calc(100vh-5rem)] overflow-y-auto no-scrollbar pr-1">
+        <div className="text-zinc-400 mb-2.5">Select a student</div>
+        {studentList?.map((student) => {
+          return (
+            <>
+              <Link
+                to="/guru"
+                search={{ userId: student.studentUserId }}
+                className="mb-2.5 flex justify-between items-center group"
+              >
+                <div className="w-52 truncate group-hover:translate-x-1 transition-transform">
+                  {student.name}
+                </div>
+                <ArrowRightIcon className="size-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <div className="mb-2.5" />
+            </>
+          );
+        })}
+      </div>
+    </>
+  );
+};
+
+export const ChatHistory = ({ studentUserId }: { studentUserId?: string }) => {
+  return (
+    <div className="border-r border-zinc-100 w-56 flex flex-col pr-4 py-[1.7rem] text-left">
+      <div className="flex justify-between items-center">
+        <div>Chat</div>
+        <MagnifyingGlassIcon className="size-3.5 text-zinc-600" weight="bold" />
+      </div>
+      <Link to="/guru">
+        <Button className="my-4 w-full">
+          <PlusIcon />
+          New Chat
+          <SparkleIcon weight="fill" />
+        </Button>
+      </Link>
+
+      <hr className="border-bzinc border-b border-t-0 mb-4" />
+
+      {studentUserId ? <ChatList /> : <StudentList />}
     </div>
   );
 };

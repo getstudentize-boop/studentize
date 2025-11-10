@@ -9,11 +9,7 @@ import {
 } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 
-import {
-  createFileRoute,
-  Link,
-  retainSearchParams,
-} from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { orpc, RouterOutputs } from "orpc/client";
 
 import { format as dateFnFormat } from "date-fns";
@@ -23,9 +19,6 @@ import { UserOverviewTab } from "@/features/user-tabs";
 
 export const Route = createFileRoute("/_authenticated/home")({
   component: RouteComponent,
-  search: {
-    middlewares: [retainSearchParams(true)],
-  },
   validateSearch: (search) =>
     z
       .object({

@@ -174,7 +174,7 @@ export const UserOverviewTab = ({
           isHeaderFixedHeightDisabled ? "py-4 mt-0" : "h-14"
         )}
       >
-        <Link to={goBack}>
+        <Link to={goBack} search={{ studentUserId: undefined }}>
           <ArrowLeftIcon />
         </Link>
 
