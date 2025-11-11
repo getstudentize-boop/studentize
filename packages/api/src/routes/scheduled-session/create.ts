@@ -37,9 +37,7 @@ export const createScheduleSessionRoute = createRouteHelper({
     const title = `${advisor.name} x ${student.name}`;
 
     // get code from the link if a link is provided
-    const meetingCode = input.meetingCode.startsWith("http")
-      ? input.meetingCode.split("/").pop()
-      : input.meetingCode;
+    const meetingCode = input.meetingCode.split("/").pop();
 
     if (!meetingCode) {
       throw new ORPCError("BAD_REQUEST", { message: "Invalid meeting code" });
