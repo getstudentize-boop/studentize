@@ -327,7 +327,7 @@ export const getStudentList = async (input: { advisorUserId?: string }) => {
   if (!input.advisorUserId) {
     return db
       .select({
-        studentUserId: schema.student.id,
+        studentUserId: schema.user.id,
         name: schema.user.name,
         curriculum: schema.student.studyCurriculum,
       })
