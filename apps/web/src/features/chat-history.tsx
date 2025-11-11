@@ -47,7 +47,11 @@ const ChatList = ({ studentUserId }: { studentUserId: string }) => {
         </Link>
         <hr className="mb-0 mt-3 border-bzinc" />
       </div>
-      {chatsQuery.isPending ? <ChatLoader /> : null}
+      {chatsQuery.isPending ? (
+        <div className="mt-2">
+          <ChatLoader />
+        </div>
+      ) : null}
       <div className="h-[calc(100vh-5rem)] overflow-y-auto no-scrollbar pr-1">
         {chats.map((c, idx) => {
           const prevChat = chats[idx - 1];

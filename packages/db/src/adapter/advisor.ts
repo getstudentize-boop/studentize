@@ -323,7 +323,18 @@ export const getOverviewStats = async (input: { advisorUserId: string }) => {
   return { totalStudents: students.count, totalSessions: sessions.count };
 };
 
-export const getStudentList = async (input: { advisorUserId: string }) => {
+export const getStudentList = async (input: { advisorUserId?: string }) => {
+  if (!input.advisorUserId) {
+    return db
+      .select({
+        studentUserId: schema.student.id,
+        name: schema.user.name,
+        curriculum: schema.student.studyCurriculum,
+      })
+      .from(schema.student)
+      .innerJoin(schema.user, eq(schema.user.id, schema.student.userId));
+  }
+
   return db
     .select({
       studentUserId: schema.advisorStudentAccess.studentUserId,
