@@ -14,7 +14,6 @@ import {
 import { student } from "./routes/student";
 
 import {
-  advisorChatHistoryHandler,
   advisorCreateHandler,
   advisorListHandler,
   advisorSearchHandler,
@@ -59,7 +58,6 @@ export const router = {
     search: advisorSearchHandler,
     getOne: advisorGetOneHandler,
     update: advisorUpdateHandler,
-    chatHistory: advisorChatHistoryHandler,
     chatMessages: advisorChatMessagesHandler,
     studentAccess: {
       get: advisorStudentAccessGetHandler,

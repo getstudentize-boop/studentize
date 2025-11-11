@@ -207,7 +207,7 @@ function App() {
 
   return (
     <>
-      <ChatHistory />
+      <ChatHistory studentUserId={userId} />
       <div className="flex flex-1 flex-col p-4 pt-2.5 h-screen">
         <div className="justify-between items-center flex p-2.5">
           <div className="flex gap-2 items-center">

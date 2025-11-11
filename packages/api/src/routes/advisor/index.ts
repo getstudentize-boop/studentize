@@ -11,7 +11,10 @@ import {
   GetAdvisorStudentAccessInputSchema,
   UpdateAdvisorStudentAccessInputSchema,
 } from "./student-access";
-import { advisorChatHistory } from "./chat-history";
+import {
+  advisorChatHistoryRoute,
+  AdvisorChatHistoryInputSchema,
+} from "./chat-history";
 import { chatMessages, ChatMessagesInputSchema } from "./chat-messages";
 
 import { getOverviewRoute } from "./get-overview";
@@ -39,13 +42,6 @@ export const advisorSearchHandler = privateRoute
     const advisors = await searchAdvisors(context, input);
     return advisors;
   });
-
-export const advisorChatHistoryHandler = privateRoute.handler(
-  async ({ context }) => {
-    const chats = await advisorChatHistory(context);
-    return chats;
-  }
-);
 
 export const advisorChatMessagesHandler = privateRoute
   .input(ChatMessagesInputSchema)
@@ -89,4 +85,7 @@ export const advisor = {
   getScheduledSessions: privateRoute
     .input(GetScheduledSessionsInputSchema)
     .handler(getScheduledSessionsRoute),
+  chatHistory: privateRoute
+    .input(AdvisorChatHistoryInputSchema)
+    .handler(advisorChatHistoryRoute),
 };

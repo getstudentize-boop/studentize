@@ -151,6 +151,7 @@ export const createAdvisorChatMessageTools = async (
 
 export const getAdvisorChatHistory = async (input: {
   advisorUserId: string;
+  studentUserId: string;
 }) => {
   const chats = await db
     .select({
@@ -160,7 +161,16 @@ export const getAdvisorChatHistory = async (input: {
       studentUserId: schema.advisorChat.studentId,
     })
     .from(schema.advisorChat)
-    .where(eq(schema.advisorChat.userId, input.advisorUserId))
+    .innerJoin(
+      schema.student,
+      eq(schema.advisorChat.studentId, schema.student.userId)
+    )
+    .where(
+      and(
+        eq(schema.advisorChat.userId, input.advisorUserId),
+        eq(schema.student.userId, input.studentUserId)
+      )
+    )
     .orderBy(desc(schema.advisorChat.createdAt));
 
   return chats;

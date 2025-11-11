@@ -1,4 +1,5 @@
 import {
+  ArrowLeftIcon,
   ArrowRightIcon,
   MagnifyingGlassIcon,
   PlusIcon,
@@ -24,8 +25,10 @@ const ChatLoader = () => {
   );
 };
 
-const ChatList = () => {
-  const chatsQuery = useQuery(orpc.advisor.chatHistory.queryOptions());
+const ChatList = ({ studentUserId }: { studentUserId: string }) => {
+  const chatsQuery = useQuery(
+    orpc.advisor.chatHistory.queryOptions({ input: { studentUserId } })
+  );
 
   const searchParams = useSearch({ from: "/_authenticated/guru" });
 
@@ -33,6 +36,17 @@ const ChatList = () => {
 
   return (
     <>
+      <div className="-translate-y-1">
+        <Link
+          to="/guru"
+          search={{ userId: undefined }}
+          className="flex gap-2 items-center"
+        >
+          <ArrowLeftIcon />
+          <span className="text-zinc-500">Select a student</span>
+        </Link>
+        <hr className="mb-0 mt-3 border-bzinc" />
+      </div>
       {chatsQuery.isPending ? <ChatLoader /> : null}
       <div className="h-[calc(100vh-5rem)] overflow-y-auto no-scrollbar pr-1">
         {chats.map((c, idx) => {
@@ -99,7 +113,9 @@ export const StudentList = () => {
     <>
       {studentListQuery.isPending ? <ChatLoader /> : null}
       <div className="h-[calc(100vh-5rem)] overflow-y-auto no-scrollbar pr-1">
-        <div className="text-zinc-400 mb-2.5">Select a student</div>
+        {!studentListQuery.isPending ? (
+          <div className="text-zinc-400 mb-2.5">Select a student</div>
+        ) : null}
         {studentList?.map((student) => {
           return (
             <>
@@ -139,7 +155,11 @@ export const ChatHistory = ({ studentUserId }: { studentUserId?: string }) => {
 
       <hr className="border-bzinc border-b border-t-0 mb-4" />
 
-      {studentUserId ? <ChatList /> : <StudentList />}
+      {studentUserId ? (
+        <ChatList studentUserId={studentUserId} />
+      ) : (
+        <StudentList />
+      )}
     </div>
   );
 };

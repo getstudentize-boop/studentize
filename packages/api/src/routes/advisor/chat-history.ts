@@ -1,7 +1,21 @@
-import { AuthContext } from "@/utils/middleware";
+import z from "zod";
+import { createRouteHelper } from "../../utils/middleware";
 import { getAdvisorChatHistory } from "@student/db";
 
-export const advisorChatHistory = async (ctx: AuthContext) => {
-  const chats = await getAdvisorChatHistory({ advisorUserId: ctx.user.id });
-  return chats;
-};
+export const AdvisorChatHistoryInputSchema = z.object({
+  studentUserId: z.string(),
+});
+
+export const advisorChatHistoryRoute = createRouteHelper({
+  inputSchema: AdvisorChatHistoryInputSchema,
+  execute: async ({ input, ctx }) => {
+    const advisorUserId = ctx.user.id;
+
+    const chats = await getAdvisorChatHistory({
+      advisorUserId,
+      studentUserId: input.studentUserId,
+    });
+
+    return chats;
+  },
+});

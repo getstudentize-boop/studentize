@@ -135,7 +135,7 @@ function RouteComponent() {
           </div>
         ) : null}
 
-        <div className="p-8 border-t border-bzinc bg-zinc-100 flex items-center justify-center">
+        <div className="p-8 border-t border-bzinc bg-zinc-100 flex items-center justify-center z-1">
           <Button
             className="rounded-md"
             variant={isLinkRequired ? "primary" : "secondary"}
