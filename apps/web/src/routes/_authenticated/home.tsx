@@ -75,7 +75,7 @@ const SessionCard = ({
 };
 
 const StudentCard = ({
-  student = {},
+  student,
 }: {
   student: RouterOutputs["advisor"]["getStudentList"][number];
 }) => {
@@ -236,7 +236,7 @@ function RouteComponent() {
         <AdvisorOverviewPanel />
         <div className="flex w-full h-full">
           <div className="w-10 bg-zinc-50 border-r border-bzinc" />
-          <div className="flex-1 p-4">
+          <div className="flex-1 p-4 overflow-y-auto custom-scrollbar pb-48">
             <div className="grid grid-cols-2 2xl:grid-cols-3 gap-4">
               {students.map((student) => (
                 <StudentCard key={student.studentUserId} student={student} />

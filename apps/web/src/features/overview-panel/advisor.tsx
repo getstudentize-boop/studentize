@@ -62,7 +62,7 @@ export const AdvisorOverviewPanel = () => {
     <div className="flex items-center border-b border-bzinc">
       <div className="flex-1 flex flex-col justify-center px-10 py-8 border-r border-bzinc">
         <div className="font-semibold">
-          Hi {overview?.user.name?.split(" ")[0]} 👋
+          Hi {overview?.user?.name?.split(" ")[0]} 👋
         </div>
         <div className="flex gap-2 items-center mt-2.5 mb-2">
           <EnvelopeIcon className="size-4" />
