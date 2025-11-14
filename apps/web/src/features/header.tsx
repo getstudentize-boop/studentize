@@ -35,13 +35,11 @@ export const Header = ({
   const isGuru = route({ to: "/guru" });
 
   const icons: any = [
-    userType === "ADVISOR"
-      ? {
-          to: "/home",
-          icon: <HouseIcon className="size-4" />,
-          isActive: route({ to: "/home" }),
-        }
-      : null,
+    {
+      to: "/home",
+      icon: <HouseIcon className="size-4" />,
+      isActive: route({ to: "/home" }),
+    },
     {
       to: "/guru",
       icon: <BrainIcon className="size-4" />,

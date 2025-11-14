@@ -12,7 +12,6 @@ import {
 import { alias } from "drizzle-orm/pg-core";
 
 type SessionInsert = InferInsertModel<typeof schema.session>;
-type SessionSelect = InferSelectModel<typeof schema.session>;
 
 export const createSession = async (data: {
   studentUserId: string;
@@ -50,7 +49,9 @@ export const getSessions = async (data: { studentUserId?: string } = {}) => {
 
   const sessions = await db
     .select({
+      // deprecate this "id" field
       id: schema.session.id,
+      sessionId: schema.session.id,
       title: schema.session.title,
       createdAt: schema.session.createdAt,
       student: {
@@ -73,7 +74,13 @@ export const getSessions = async (data: { studentUserId?: string } = {}) => {
       )
     );
 
-  return sessions;
+  return sessions.map((s) => ({
+    sessionId: s.id,
+    student: s.student?.name ?? "",
+    createdAt: s.createdAt,
+    title: s.title,
+    advisor: s.advisor?.name ?? "",
+  }));
 };
 
 export const updateSessionSummary = async (input: {
@@ -103,7 +110,12 @@ export const getSessionSummarysByStudent = async (input: {
 export const getSessionSummaryById = async (input: { sessionId: string }) => {
   return db.query.session.findFirst({
     where: eq(schema.session.id, input.sessionId),
-    columns: { summary: true, createdAt: true, title: true },
+    columns: {
+      summary: true,
+      createdAt: true,
+      title: true,
+      studentUserId: true,
+    },
   });
 };
 

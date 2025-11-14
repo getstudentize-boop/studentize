@@ -1,4 +1,9 @@
-import { createFileRoute, Outlet, useParams } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Outlet,
+  useMatchRoute,
+  useParams,
+} from "@tanstack/react-router";
 
 import { PlusIcon } from "@phosphor-icons/react";
 
@@ -16,6 +21,8 @@ export const Route = createFileRoute("/_authenticated/sessions")({
 });
 
 function RouteComponent() {
+  const route = useMatchRoute();
+
   const params = useParams({
     from: "/_authenticated/sessions/$sessionId",
     shouldThrow: false,
@@ -23,11 +30,17 @@ function RouteComponent() {
 
   const [isOpen, setIsOpen] = useState(false);
 
+  const isUserSession = route({ to: "/sessions/user/$sessionId" });
+
   const listSessionsQuery = useQuery(
     orpc.session.list.queryOptions({ input: {} })
   );
 
   const sessions = listSessionsQuery.data ?? [];
+
+  if (isUserSession) {
+    return <Outlet />;
+  }
 
   return (
     <>

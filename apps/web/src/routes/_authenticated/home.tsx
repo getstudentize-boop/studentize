@@ -105,7 +105,13 @@ const StudentCard = ({
           </div>
           <div className="flex-1">
             <div className="mb-0.5 font-semibold">Total sessions</div>
-            <div className="mt-1.5 underline">20</div>
+            <Link
+              to="/student/$userId"
+              params={{ userId: student.studentUserId }}
+              className="mt-1.5 underline"
+            >
+              View Sessions
+            </Link>
           </div>
         </div>
       </div>

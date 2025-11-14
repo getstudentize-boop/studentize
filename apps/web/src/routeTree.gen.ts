@@ -21,8 +21,10 @@ import { Route as AuthenticatedGuruRouteImport } from './routes/_authenticated/g
 import { Route as AuthenticatedAdvisorsRouteImport } from './routes/_authenticated/advisors'
 import { Route as AuthenticatedScheduleIndexRouteImport } from './routes/_authenticated/schedule/index'
 import { Route as AuthenticatedStudentsUserIdRouteImport } from './routes/_authenticated/students/$userId'
+import { Route as AuthenticatedStudentUserIdRouteImport } from './routes/_authenticated/student/$userId'
 import { Route as AuthenticatedSessionsSessionIdRouteImport } from './routes/_authenticated/sessions/$sessionId'
 import { Route as AuthenticatedAdvisorsUserIdRouteImport } from './routes/_authenticated/advisors/$userId'
+import { Route as AuthenticatedSessionsUserSessionIdRouteImport } from './routes/_authenticated/sessions/user/$sessionId'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as ApiAuthLoginServerRouteImport } from './routes/api/auth/login'
 import { ServerRoute as ApiAuthCallbackServerRouteImport } from './routes/api/auth/callback'
@@ -80,6 +82,12 @@ const AuthenticatedStudentsUserIdRoute =
     path: '/$userId',
     getParentRoute: () => AuthenticatedStudentsRoute,
   } as any)
+const AuthenticatedStudentUserIdRoute =
+  AuthenticatedStudentUserIdRouteImport.update({
+    id: '/student/$userId',
+    path: '/student/$userId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedSessionsSessionIdRoute =
   AuthenticatedSessionsSessionIdRouteImport.update({
     id: '/$sessionId',
@@ -91,6 +99,12 @@ const AuthenticatedAdvisorsUserIdRoute =
     id: '/$userId',
     path: '/$userId',
     getParentRoute: () => AuthenticatedAdvisorsRoute,
+  } as any)
+const AuthenticatedSessionsUserSessionIdRoute =
+  AuthenticatedSessionsUserSessionIdRouteImport.update({
+    id: '/user/$sessionId',
+    path: '/user/$sessionId',
+    getParentRoute: () => AuthenticatedSessionsRoute,
   } as any)
 const ApiRpcSplatServerRoute = ApiRpcSplatServerRouteImport.update({
   id: '/api/rpc/$',
@@ -118,8 +132,10 @@ export interface FileRoutesByFullPath {
   '/users': typeof AuthenticatedUsersRoute
   '/advisors/$userId': typeof AuthenticatedAdvisorsUserIdRoute
   '/sessions/$sessionId': typeof AuthenticatedSessionsSessionIdRoute
+  '/student/$userId': typeof AuthenticatedStudentUserIdRoute
   '/students/$userId': typeof AuthenticatedStudentsUserIdRoute
   '/schedule': typeof AuthenticatedScheduleIndexRoute
+  '/sessions/user/$sessionId': typeof AuthenticatedSessionsUserSessionIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -131,8 +147,10 @@ export interface FileRoutesByTo {
   '/users': typeof AuthenticatedUsersRoute
   '/advisors/$userId': typeof AuthenticatedAdvisorsUserIdRoute
   '/sessions/$sessionId': typeof AuthenticatedSessionsSessionIdRoute
+  '/student/$userId': typeof AuthenticatedStudentUserIdRoute
   '/students/$userId': typeof AuthenticatedStudentsUserIdRoute
   '/schedule': typeof AuthenticatedScheduleIndexRoute
+  '/sessions/user/$sessionId': typeof AuthenticatedSessionsUserSessionIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -146,8 +164,10 @@ export interface FileRoutesById {
   '/_authenticated/users': typeof AuthenticatedUsersRoute
   '/_authenticated/advisors/$userId': typeof AuthenticatedAdvisorsUserIdRoute
   '/_authenticated/sessions/$sessionId': typeof AuthenticatedSessionsSessionIdRoute
+  '/_authenticated/student/$userId': typeof AuthenticatedStudentUserIdRoute
   '/_authenticated/students/$userId': typeof AuthenticatedStudentsUserIdRoute
   '/_authenticated/schedule/': typeof AuthenticatedScheduleIndexRoute
+  '/_authenticated/sessions/user/$sessionId': typeof AuthenticatedSessionsUserSessionIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -161,8 +181,10 @@ export interface FileRouteTypes {
     | '/users'
     | '/advisors/$userId'
     | '/sessions/$sessionId'
+    | '/student/$userId'
     | '/students/$userId'
     | '/schedule'
+    | '/sessions/user/$sessionId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -174,8 +196,10 @@ export interface FileRouteTypes {
     | '/users'
     | '/advisors/$userId'
     | '/sessions/$sessionId'
+    | '/student/$userId'
     | '/students/$userId'
     | '/schedule'
+    | '/sessions/user/$sessionId'
   id:
     | '__root__'
     | '/'
@@ -188,8 +212,10 @@ export interface FileRouteTypes {
     | '/_authenticated/users'
     | '/_authenticated/advisors/$userId'
     | '/_authenticated/sessions/$sessionId'
+    | '/_authenticated/student/$userId'
     | '/_authenticated/students/$userId'
     | '/_authenticated/schedule/'
+    | '/_authenticated/sessions/user/$sessionId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -298,6 +324,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStudentsUserIdRouteImport
       parentRoute: typeof AuthenticatedStudentsRoute
     }
+    '/_authenticated/student/$userId': {
+      id: '/_authenticated/student/$userId'
+      path: '/student/$userId'
+      fullPath: '/student/$userId'
+      preLoaderRoute: typeof AuthenticatedStudentUserIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/sessions/$sessionId': {
       id: '/_authenticated/sessions/$sessionId'
       path: '/$sessionId'
@@ -311,6 +344,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/advisors/$userId'
       preLoaderRoute: typeof AuthenticatedAdvisorsUserIdRouteImport
       parentRoute: typeof AuthenticatedAdvisorsRoute
+    }
+    '/_authenticated/sessions/user/$sessionId': {
+      id: '/_authenticated/sessions/user/$sessionId'
+      path: '/user/$sessionId'
+      fullPath: '/sessions/user/$sessionId'
+      preLoaderRoute: typeof AuthenticatedSessionsUserSessionIdRouteImport
+      parentRoute: typeof AuthenticatedSessionsRoute
     }
   }
 }
@@ -355,10 +395,13 @@ const AuthenticatedAdvisorsRouteWithChildren =
 
 interface AuthenticatedSessionsRouteChildren {
   AuthenticatedSessionsSessionIdRoute: typeof AuthenticatedSessionsSessionIdRoute
+  AuthenticatedSessionsUserSessionIdRoute: typeof AuthenticatedSessionsUserSessionIdRoute
 }
 
 const AuthenticatedSessionsRouteChildren: AuthenticatedSessionsRouteChildren = {
   AuthenticatedSessionsSessionIdRoute: AuthenticatedSessionsSessionIdRoute,
+  AuthenticatedSessionsUserSessionIdRoute:
+    AuthenticatedSessionsUserSessionIdRoute,
 }
 
 const AuthenticatedSessionsRouteWithChildren =
@@ -386,6 +429,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedSessionsRoute: typeof AuthenticatedSessionsRouteWithChildren
   AuthenticatedStudentsRoute: typeof AuthenticatedStudentsRouteWithChildren
   AuthenticatedUsersRoute: typeof AuthenticatedUsersRoute
+  AuthenticatedStudentUserIdRoute: typeof AuthenticatedStudentUserIdRoute
   AuthenticatedScheduleIndexRoute: typeof AuthenticatedScheduleIndexRoute
 }
 
@@ -396,6 +440,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedSessionsRoute: AuthenticatedSessionsRouteWithChildren,
   AuthenticatedStudentsRoute: AuthenticatedStudentsRouteWithChildren,
   AuthenticatedUsersRoute: AuthenticatedUsersRoute,
+  AuthenticatedStudentUserIdRoute: AuthenticatedStudentUserIdRoute,
   AuthenticatedScheduleIndexRoute: AuthenticatedScheduleIndexRoute,
 }
 

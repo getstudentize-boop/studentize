@@ -34,6 +34,7 @@ import {
 } from "./routes/user";
 import { scheduledSession } from "./routes/scheduled-session";
 import { admin } from "./routes/admin";
+import { session } from "./routes/session";
 
 export const router = {
   admin,
@@ -48,6 +49,7 @@ export const router = {
     update: sessionUpdateHandler,
     readTranscription: sessionReadTranscriptionHandler,
     delete: sessionDeleteHandler,
+    ...session,
   },
   scheduledSession,
   student,

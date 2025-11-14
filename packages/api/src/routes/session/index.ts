@@ -98,3 +98,23 @@ export const sessionReadTranscriptionHandler = privateRoute
     const result = await readSessionTranscription(context, input);
     return result;
   });
+
+import {
+  getStudentSessionsRoute,
+  GetStudentSessionsInputSchema,
+} from "./student-sessions";
+
+import {
+  GetSessionOverviewInputSchema,
+  getSessionOverviewRoute,
+} from "./overview";
+
+// todo: move all the handlers above to this format
+export const session = {
+  getStudentSessions: privateRoute
+    .input(GetStudentSessionsInputSchema)
+    .handler(getStudentSessionsRoute),
+  overview: privateRoute
+    .input(GetSessionOverviewInputSchema)
+    .handler(getSessionOverviewRoute),
+};
