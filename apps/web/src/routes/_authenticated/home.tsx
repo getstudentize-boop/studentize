@@ -75,7 +75,7 @@ const SessionCard = ({
 };
 
 const StudentCard = ({
-  student,
+  student = {},
 }: {
   student: RouterOutputs["advisor"]["getStudentList"][number];
 }) => {
