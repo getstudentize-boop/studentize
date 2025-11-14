@@ -11,7 +11,7 @@ export const Route = createFileRoute("/")({
     const user = await getUserAuth();
 
     if (user) {
-      throw redirect({ to: "/guru" });
+      throw redirect({ to: "/home" });
     }
   },
 });
