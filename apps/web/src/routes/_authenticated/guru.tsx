@@ -272,6 +272,8 @@ function App() {
               )}
               onSubmit={(ev) => {
                 ev.preventDefault();
+
+                if (!userId) return;
                 if (input.trim()) {
                   chat.sendMessage({ text: input });
                   setInput("");
@@ -280,6 +282,25 @@ function App() {
                 }
               }}
             >
+              {isEmptyState && !!userId ? (
+                <div className="flex flex-col p-4 gap-4">
+                  {[
+                    `Where is ${userDisplay?.name?.split(" ")[0]}'s in the applying?`,
+                    "What should we prioritize in our next session?",
+                    "Where are you in the application process (tests, essays, recommendations)?",
+                  ].map((text) => (
+                    <div key={text}>
+                      <button
+                        type="button"
+                        onClick={() => setInput(text)}
+                        className="text-zinc-900 bg-zinc-50 border border-bzinc rounded-lg p-1 px-2 font-semibold"
+                      >
+                        {text}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
               <div className="rounded-2xl bg-white p-4 outline-[1px] outline-zinc-100 shadow-xs">
                 <AutosizeTextArea
                   placeholder="Ask me anything..."
@@ -335,7 +356,11 @@ function App() {
                         align="end"
                         className="w-72 h-50"
                         trigger={(user) => (
-                          <Button variant="neutral" className="rounded-lg">
+                          <Button
+                            type="button"
+                            variant="neutral"
+                            className="rounded-lg"
+                          >
                             {user ? user.name : "Select a student"}
                             {isUserSelectionDisabled ? null : (
                               <CaretDownIcon weight="bold" />

@@ -3,6 +3,7 @@ import { Loader } from "@/components/loader";
 import { AdvisorOverviewPanel } from "@/features/overview-panel/advisor";
 import {
   ArrowRightIcon,
+  BrainIcon,
   CalendarBlankIcon,
   ChatCircleTextIcon,
   ClockIcon,
@@ -81,7 +82,7 @@ const StudentCard = ({
 }) => {
   return (
     <div className="border border-bzinc rounded-lg">
-      <div className="p-4 flex flex-col gap-4">
+      <div className="p-4 py-3 flex flex-col gap-4">
         <div className="flex justify-between">
           <div className="font-semibold text-[16px]">{student.name}</div>
           <Link
@@ -89,30 +90,11 @@ const StudentCard = ({
             search={{ userId: student.studentUserId }}
             className="underline flex gap-2 items-center"
           >
-            Open Chat
-            <ChatCircleTextIcon className="size-4" />
+            <BrainIcon
+              size={16}
+              className="hover:text-cyan-600 transition-colors"
+            />
           </Link>
-        </div>
-
-        <div className="flex gap-4">
-          <div className="flex-1">
-            <div className="mb-0.5 font-semibold">Curriculum</div>
-            <div>
-              <div className="rounded-lg border border-zinc-200 px-2 py-1 inline-block mt-1.5">
-                📚 {student.curriculum}
-              </div>
-            </div>
-          </div>
-          <div className="flex-1">
-            <div className="mb-0.5 font-semibold">Total sessions</div>
-            <Link
-              to="/student/$userId"
-              params={{ userId: student.studentUserId }}
-              className="mt-1.5 underline"
-            >
-              View Sessions
-            </Link>
-          </div>
         </div>
       </div>
       <Link
@@ -133,19 +115,6 @@ const StudentCardLoader = () => {
       <div className="p-4 flex flex-col gap-4">
         <div className="flex justify-between">
           <Loader className="w-32" />
-        </div>
-
-        <div className="flex gap-4">
-          <div className="flex-1">
-            <Loader className="w-20 mb-0.5" />
-            <div>
-              <Loader className="w-24 h-6" />
-            </div>
-          </div>
-          <div className="flex-1">
-            <Loader className="w-20 mb-0.5" />
-            <Loader className="w-16" />
-          </div>
         </div>
       </div>
       <div className="px-4 py-3 border-t border-bzinc flex justify-center gap-4 items-center">
