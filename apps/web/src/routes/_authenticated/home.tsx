@@ -98,8 +98,8 @@ const StudentCard = ({
         </div>
       </div>
       <Link
-        to="/home"
-        search={{ studentUserId: student.studentUserId }}
+        to="/student/$userId"
+        params={{ userId: student.studentUserId }}
         className="px-4 py-3 border-t border-bzinc flex justify-center gap-4 items-center"
       >
         View Student

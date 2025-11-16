@@ -1,7 +1,8 @@
+import { Button } from "@/components/button";
 import { Markdown } from "@/components/markdown";
-import { ListDashesIcon } from "@phosphor-icons/react";
+import { BrainIcon, ListDashesIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { orpc } from "orpc/client";
 import z from "zod";
 
@@ -39,8 +40,14 @@ function RouteComponent() {
         <div className="p-4">
           <div className="rounded-lg h-96 bg-zinc-900" />
         </div>
-        <div className="px-4 py-3 border-y border-bzinc">
-          {sessionOverview?.title}
+        <div className="px-4 py-3 border-y border-bzinc flex justify-between items-center">
+          <div>{sessionOverview?.title}</div>
+          <Link to="/guru" search={{ userId: sessionOverview?.studentUserId }}>
+            <Button className="rounded-md" variant="primary">
+              Chat with Guru
+              <BrainIcon />
+            </Button>
+          </Link>
         </div>
         <div className="p-4 flex flex-col gap-4">
           <div className="border border-bzinc bg-gradient-to-t to-zinc-100 from-white rounded-lg">
