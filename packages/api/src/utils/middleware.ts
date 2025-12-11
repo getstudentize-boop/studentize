@@ -4,6 +4,7 @@ import { findOrCreateUser } from "@student/db";
 export type Context = {
   user?: Awaited<ReturnType<typeof findOrCreateUser>> | null;
   accessToken?: string;
+  userVerificationPayload?: any;
 };
 
 export type AuthContext = {
@@ -69,9 +70,11 @@ export const adminRoute = serverRoute.use(
 
 export const privateRoute = serverRoute.use(
   os.middleware(async ({ context, next }) => {
-    const { user, userAccessToken } = context as any;
+    const { user, accessToken } = context as any;
 
-    // const data = await getCalendarList({ accessToken: userAccessToken });
+    const data = await getCalendarList({ accessToken });
+
+    console.log("data", data);
 
     if (!user) {
       throw new ORPCError("UNAUTHORIZED");

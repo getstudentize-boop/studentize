@@ -11,6 +11,7 @@ export const getCalendarList = async (input: { accessToken: string }) => {
   );
 
   if (!response.ok) {
+    console.log("response", response.status);
     throw new Error("Failed to fetch calendar list");
   }
 

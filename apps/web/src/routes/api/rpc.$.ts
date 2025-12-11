@@ -18,7 +18,10 @@ async function handle({ request }: { request: Request }) {
 
   const { response } = await handler.handle(request, {
     prefix: "/api/rpc",
-    context: { user: userData as any, userAccessToken: userAccessToken as any },
+    context: {
+      user: userData as any,
+      accessToken: userAccessToken,
+    },
   });
 
   return response ?? new Response("Not Found", { status: 404 });
