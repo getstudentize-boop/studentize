@@ -11,6 +11,7 @@ export type AuthContext = {
 };
 
 import { z } from "zod";
+import { getCalendarList } from "./google";
 
 type Input = z.ZodType | Record<string, any>;
 
@@ -68,7 +69,9 @@ export const adminRoute = serverRoute.use(
 
 export const privateRoute = serverRoute.use(
   os.middleware(async ({ context, next }) => {
-    const { user } = context as any;
+    const { user, userAccessToken } = context as any;
+
+    // const data = await getCalendarList({ accessToken: userAccessToken });
 
     if (!user) {
       throw new ORPCError("UNAUTHORIZED");

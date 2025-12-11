@@ -119,39 +119,42 @@ function RouteComponent() {
   );
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center">
-      <div className="max-w-2xl w-full overflow-hidden bg-white rounded-xl shadow-xs outline outline-bzinc">
-        {!isLinkRequired ? <Settings /> : null}
+    <div className="flex flex-1">
+      <div className="flex flex-1 flex-col items-center justify-center p-10">
+        <div className="max-w-2xl w-full overflow-hidden bg-white rounded-xl shadow-xs outline outline-bzinc">
+          {!isLinkRequired ? <Settings /> : null}
 
-        {isLinkRequired ? (
-          <div className="p-4 text-left">
-            <Input
-              placeholder="https://meet.google.com/qbt-kaqz-nho"
-              label="Paste meeting link"
-              className="w-full"
-              value={meetingCode}
-              onChange={(ev) => setmeetingCode(ev.target.value)}
-            />
+          {isLinkRequired ? (
+            <div className="p-4 text-left">
+              <Input
+                placeholder="https://meet.google.com/qbt-kaqz-nho"
+                label="Paste meeting link"
+                className="w-full"
+                value={meetingCode}
+                onChange={(ev) => setmeetingCode(ev.target.value)}
+              />
+            </div>
+          ) : null}
+
+          <div className="p-8 border-t border-bzinc bg-zinc-100 flex items-center justify-center z-1">
+            <Button
+              className="rounded-md"
+              variant={isLinkRequired ? "primary" : "secondary"}
+              isLoading={createSessionMutation.isPending}
+              onClick={handleCreateSession}
+            >
+              Schedule a Session
+              <VideoCameraIcon />
+            </Button>
           </div>
-        ) : null}
-
-        <div className="p-8 border-t border-bzinc bg-zinc-100 flex items-center justify-center z-1">
-          <Button
-            className="rounded-md"
-            variant={isLinkRequired ? "primary" : "secondary"}
-            isLoading={createSessionMutation.isPending}
-            onClick={handleCreateSession}
-          >
-            Schedule a Session
-            <VideoCameraIcon />
-          </Button>
+        </div>
+        <div className="mt-4 max-w-2xl w-full grid-cols-2 grid gap-4 text-left">
+          {sessionList.map((session) => (
+            <ScheduleCard key={session.id} session={session} />
+          ))}
         </div>
       </div>
-      <div className="mt-4 max-w-2xl w-full grid-cols-2 grid gap-4 text-left">
-        {sessionList.map((session) => (
-          <ScheduleCard key={session.id} session={session} />
-        ))}
-      </div>
+      <div className="h-screen bg-red-200 w-96"></div>
     </div>
   );
 }

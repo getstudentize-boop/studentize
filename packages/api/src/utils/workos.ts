@@ -36,6 +36,6 @@ export const getUserAuth = async (accessToken: string) => {
   const userId = user?.sub as string | undefined;
   if (user) {
     const userData = await workos.userManagement.getUser(userId!);
-    return userData;
+    return { userData, userAccessToken: accessToken };
   }
 };
