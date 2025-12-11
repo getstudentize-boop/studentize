@@ -72,9 +72,9 @@ export const privateRoute = serverRoute.use(
   os.middleware(async ({ context, next }) => {
     const { user, accessToken } = context as any;
 
-    const data = await getCalendarList({ accessToken });
+    // const data = await getCalendarList({ accessToken });
 
-    console.log("data", data);
+    // console.log("data", data);
 
     if (!user) {
       throw new ORPCError("UNAUTHORIZED");
