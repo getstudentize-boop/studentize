@@ -25,6 +25,7 @@ import { Route as AuthenticatedStudentUserIdRouteImport } from './routes/_authen
 import { Route as AuthenticatedSessionsSessionIdRouteImport } from './routes/_authenticated/sessions/$sessionId'
 import { Route as AuthenticatedAdvisorsUserIdRouteImport } from './routes/_authenticated/advisors/$userId'
 import { Route as AuthenticatedSessionsUserSessionIdRouteImport } from './routes/_authenticated/sessions/user/$sessionId'
+import { ServerRoute as ApiGoogle_oauth_callbackServerRouteImport } from './routes/api/google_oauth_callback'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as ApiAuthLoginServerRouteImport } from './routes/api/auth/login'
 import { ServerRoute as ApiAuthCallbackServerRouteImport } from './routes/api/auth/callback'
@@ -105,6 +106,12 @@ const AuthenticatedSessionsUserSessionIdRoute =
     id: '/user/$sessionId',
     path: '/user/$sessionId',
     getParentRoute: () => AuthenticatedSessionsRoute,
+  } as any)
+const ApiGoogle_oauth_callbackServerRoute =
+  ApiGoogle_oauth_callbackServerRouteImport.update({
+    id: '/api/google_oauth_callback',
+    path: '/api/google_oauth_callback',
+    getParentRoute: () => rootServerRouteImport,
   } as any)
 const ApiRpcSplatServerRoute = ApiRpcSplatServerRouteImport.update({
   id: '/api/rpc/$',
@@ -223,30 +230,47 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
 }
 export interface FileServerRoutesByFullPath {
+  '/api/google_oauth_callback': typeof ApiGoogle_oauth_callbackServerRoute
   '/api/auth/callback': typeof ApiAuthCallbackServerRoute
   '/api/auth/login': typeof ApiAuthLoginServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
 export interface FileServerRoutesByTo {
+  '/api/google_oauth_callback': typeof ApiGoogle_oauth_callbackServerRoute
   '/api/auth/callback': typeof ApiAuthCallbackServerRoute
   '/api/auth/login': typeof ApiAuthLoginServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
+  '/api/google_oauth_callback': typeof ApiGoogle_oauth_callbackServerRoute
   '/api/auth/callback': typeof ApiAuthCallbackServerRoute
   '/api/auth/login': typeof ApiAuthLoginServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
 export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/api/auth/callback' | '/api/auth/login' | '/api/rpc/$'
+  fullPaths:
+    | '/api/google_oauth_callback'
+    | '/api/auth/callback'
+    | '/api/auth/login'
+    | '/api/rpc/$'
   fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/api/auth/callback' | '/api/auth/login' | '/api/rpc/$'
-  id: '__root__' | '/api/auth/callback' | '/api/auth/login' | '/api/rpc/$'
+  to:
+    | '/api/google_oauth_callback'
+    | '/api/auth/callback'
+    | '/api/auth/login'
+    | '/api/rpc/$'
+  id:
+    | '__root__'
+    | '/api/google_oauth_callback'
+    | '/api/auth/callback'
+    | '/api/auth/login'
+    | '/api/rpc/$'
   fileServerRoutesById: FileServerRoutesById
 }
 export interface RootServerRouteChildren {
+  ApiGoogle_oauth_callbackServerRoute: typeof ApiGoogle_oauth_callbackServerRoute
   ApiAuthCallbackServerRoute: typeof ApiAuthCallbackServerRoute
   ApiAuthLoginServerRoute: typeof ApiAuthLoginServerRoute
   ApiRpcSplatServerRoute: typeof ApiRpcSplatServerRoute
@@ -356,6 +380,13 @@ declare module '@tanstack/react-router' {
 }
 declare module '@tanstack/react-start/server' {
   interface ServerFileRoutesByPath {
+    '/api/google_oauth_callback': {
+      id: '/api/google_oauth_callback'
+      path: '/api/google_oauth_callback'
+      fullPath: '/api/google_oauth_callback'
+      preLoaderRoute: typeof ApiGoogle_oauth_callbackServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
     '/api/rpc/$': {
       id: '/api/rpc/$'
       path: '/api/rpc/$'
@@ -456,6 +487,7 @@ export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 const rootServerRouteChildren: RootServerRouteChildren = {
+  ApiGoogle_oauth_callbackServerRoute: ApiGoogle_oauth_callbackServerRoute,
   ApiAuthCallbackServerRoute: ApiAuthCallbackServerRoute,
   ApiAuthLoginServerRoute: ApiAuthLoginServerRoute,
   ApiRpcSplatServerRoute: ApiRpcSplatServerRoute,

@@ -34,8 +34,6 @@ const Oauth = async () => {
 
   const authToken = await getAuthToken();
 
-  console.log("🔥".repeat(10), authToken);
-
   url.searchParams.set(
     "scope",
     "https://www.googleapis.com/auth/calendar.events.readonly https://www.googleapis.com/auth/userinfo.email"
@@ -45,17 +43,12 @@ const Oauth = async () => {
   url.searchParams.set("response_type", "code");
   url.searchParams.set("client_id", process.env.AUTO_CALENDAR_CLIENT_ID!);
 
-  const redirectUri = process.env.AUTO_CALENDAR_REDIRECT_URI!;
-  // Ensure redirect_uri matches exactly what's in Google Cloud Console (including trailing slash)
-  console.log("Using redirect_uri:", redirectUri);
+  const redirectUri = `${process.env.WEB_APP_URL}/api/google_oauth_callback`;
   url.searchParams.set("redirect_uri", redirectUri);
-
-  // Remove include_granted_scopes as it might interfere with refresh token issuance
-  // url.searchParams.set("include_granted_scopes", "true");
 
   const state = JSON.stringify({
     recall_calendar_auth_token: authToken,
-    google_oauth_redirect_url: `${process.env.WEB_APP_URL}/api/google_oauth_callback`,
+    google_oauth_redirect_url: redirectUri,
     success_url: `${process.env.WEB_APP_URL}/api/google-calendar/success`,
     error_url: `${process.env.WEB_APP_URL}/api/google-calendar/error`,
   });
@@ -72,7 +65,6 @@ export const authenticateGoogleRoute = createRouteHelper({
       throw new ORPCError("FORBIDDEN", { message: "Access denied" });
     }
 
-    const data = await Oauth();
-    return data;
+    return Oauth();
   },
 });

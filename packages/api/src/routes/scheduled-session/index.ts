@@ -17,6 +17,8 @@ import {
   SendBotToMeetingInputSchema,
 } from "./send-bot-meeting";
 
+import { authenticateGoogleRoute } from "./authenticate";
+
 export const scheduledSession = {
   create: privateRoute
     .input(CreateScheduleSessionInputSchema)
@@ -28,4 +30,5 @@ export const scheduledSession = {
   delete: privateRoute
     .input(DeleteScheduledSessionInputSchema)
     .handler(deleteScheduledSessionRoute),
+  authenticateGoogle: privateRoute.handler(authenticateGoogleRoute),
 };

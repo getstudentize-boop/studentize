@@ -31,7 +31,7 @@ const verifyAccessToken = async (token: string) => {
 };
 
 export const getUserAuth = async (accessToken: string) => {
-  const user = await verifyAccessToken(accessToken);
+  const user: any = await verifyAccessToken(accessToken);
 
   const userId = user?.sub as string | undefined;
   if (user) {

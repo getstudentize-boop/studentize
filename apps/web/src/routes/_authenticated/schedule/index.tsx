@@ -1,7 +1,11 @@
 import { Button } from "@/components/button";
 import { Input } from "@/components/input";
 import { UserSearch } from "@/features/user-search";
-import { VideoCameraIcon } from "@phosphor-icons/react";
+import {
+  CalendarIcon,
+  GoogleLogoIcon,
+  VideoCameraIcon,
+} from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { orpc } from "orpc/client";
@@ -45,6 +49,10 @@ function RouteComponent() {
     })
   );
 
+  const authenticateGoogleMutation = useMutation(
+    orpc.scheduledSession.authenticateGoogle.mutationOptions()
+  );
+
   const searchStudentsMutation = useMutation(
     orpc.student.search.mutationOptions()
   );
@@ -78,6 +86,11 @@ function RouteComponent() {
       scheduledAt: ukTime.toISOString(),
       meetingCode,
     });
+  };
+
+  const handleAuthenticateGoogle = async () => {
+    const data = await authenticateGoogleMutation.mutateAsync({});
+    window.open(data, "_blank", "noopener,noreferrer");
   };
 
   useEffect(() => {
@@ -154,7 +167,21 @@ function RouteComponent() {
           ))}
         </div>
       </div>
-      <div className="h-screen bg-red-200 w-96"></div>
+      <div className="h-screen flex flex-col w-96 bg-white border-l border-bzinc items-center justify-center">
+        <div className="space-y-4">
+          <div className="flex items-center justify-center gap-2">
+            <CalendarIcon className="size-5" />
+            <div>Auto-join sessions</div>
+          </div>
+          <Button
+            className="rounded-md w-full flex items-center justify-center gap-2"
+            onClick={handleAuthenticateGoogle}
+          >
+            <GoogleLogoIcon />
+            Connect calendar
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
