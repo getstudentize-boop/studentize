@@ -137,9 +137,10 @@ const ListCalendar = () => {
                       name={event.raw.summary}
                       startDateTime={event.raw.start.dateTime}
                       endDateTime={event.raw.end.dateTime}
-                      attendees={event.raw.attendees.map(
-                        (attendee) => attendee.name
-                      )}
+                      attendees={
+                        event.raw.attendees?.map((attendee) => attendee.name) ??
+                        []
+                      }
                       isLatest={idx === 0}
                       meetingUrl={event.meeting_url}
                     />
@@ -335,7 +336,7 @@ function RouteComponent() {
           </div>
         </div>
         <div className="mt-4 max-w-2xl w-full grid-cols-2 grid gap-4 text-left">
-          {sessionList.map((session) => {
+          {sessionList?.map((session) => {
             const isGoogleSynced = !!session.googleEventId;
 
             if (filter === "manually-created" && isGoogleSynced) {
