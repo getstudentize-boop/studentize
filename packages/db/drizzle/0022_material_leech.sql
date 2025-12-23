@@ -1,0 +1,1 @@
+ALTER TABLE "scheduled_session" ADD COLUMN "created_session_id" text;

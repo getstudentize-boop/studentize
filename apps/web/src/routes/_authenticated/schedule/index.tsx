@@ -118,7 +118,7 @@ const ListCalendar = () => {
           <div className="overflow-y-auto custom-scrollbar h-[calc(100vh-5rem)]">
             <div className="p-4 pt-2 flex flex-col gap-2">
               {/* <Button>Sync with calendar (every 5 minutes)</Button> */}
-              {calendarEvents.map((event, idx) => {
+              {calendarEvents?.map((event, idx) => {
                 const previousEvent = calendarEvents[idx - 1];
 
                 const isSameMonth =

@@ -2,6 +2,8 @@ import { createServerFileRoute } from "@tanstack/react-start/server";
 
 import { db, schema } from "@student/db";
 
+import { redirect } from "@tanstack/react-router";
+
 export async function fetchTokensFromAuthorizationCode(input: {
   code: string;
 }) {
@@ -72,6 +74,6 @@ export const ServerRoute = createServerFileRoute(
       calendarId: calendar.id,
     });
 
-    return new Response("Tokens fetched", { status: 200 });
+    return redirect({ to: "/schedule" });
   },
 });
