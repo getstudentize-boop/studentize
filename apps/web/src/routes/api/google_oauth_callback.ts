@@ -1,6 +1,6 @@
 import { createServerFileRoute } from "@tanstack/react-start/server";
 
-import { getCalendarList } from "@student/api";
+import { db, schema } from "@student/db";
 
 export async function fetchTokensFromAuthorizationCode(input: {
   code: string;
@@ -33,37 +33,44 @@ export const ServerRoute = createServerFileRoute(
     const url = new URL(request.url);
     const code = url.searchParams.get("code");
 
+    const state = url.searchParams.get("state");
+
+    const { userId } = JSON.parse(state ?? "{}");
+
+    if (!userId) {
+      return new Response("No userId provided", { status: 400 });
+    }
+
     if (!code) {
       return new Response("No code provided", { status: 400 });
     }
 
     const tokens = await fetchTokensFromAuthorizationCode({ code });
 
-    // const response = await fetch(
-    //   "https://us-east-2.recall.ai/api/v2/calendars/",
-    //   {
-    //     method: "POST",
-    //     headers: {
-    //       accept: "application/json",
-    //       "content-type": "application/json",
-    //       Authorization: process.env.AUTO_CALENDAR_CLIENT_SECRET!,
-    //     },
-    //     body: JSON.stringify({
-    //       platform: "google_calendar",
-    //       oauth_client_id: process.env.AUTO_CALENDAR_CLIENT_ID!,
-    //       oauth_client_secret: process.env.AUTO_CALENDAR_CLIENT_SECRET!,
-    //       oauth_refresh_token: tokens.refresh_token,
-    //     }),
-    //   }
-    // );
+    const response = await fetch(
+      "https://us-west-2.recall.ai/api/v2/calendars/",
+      {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "content-type": "application/json",
+          Authorization: process.env.RECALLAI_API_KEY!,
+        },
+        body: JSON.stringify({
+          platform: "google_calendar",
+          oauth_client_id: process.env.AUTO_CALENDAR_CLIENT_ID!,
+          oauth_client_secret: process.env.AUTO_CALENDAR_CLIENT_SECRET!,
+          oauth_refresh_token: tokens.refresh_token,
+        }),
+      }
+    );
 
-    console.log("🔥".repeat(10), tokens);
+    const calendar = await response.json();
 
-    const calendarList = await getCalendarList({
-      accessToken: tokens.access_token,
+    await db.insert(schema.calendar).values({
+      userId,
+      calendarId: calendar.id,
     });
-
-    console.log("🔥".repeat(10), calendarList);
 
     return new Response("Tokens fetched", { status: 200 });
   },

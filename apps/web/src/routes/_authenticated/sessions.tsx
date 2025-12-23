@@ -2,10 +2,11 @@ import {
   createFileRoute,
   Outlet,
   useMatchRoute,
+  useNavigate,
   useParams,
 } from "@tanstack/react-router";
 
-import { PlusIcon } from "@phosphor-icons/react";
+import { ArrowsLeftRightIcon, PlusIcon } from "@phosphor-icons/react";
 
 import Avvatar from "avvvatars-react";
 
@@ -15,6 +16,7 @@ import { SessionTable } from "@/features/tables/session";
 import { useState } from "react";
 import { Button } from "@/components/button";
 import { CreateSession } from "@/features/create-session";
+import { AutoSyncSessionTable } from "@/features/tables/auto-sync-session";
 
 export const Route = createFileRoute("/_authenticated/sessions")({
   component: RouteComponent,
@@ -29,6 +31,9 @@ function RouteComponent() {
   });
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isAutoSync, setIsAutoSync] = useState(false);
+
+  const navigate = useNavigate();
 
   const isUserSession = route({ to: "/sessions/user/$sessionId" });
 
@@ -36,7 +41,12 @@ function RouteComponent() {
     orpc.session.list.queryOptions({ input: {} })
   );
 
+  const listAutoSyncSessionsQuery = useQuery(
+    orpc.session.listAutoSync.queryOptions({ input: {} })
+  );
+
   const sessions = listSessionsQuery.data ?? [];
+  const autoSyncSessions = listAutoSyncSessionsQuery.data ?? [];
 
   if (isUserSession) {
     return <Outlet />;
@@ -54,7 +64,7 @@ function RouteComponent() {
           </Button>
         </div>
         <div className="flex-1 flex flex-col rounded-lg border border-bzinc text-left bg-white">
-          <div className="p-2 border-b border-bzinc">
+          <div className="p-2 border-b border-bzinc flex justify-between items-center">
             <div className="border border-zinc-200 rounded-lg inline-flex items-center">
               <div className="p-2 border-r border-zinc-200/80">
                 <Avvatar size={20} value="test" style="shape" />
@@ -66,19 +76,50 @@ function RouteComponent() {
                 />
               </div>
             </div>
+
+            <button
+              onClick={() => setIsAutoSync((prevState) => !prevState)}
+              className="flex gap-2 items-center py-1 px-2 border border-bzinc rounded-md"
+            >
+              <ArrowsLeftRightIcon />
+              <div>
+                {isAutoSync ? "Create" : "Switch to auto-synced sessions"}
+              </div>
+
+              {!isAutoSync ? (
+                <>
+                  <div className="h-3.5 w-[1px] bg-bzinc" />
+
+                  <div className="text-sm font-semibold text-green-600">
+                    {autoSyncSessions.length}
+                  </div>
+                </>
+              ) : null}
+            </button>
           </div>
 
-          <SessionTable
-            isLoading={listSessionsQuery.isLoading}
-            isError={listSessionsQuery.isError}
-            data={sessions}
-            currentSessionId={params?.sessionId}
-          />
+          {isAutoSync ? (
+            <AutoSyncSessionTable
+              isLoading={listAutoSyncSessionsQuery.isLoading}
+              isError={listAutoSyncSessionsQuery.isError}
+              data={autoSyncSessions}
+            />
+          ) : (
+            <SessionTable
+              isLoading={listSessionsQuery.isLoading}
+              isError={listSessionsQuery.isError}
+              data={sessions}
+              currentSessionId={params?.sessionId}
+            />
+          )}
         </div>
       </div>
       {isOpen ? (
         <CreateSession
-          onBack={() => setIsOpen(false)}
+          onBack={() => {
+            setIsOpen(false);
+            navigate({ to: "/sessions" });
+          }}
           onComplete={() => setIsOpen(false)}
         />
       ) : (

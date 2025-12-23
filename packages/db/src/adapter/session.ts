@@ -1,21 +1,13 @@
 import * as schema from "../schema";
 
-import {
-  InferInsertModel,
-  InferSelectModel,
-  and,
-  db,
-  desc,
-  eq,
-  isNull,
-} from "..";
+import { InferInsertModel, and, db, desc, eq, isNull } from "..";
 import { alias } from "drizzle-orm/pg-core";
 
 type SessionInsert = InferInsertModel<typeof schema.session>;
 
 export const createSession = async (data: {
-  studentUserId: string;
-  advisorUserId: string;
+  studentUserId?: string | null;
+  advisorUserId?: string | null;
   title: string;
 }) => {
   const [session] = await db
@@ -41,6 +33,23 @@ export const getSessionById = (input: { sessionId: string }) => {
       createdAt: true,
     },
   });
+};
+
+export const getAutoSyncedSessions = async () => {
+  return db
+    .select({
+      id: schema.session.id,
+      title: schema.session.title,
+      createdAt: schema.session.createdAt,
+    })
+    .from(schema.session)
+    .where(
+      and(
+        isNull(schema.session.studentUserId),
+        isNull(schema.session.advisorUserId),
+        isNull(schema.session.deletedAt)
+      )
+    );
 };
 
 export const getSessions = async (data: { studentUserId?: string } = {}) => {
@@ -143,4 +152,17 @@ export const deleteSessionById = async (input: { sessionId: string }) => {
     .update(schema.session)
     .set({ deletedAt: new Date() })
     .where(eq(schema.session.id, input.sessionId));
+};
+
+export const getAutoSyncSessionById = async (input: { sessionId: string }) => {
+  return db.query.session.findFirst({
+    where: eq(schema.session.id, input.sessionId),
+    columns: {
+      advisorUserId: true,
+      studentUserId: true,
+      summary: true,
+      title: true,
+      createdAt: true,
+    },
+  });
 };

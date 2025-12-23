@@ -98,4 +98,13 @@ app.post(
 export { SummarizeSessionWorkflow } from "./workflows/session";
 export { AutoJoinSessionWorkflow } from "./workflows/scheduled-session";
 
-export default app;
+// export default app;
+export default {
+  fetch: app.fetch,
+  async scheduled(_controller: any, env: any) {
+    await client.admin.syncScheduledSessions(
+      {},
+      { context: { accessToken: env.ADMIN_TOKEN } }
+    );
+  },
+};

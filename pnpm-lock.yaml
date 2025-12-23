@@ -41,6 +41,9 @@ importers:
       '@student/api':
         specifier: workspace:*
         version: link:../../packages/api
+      '@student/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@student/worker':
         specifier: workspace:*
         version: link:../worker

@@ -18,6 +18,15 @@
   "compatibility_flags": ["nodejs_compat"],
   "vars": {
     "API_URL": "https://app.studentize.com/api/rpc",
+    "ADMIN_TOKEN": "xsx1FQFRdt93bRoEIa67XNXZR7Z+gbIoC1DwS2qoPlw=",
+  },
+  "triggers": {
+    "crons": [
+      // // every 10 minutes
+      // "*/10 * * * *",
+      // every 5 minutes
+      "*/5 * * * *",
+    ],
   },
   // "kv_namespaces": [
   //   {

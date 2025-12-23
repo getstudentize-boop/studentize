@@ -127,6 +127,34 @@
       "when": 1761124488347,
       "tag": "0017_colorful_earthquake",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1766266496105,
+      "tag": "0018_opposite_imperial_guard",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1766340075941,
+      "tag": "0019_nebulous_sugar_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1766489795230,
+      "tag": "0020_warm_nighthawk",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1766491400509,
+      "tag": "0021_married_thunderbolt",
+      "breakpoints": true
     }
   ]
 }

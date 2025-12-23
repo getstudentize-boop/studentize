@@ -9,6 +9,7 @@ import z from "zod";
 import { ORPCError } from "@orpc/server";
 import { MeetingBotService } from "../../services/meeting-bot";
 import {
+  createTemporaryTranscriptionObjectKey,
   createTranscriptionObjectKey,
   getSignedUrl,
   uploadTextFile,
@@ -75,13 +76,20 @@ export const saveScheduledSession = createAdminRouteHelper({
       })
       .join("\n\n");
 
+    const isGoogleSynced = scheduledSession.googleEventId !== null;
+
     const upload = await getSignedUrl(
       "transcription",
-      createTranscriptionObjectKey({
-        ext: "txt",
-        studentUserId: scheduledSession.studentUserId,
-        sessionId: newSession.id,
-      }),
+      isGoogleSynced || !scheduledSession.studentUserId
+        ? createTemporaryTranscriptionObjectKey({
+            ext: "txt",
+            sessionId: newSession.id,
+          })
+        : createTranscriptionObjectKey({
+            ext: "txt",
+            studentUserId: scheduledSession.studentUserId,
+            sessionId: newSession.id,
+          }),
       { type: "put" }
     );
 
@@ -90,6 +98,7 @@ export const saveScheduledSession = createAdminRouteHelper({
     await updateScheduledSessionDoneAt({
       scheduledSessionId: scheduledSession.id,
       doneAt: new Date(doneStatusChange.created_at),
+      createdSessionId: newSession.id,
     });
 
     // summarize content of the session

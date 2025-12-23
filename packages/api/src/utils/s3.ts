@@ -1,4 +1,5 @@
 import {
+  DeleteObjectCommand,
   GetObjectCommand,
   PutObjectCommand,
   S3Client,
@@ -29,6 +30,13 @@ export const createTranscriptionObjectKey = (input: {
   return `${input.studentUserId}/${input.sessionId}.${input.ext}`;
 };
 
+export const createTemporaryTranscriptionObjectKey = (input: {
+  sessionId: string;
+  ext: string;
+}) => {
+  return `temporary/${input.sessionId}.${input.ext}`;
+};
+
 type Bucket = "transcription";
 
 export const getSignedUrl = (
@@ -46,6 +54,15 @@ export const getSignedUrl = (
         });
 
   return awsGetSignedUrl(S3, command, { expiresIn: 3600 });
+};
+
+//
+export const deleteFile = async (input: { bucket: Bucket; key: string }) => {
+  const command = new DeleteObjectCommand({
+    Bucket: input.bucket,
+    Key: input.key,
+  });
+  await S3.send(command);
 };
 
 export const readFile = async (input: { bucket: Bucket; key: string }) => {

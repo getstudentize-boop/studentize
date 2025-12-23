@@ -6,12 +6,14 @@ export const createScheduleSession = async ({
   studentUserId,
   meetingCode,
   title,
+  googleEventId,
 }: {
   scheduledAt: Date;
-  advisorUserId: string;
-  studentUserId: string;
+  advisorUserId?: string;
+  studentUserId?: string;
   meetingCode: string;
   title: string;
+  googleEventId?: string;
 }) => {
   const [session] = await db
     .insert(schema.scheduledSession)
@@ -21,6 +23,7 @@ export const createScheduleSession = async ({
       studentUserId,
       meetingCode,
       title,
+      googleEventId,
     })
     .returning({ id: schema.scheduledSession.id });
 
@@ -41,6 +44,7 @@ export const getScheduledSessionList = async () => {
       title: true,
       id: true,
       botId: true,
+      googleEventId: true,
     },
   });
 };
@@ -77,6 +81,7 @@ export const getScheduledSessionByBotId = async (input: { botId: string }) => {
       meetingCode: true,
       title: true,
       id: true,
+      googleEventId: true,
     },
   });
 };
@@ -106,11 +111,12 @@ export const updateScheduledSessionBotId = async (input: {
 
 export const updateScheduledSessionDoneAt = async (input: {
   scheduledSessionId: string;
+  createdSessionId: string;
   doneAt: Date;
 }) => {
   await db
     .update(schema.scheduledSession)
-    .set({ doneAt: input.doneAt })
+    .set({ doneAt: input.doneAt, createdSessionId: input.createdSessionId })
     .where(eq(schema.scheduledSession.id, input.scheduledSessionId));
 };
 

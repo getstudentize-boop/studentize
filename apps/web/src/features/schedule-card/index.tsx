@@ -3,6 +3,7 @@ import {
   CalendarBlankIcon,
   ClockIcon,
   DotsThreeOutlineIcon,
+  GoogleLogoIcon,
   RobotIcon,
 } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -41,6 +42,15 @@ export const ScheduleCard = ({
             <div className="flex gap-2 items-center">
               <ClockIcon className="size-4 text-zinc-500" />
               <div>{_format(new Date(session.scheduledAt), "h:mm a")}</div>
+              {!!session.googleEventId ? (
+                <>
+                  <div className="bg-zinc-400 w-[1px] h-4 rounded-full" />
+                  <div className="flex gap-2 items-center text-green-600">
+                    <GoogleLogoIcon weight="bold" />
+                    <div>Synced</div>
+                  </div>
+                </>
+              ) : null}
             </div>
 
             <Popover

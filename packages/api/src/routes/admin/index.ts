@@ -15,6 +15,8 @@ import {
   SaveScheduledSessionInputSchema,
 } from "./save-scheduled-session";
 
+import { syncScheduledSessionsRoute } from "./sync";
+
 export const admin = {
   scheduledSessionTime: adminRoute
     .input(ScheduledSessionTimeInputSchema)
@@ -25,4 +27,5 @@ export const admin = {
   saveScheduledSession: adminRoute
     .input(SaveScheduledSessionInputSchema)
     .handler(saveScheduledSession),
+  syncScheduledSessions: adminRoute.handler(syncScheduledSessionsRoute),
 };

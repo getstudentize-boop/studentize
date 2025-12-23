@@ -18,7 +18,7 @@ export const readSessionTranscription = async (
 
   const session = await getSessionById({ sessionId: input.sessionId });
 
-  if (!session) {
+  if (!session || !session?.studentUserId) {
     throw new ORPCError("NOT_FOUND", { message: "Session not found" });
   }
 

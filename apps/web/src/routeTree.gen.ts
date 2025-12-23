@@ -23,6 +23,7 @@ import { Route as AuthenticatedScheduleIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedStudentsUserIdRouteImport } from './routes/_authenticated/students/$userId'
 import { Route as AuthenticatedStudentUserIdRouteImport } from './routes/_authenticated/student/$userId'
 import { Route as AuthenticatedSessionsSessionIdRouteImport } from './routes/_authenticated/sessions/$sessionId'
+import { Route as AuthenticatedSessionsAutoSessionIdRouteImport } from './routes/_authenticated/sessions/$autoSessionId'
 import { Route as AuthenticatedAdvisorsUserIdRouteImport } from './routes/_authenticated/advisors/$userId'
 import { Route as AuthenticatedSessionsUserSessionIdRouteImport } from './routes/_authenticated/sessions/user/$sessionId'
 import { ServerRoute as ApiGoogle_oauth_callbackServerRouteImport } from './routes/api/google_oauth_callback'
@@ -95,6 +96,12 @@ const AuthenticatedSessionsSessionIdRoute =
     path: '/$sessionId',
     getParentRoute: () => AuthenticatedSessionsRoute,
   } as any)
+const AuthenticatedSessionsAutoSessionIdRoute =
+  AuthenticatedSessionsAutoSessionIdRouteImport.update({
+    id: '/$autoSessionId',
+    path: '/$autoSessionId',
+    getParentRoute: () => AuthenticatedSessionsRoute,
+  } as any)
 const AuthenticatedAdvisorsUserIdRoute =
   AuthenticatedAdvisorsUserIdRouteImport.update({
     id: '/$userId',
@@ -138,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/students': typeof AuthenticatedStudentsRouteWithChildren
   '/users': typeof AuthenticatedUsersRoute
   '/advisors/$userId': typeof AuthenticatedAdvisorsUserIdRoute
+  '/sessions/$autoSessionId': typeof AuthenticatedSessionsAutoSessionIdRoute
   '/sessions/$sessionId': typeof AuthenticatedSessionsSessionIdRoute
   '/student/$userId': typeof AuthenticatedStudentUserIdRoute
   '/students/$userId': typeof AuthenticatedStudentsUserIdRoute
@@ -153,6 +161,7 @@ export interface FileRoutesByTo {
   '/students': typeof AuthenticatedStudentsRouteWithChildren
   '/users': typeof AuthenticatedUsersRoute
   '/advisors/$userId': typeof AuthenticatedAdvisorsUserIdRoute
+  '/sessions/$autoSessionId': typeof AuthenticatedSessionsAutoSessionIdRoute
   '/sessions/$sessionId': typeof AuthenticatedSessionsSessionIdRoute
   '/student/$userId': typeof AuthenticatedStudentUserIdRoute
   '/students/$userId': typeof AuthenticatedStudentsUserIdRoute
@@ -170,6 +179,7 @@ export interface FileRoutesById {
   '/_authenticated/students': typeof AuthenticatedStudentsRouteWithChildren
   '/_authenticated/users': typeof AuthenticatedUsersRoute
   '/_authenticated/advisors/$userId': typeof AuthenticatedAdvisorsUserIdRoute
+  '/_authenticated/sessions/$autoSessionId': typeof AuthenticatedSessionsAutoSessionIdRoute
   '/_authenticated/sessions/$sessionId': typeof AuthenticatedSessionsSessionIdRoute
   '/_authenticated/student/$userId': typeof AuthenticatedStudentUserIdRoute
   '/_authenticated/students/$userId': typeof AuthenticatedStudentsUserIdRoute
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/students'
     | '/users'
     | '/advisors/$userId'
+    | '/sessions/$autoSessionId'
     | '/sessions/$sessionId'
     | '/student/$userId'
     | '/students/$userId'
@@ -202,6 +213,7 @@ export interface FileRouteTypes {
     | '/students'
     | '/users'
     | '/advisors/$userId'
+    | '/sessions/$autoSessionId'
     | '/sessions/$sessionId'
     | '/student/$userId'
     | '/students/$userId'
@@ -218,6 +230,7 @@ export interface FileRouteTypes {
     | '/_authenticated/students'
     | '/_authenticated/users'
     | '/_authenticated/advisors/$userId'
+    | '/_authenticated/sessions/$autoSessionId'
     | '/_authenticated/sessions/$sessionId'
     | '/_authenticated/student/$userId'
     | '/_authenticated/students/$userId'
@@ -362,6 +375,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSessionsSessionIdRouteImport
       parentRoute: typeof AuthenticatedSessionsRoute
     }
+    '/_authenticated/sessions/$autoSessionId': {
+      id: '/_authenticated/sessions/$autoSessionId'
+      path: '/$autoSessionId'
+      fullPath: '/sessions/$autoSessionId'
+      preLoaderRoute: typeof AuthenticatedSessionsAutoSessionIdRouteImport
+      parentRoute: typeof AuthenticatedSessionsRoute
+    }
     '/_authenticated/advisors/$userId': {
       id: '/_authenticated/advisors/$userId'
       path: '/$userId'
@@ -425,11 +445,14 @@ const AuthenticatedAdvisorsRouteWithChildren =
   )
 
 interface AuthenticatedSessionsRouteChildren {
+  AuthenticatedSessionsAutoSessionIdRoute: typeof AuthenticatedSessionsAutoSessionIdRoute
   AuthenticatedSessionsSessionIdRoute: typeof AuthenticatedSessionsSessionIdRoute
   AuthenticatedSessionsUserSessionIdRoute: typeof AuthenticatedSessionsUserSessionIdRoute
 }
 
 const AuthenticatedSessionsRouteChildren: AuthenticatedSessionsRouteChildren = {
+  AuthenticatedSessionsAutoSessionIdRoute:
+    AuthenticatedSessionsAutoSessionIdRoute,
   AuthenticatedSessionsSessionIdRoute: AuthenticatedSessionsSessionIdRoute,
   AuthenticatedSessionsUserSessionIdRoute:
     AuthenticatedSessionsUserSessionIdRoute,

@@ -17,7 +17,6 @@ const getAuthToken = async () => {
   );
 
   const data = await response.json();
-  console.log("Recall.ai response:", JSON.stringify(data, null, 2));
 
   // The response might have 'token' or 'recall_calendar_auth_token' field
   const token = data.token || data.recall_calendar_auth_token;
@@ -29,8 +28,10 @@ const getAuthToken = async () => {
   return token;
 };
 
-const Oauth = async () => {
-  const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+const Oauth = async (input: { userId: string }) => {
+  const { userId } = input;
+
+  const url = new URL(`https://accounts.google.com/o/oauth2/v2/auth`);
 
   const authToken = await getAuthToken();
 
@@ -51,6 +52,7 @@ const Oauth = async () => {
     google_oauth_redirect_url: redirectUri,
     success_url: `${process.env.WEB_APP_URL}/api/google-calendar/success`,
     error_url: `${process.env.WEB_APP_URL}/api/google-calendar/error`,
+    userId,
   });
 
   // URLSearchParams.set() automatically URL-encodes the value, so no need for encodeURIComponent
@@ -65,6 +67,6 @@ export const authenticateGoogleRoute = createRouteHelper({
       throw new ORPCError("FORBIDDEN", { message: "Access denied" });
     }
 
-    return Oauth();
+    return Oauth({ userId: ctx.user.id });
   },
 });

@@ -1,0 +1,66 @@
+import { createRouteHelper } from "../../utils/middleware";
+import { updateSessionById } from "@student/db";
+
+import { ORPCError } from "@orpc/server";
+import z from "zod";
+import {
+  createTemporaryTranscriptionObjectKey,
+  createTranscriptionObjectKey,
+  deleteFile,
+  getSignedUrl,
+  readFile,
+  uploadTextFile,
+} from "../../utils/s3";
+
+export const CreateAutoSyncInputSchema = z.object({
+  sessionId: z.string(),
+  studentUserId: z.string(),
+  advisorUserId: z.string(),
+});
+
+export const createAutoSyncRoute = createRouteHelper({
+  inputSchema: CreateAutoSyncInputSchema,
+  execute: async ({ ctx, input }) => {
+    if (ctx.user.type !== "ADMIN") {
+      throw new ORPCError("UNAUTHORIZED");
+    }
+
+    const { sessionId, advisorUserId, studentUserId } = input;
+
+    await updateSessionById({ sessionId, advisorUserId, studentUserId });
+
+    const temporaryTranscriptionKey = createTemporaryTranscriptionObjectKey({
+      sessionId,
+      ext: "txt",
+    });
+
+    // read the temporary transcription
+    const temporaryTranscription = await readFile({
+      bucket: "transcription",
+      key: temporaryTranscriptionKey,
+    });
+
+    if (!temporaryTranscription) {
+      throw new ORPCError("NOT_FOUND", {
+        message: "Temporary transcription not found",
+      });
+    }
+
+    const transcriptionKey = createTranscriptionObjectKey({
+      sessionId,
+      ext: "txt",
+      studentUserId,
+    });
+
+    const uploadUrl = await getSignedUrl("transcription", transcriptionKey, {
+      type: "put",
+    });
+
+    await uploadTextFile({ uploadUrl, content: temporaryTranscription });
+
+    await deleteFile({
+      bucket: "transcription",
+      key: temporaryTranscriptionKey,
+    });
+  },
+});

@@ -108,6 +108,18 @@ import {
   GetSessionOverviewInputSchema,
   getSessionOverviewRoute,
 } from "./overview";
+import { listAutoSyncSessionsRoute } from "./list-auto-sync";
+import { GetOneAutoSyncSessionInputSchema } from "./get-one-auto-sync";
+import { getOneAutoSyncSessionRoute } from "./get-one-auto-sync";
+
+import {
+  readTemporaryTranscription,
+  ReadTemporaryTranscriptionSchema,
+} from "./read-temporary-transcription";
+import {
+  CreateAutoSyncInputSchema,
+  createAutoSyncRoute,
+} from "./create-auto-sync";
 
 // todo: move all the handlers above to this format
 export const session = {
@@ -117,4 +129,14 @@ export const session = {
   overview: privateRoute
     .input(GetSessionOverviewInputSchema)
     .handler(getSessionOverviewRoute),
+  listAutoSync: privateRoute.handler(listAutoSyncSessionsRoute),
+  getOneAutoSync: privateRoute
+    .input(GetOneAutoSyncSessionInputSchema)
+    .handler(getOneAutoSyncSessionRoute),
+  readTemporaryTranscription: privateRoute
+    .input(ReadSessionTranscriptionInputSchema)
+    .handler(readTemporaryTranscription),
+  createAutoSync: privateRoute
+    .input(CreateAutoSyncInputSchema)
+    .handler(createAutoSyncRoute),
 };

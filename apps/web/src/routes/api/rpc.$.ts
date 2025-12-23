@@ -20,7 +20,7 @@ async function handle({ request }: { request: Request }) {
     prefix: "/api/rpc",
     context: {
       user: userData as any,
-      accessToken: userAccessToken,
+      accessToken: userAccessToken ?? accessToken,
     },
   });
 

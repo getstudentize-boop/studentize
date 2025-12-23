@@ -17,6 +17,7 @@
     "@orpc/tanstack-query": "^1.8.6",
     "@phosphor-icons/react": "^2.1.10",
     "@student/api": "workspace:*",
+    "@student/db": "workspace:*",
     "@student/worker": "workspace:*",
     "@tailwindcss/vite": "^4.1.12",
     "@tanstack/react-devtools": "^0.2.2",

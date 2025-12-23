@@ -42,12 +42,12 @@ function RouteComponent() {
       className="w-[500px] border-l border-bzinc bg-white relative"
     >
       <div className="px-4 pt-7 border-b border-bzinc">
-        <div className="flex gap-4 items-center">
+        <Link to="/sessions" className="flex gap-4 items-center">
           <ArrowLeftIcon />
           <div>
             <div className="font-semibold">Update Session</div>
           </div>
-        </div>
+        </Link>
         <div className="flex">
           {(["general", "transcription"] as const).map((t) => (
             <Link key={t} to="." search={{ tab: t }}>

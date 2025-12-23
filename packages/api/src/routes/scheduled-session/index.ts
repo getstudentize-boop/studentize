@@ -19,6 +19,8 @@ import {
 
 import { authenticateGoogleRoute } from "./authenticate";
 
+import { listGoogleCalendarRoute } from "./list-google-calendar";
+
 export const scheduledSession = {
   create: privateRoute
     .input(CreateScheduleSessionInputSchema)
@@ -31,4 +33,5 @@ export const scheduledSession = {
     .input(DeleteScheduledSessionInputSchema)
     .handler(deleteScheduledSessionRoute),
   authenticateGoogle: privateRoute.handler(authenticateGoogleRoute),
+  listGoogleCalendar: privateRoute.handler(listGoogleCalendarRoute),
 };
