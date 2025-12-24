@@ -90,7 +90,7 @@ const ListCalendar = () => {
   );
 
   const adminSyncCalendarMutation = useMutation(
-    orpc.admin.syncScheduledSessions.mutationOptions()
+    orpc.scheduledSession.forceSync.mutationOptions()
   );
 
   const calendarEvents = listGoogleCalendarQuery.data ?? [];

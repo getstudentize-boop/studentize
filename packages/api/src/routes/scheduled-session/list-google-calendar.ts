@@ -39,8 +39,6 @@ export const getGoogleCalendar = async (input: { calendarId: string }) => {
     }[];
   };
 
-  console.log(data);
-
   return data.results;
 };
 
