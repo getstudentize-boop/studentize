@@ -18,6 +18,7 @@ import { ScheduleCard } from "@/features/schedule-card";
 import Avvatar from "avvvatars-react";
 import { cn } from "@/utils/cn";
 import { Loader } from "@/components/loader";
+import { Tooltip } from "@/components/tooltip";
 
 export const Route = createFileRoute("/_authenticated/schedule/")({
   component: RouteComponent,
@@ -121,14 +122,31 @@ const ListCalendar = () => {
           </div>
           <div className="overflow-y-auto custom-scrollbar h-[calc(100vh-5rem)]">
             <div className="p-4 pt-2 flex flex-col gap-2">
-              <Button
-                className="rounded-md"
-                variant="neutral"
-                onClick={() => adminSyncCalendarMutation.mutateAsync({})}
-                isLoading={adminSyncCalendarMutation.isPending}
+              <Tooltip
+                className="w-96"
+                side="bottom"
+                align="end"
+                trigger={
+                  <Button
+                    className="rounded-md flex-col p-2"
+                    variant="neutral"
+                    onClick={() => adminSyncCalendarMutation.mutateAsync({})}
+                    isLoading={adminSyncCalendarMutation.isPending}
+                  >
+                    Sync with calendar (every 5 minutes)
+                  </Button>
+                }
               >
-                Sync with calendar (every 5 minutes)
-              </Button>
+                <div className="text-sm text-zinc-500 p-2">
+                  Every 5 minutes your google calendar will be synced with your
+                  scheduled sessions. Mark with
+                  <span className="inline-flex gap-1 mx-1 items-center translate-y-0.5 text-green-600">
+                    <GoogleLogoIcon />
+                    <span>Synced</span>
+                  </span>{" "}
+                  on the right.
+                </div>
+              </Tooltip>
               {calendarEvents?.map((event, idx) => {
                 const previousEvent = calendarEvents[idx - 1];
 
