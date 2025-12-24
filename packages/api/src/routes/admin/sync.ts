@@ -11,6 +11,8 @@ export const syncScheduledSessionsRoute = createAdminRouteHelper({
       })
       .from(schema.calendar);
 
+    const now = new Date();
+
     for (const calendar of calendars) {
       const data = await getGoogleCalendar({ calendarId: calendar.calendarId });
 
@@ -18,6 +20,11 @@ export const syncScheduledSessionsRoute = createAdminRouteHelper({
 
       for (const event of data) {
         const code = event.meeting_url.split("/").pop();
+
+        // only sync events that are in the future
+        if (new Date(event.start_time) < now) {
+          continue;
+        }
 
         if (!code) {
           continue;
