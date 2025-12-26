@@ -50,6 +50,8 @@ export const saveScheduledSession = createAdminRouteHelper({
       throw new Error("Meeting is not done yet");
     }
 
+    console.log("doneStatusChange 😅", response);
+
     const transcriptionData = await meetingBotService.getMeetingTranscription({
       information: response,
     });
