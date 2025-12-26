@@ -78,17 +78,23 @@ export const ScheduleCard = ({
               </Button>
               <DeleteSession scheduledSessionId={session.id} />
 
-              <hr className="border border-bzinc" />
+              {session.botId ? (
+                <>
+                  <hr className="border border-bzinc" />
 
-              <Button
-                className="rounded-md"
-                isLoading={endMeetingMutation.isPending}
-                onClick={() =>
-                  endMeetingMutation.mutate({ scheduledSessionId: session.id })
-                }
-              >
-                End meeting
-              </Button>
+                  <Button
+                    className="rounded-md"
+                    isLoading={endMeetingMutation.isPending}
+                    onClick={() =>
+                      endMeetingMutation.mutate({
+                        scheduledSessionId: session.id,
+                      })
+                    }
+                  >
+                    End meeting
+                  </Button>
+                </>
+              ) : null}
             </Popover>
           </div>
         </div>

@@ -14,12 +14,14 @@ export const endMeetingRoute = createRouteHelper({
   execute: async ({ input }) => {
     const { scheduledSessionId } = input;
 
+    console.log("scheduledSessionId 😅", scheduledSessionId);
+
     const scheduleSession = await getScheduledSessionById({
       scheduledSessionId,
     });
 
     if (!scheduleSession?.botId) {
-      throw new Error("Scheduled session not found");
+      throw new Error("Scheduled and bot not found");
     }
 
     await saveScheduledSession({ input: { botId: scheduleSession.botId } });
