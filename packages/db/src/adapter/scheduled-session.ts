@@ -62,6 +62,7 @@ export const getScheduledSessionById = async (input: {
       meetingCode: true,
       title: true,
       id: true,
+      botId: true,
     },
   });
 };

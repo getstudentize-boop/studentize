@@ -3,6 +3,7 @@ import {
   CalendarBlankIcon,
   ClockIcon,
   DotsThreeOutlineIcon,
+  FloppyDiskBackIcon,
   GoogleLogoIcon,
   RobotIcon,
 } from "@phosphor-icons/react";
@@ -22,6 +23,10 @@ export const ScheduleCard = ({
 
   const sendBotToMeetingMutation = useMutation(
     orpc.scheduledSession.sendBotToMeeting.mutationOptions({})
+  );
+
+  const endMeetingMutation = useMutation(
+    orpc.scheduledSession.endMeeting.mutationOptions()
   );
 
   return (
@@ -72,6 +77,18 @@ export const ScheduleCard = ({
                 Send bot to session
               </Button>
               <DeleteSession scheduledSessionId={session.id} />
+
+              <hr className="border border-bzinc" />
+
+              <Button
+                className="rounded-md"
+                isLoading={endMeetingMutation.isPending}
+                onClick={() =>
+                  endMeetingMutation.mutate({ scheduledSessionId: session.id })
+                }
+              >
+                End meeting
+              </Button>
             </Popover>
           </div>
         </div>

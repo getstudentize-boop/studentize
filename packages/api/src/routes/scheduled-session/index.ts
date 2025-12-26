@@ -23,6 +23,8 @@ import { listGoogleCalendarRoute } from "./list-google-calendar";
 
 import { forcSyncScheduledSessionRoute } from "./force-sync";
 
+import { endMeetingRoute, EndMeetingInputSchema } from "./end-meeting";
+
 export const scheduledSession = {
   create: privateRoute
     .input(CreateScheduleSessionInputSchema)
@@ -37,4 +39,7 @@ export const scheduledSession = {
   authenticateGoogle: privateRoute.handler(authenticateGoogleRoute),
   listGoogleCalendar: privateRoute.handler(listGoogleCalendarRoute),
   forceSync: privateRoute.handler(forcSyncScheduledSessionRoute),
+  endMeeting: privateRoute
+    .input(EndMeetingInputSchema)
+    .handler(endMeetingRoute),
 };

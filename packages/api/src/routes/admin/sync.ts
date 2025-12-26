@@ -19,6 +19,10 @@ export const syncScheduledSessionsRoute = createAdminRouteHelper({
       const workerService = new WorkerService();
 
       for (const event of data) {
+        if (!event.meeting_url) {
+          continue;
+        }
+
         const code = event.meeting_url.split("/").pop();
 
         // only sync events that are in the future
