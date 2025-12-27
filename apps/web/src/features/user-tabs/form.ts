@@ -21,6 +21,7 @@ export const studentFormOpts = formOptions({
     targetCountries: [] as string[],
     areasOfInterest: [] as string[],
     expectedGraduationYear: "",
+    status: "ACTIVE" as "ACTIVE" | "INACTIVE",
     extracurricular: [] as Array<{
       type: string;
       name: string;

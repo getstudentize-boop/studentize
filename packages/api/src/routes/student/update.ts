@@ -9,6 +9,7 @@ export const UpdateStudentInputSchema = z.object({
   expectedGraduationYear: z.string(),
   targetCountries: z.array(z.string()),
   areasOfInterest: z.array(z.string()),
+  status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
   extracurricular: z.array(
     z.object({
       type: z.string(),
@@ -29,6 +30,7 @@ export const updateStudent = async (
   const { studentId } = await updateStudentByUserId(studentUserId, {
     ...rest,
     expectedGraduationYear: rest.expectedGraduationYear.toString(),
+    status: rest.status,
   });
 
   return { studentId };

@@ -162,6 +162,13 @@
       "when": 1766525786724,
       "tag": "0022_material_leech",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1766802773196,
+      "tag": "0023_wakeful_bug",
+      "breakpoints": true
     }
   ]
 }

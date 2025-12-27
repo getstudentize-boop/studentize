@@ -1,6 +1,8 @@
-import { jsonb, pgTable, text } from "drizzle-orm/pg-core";
+import { jsonb, pgEnum, pgTable, text } from "drizzle-orm/pg-core";
 
 import { createdAt, id } from "./utils";
+
+export const statusType = pgEnum("status_type", ["ACTIVE", "INACTIVE"]);
 
 export const student = pgTable("student", {
   id,
@@ -12,6 +14,7 @@ export const student = pgTable("student", {
   expectedGraduationYear: text("expected_graduation_year"),
   targetCountries: jsonb("target_countries").$type<string[]>().default([]),
   areasOfInterest: jsonb("areas_of_interest").$type<string[]>().default([]),
+  status: statusType().default("ACTIVE"),
   extracurricular: jsonb("extracurricular")
     .$type<
       Array<{

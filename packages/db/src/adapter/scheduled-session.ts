@@ -1,4 +1,4 @@
-import { and, db, eq, gte, isNull, lt, schema } from "..";
+import { and, db, desc, eq, gte, isNull, lt, schema } from "..";
 
 export const createScheduleSession = async ({
   scheduledAt,
@@ -36,6 +36,7 @@ export const getScheduledSessionList = async () => {
       isNull(schema.scheduledSession.doneAt),
       isNull(schema.scheduledSession.deletedAt)
     ),
+    orderBy: desc(schema.scheduledSession.scheduledAt),
     columns: {
       advisorUserId: true,
       studentUserId: true,

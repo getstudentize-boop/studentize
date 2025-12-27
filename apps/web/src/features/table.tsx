@@ -77,7 +77,7 @@ export const DataTable = ({
               key={row.id}
               onClick={() => onRowClick?.(row)}
               className={cn(
-                "transition-colors",
+                "transition-colors group",
                 !!onRowClick && "cursor-pointer hover:bg-zinc-50",
                 isRowSelected?.(row) && "bg-zinc-100"
               )}

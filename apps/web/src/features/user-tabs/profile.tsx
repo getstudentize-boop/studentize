@@ -227,6 +227,26 @@ export const UserProfileTab = withStudentForm({
 
     return (
       <div className="p-6">
+        <div className="mb-4">
+          <form.Field
+            name="status"
+            children={(field) => (
+              <Select
+                label="Status"
+                value={(field.state.value ?? "ACTIVE").toLowerCase()}
+                onValueChange={(val) =>
+                  !isDisabled &&
+                  field.handleChange(val.toUpperCase() as "ACTIVE" | "INACTIVE")
+                }
+                options={[
+                  { value: "active", label: "Active" },
+                  { value: "inactive", label: "Inactive" },
+                ]}
+              />
+            )}
+          />
+        </div>
+
         <div className="flex gap-2 font-semibold items-center">
           <GraduationCapIcon size={18} weight="bold" />
           <div>Academic Information</div>

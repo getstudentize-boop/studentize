@@ -10,6 +10,7 @@ import { RouterOutputs } from "orpc/client";
 import { Link } from "@tanstack/react-router";
 import { ArrowRightIcon, BrainIcon } from "@phosphor-icons/react";
 import { useTableHeight } from "@/hooks/use-table-height";
+import { cn } from "@/utils/cn";
 
 const StudentCell = (props: { name: string }) => {
   return (
@@ -27,23 +28,54 @@ const columnHelper = createColumnHelper<Student>();
 const columns = [
   columnHelper.accessor("name", {
     header: "Students",
-    cell: (info) => <StudentCell name={info.getValue() ?? "n/a"} />,
+    cell: (info) => {
+      const status = info.row.original.status;
+
+      return (
+        <div
+          className={cn(
+            status === "INACTIVE" &&
+              "opacity-50 transition-opacity group-hover:opacity-100"
+          )}
+        >
+          <StudentCell name={info.getValue() ?? "n/a"} />
+        </div>
+      );
+    },
   }),
   columnHelper.accessor("studentUserId", {
     header: "Guru",
-    cell: (info) => (
-      <Link to="/guru" search={{ userId: info.getValue() }}>
-        <BrainIcon className="size-4 hover:text-cyan-600 transition-colors" />
-      </Link>
-    ),
+    cell: (info) => {
+      const status = info.row.original.status;
+
+      return (
+        <Link to="/guru" search={{ userId: info.getValue() }}>
+          <BrainIcon
+            className={cn(
+              "size-4 hover:text-cyan-600 transition-all",
+              status === "INACTIVE" && "opacity-50 group-hover:opacity-100"
+            )}
+          />
+        </Link>
+      );
+    },
   }),
   columnHelper.accessor("studentUserId", {
     header: "",
-    cell: (info) => (
-      <Link to="/student/$userId" params={{ userId: info.getValue() }}>
-        <ArrowRightIcon className="size-4 hover:text-cyan-600 transition-colors" />
-      </Link>
-    ),
+    cell: (info) => {
+      const status = info.row.original.status;
+
+      return (
+        <Link to="/student/$userId" params={{ userId: info.getValue() }}>
+          <ArrowRightIcon
+            className={cn(
+              "size-4 hover:text-cyan-600 transition-colors",
+              status === "INACTIVE" && "opacity-50 group-hover:opacity-100"
+            )}
+          />
+        </Link>
+      );
+    },
   }),
 ];
 

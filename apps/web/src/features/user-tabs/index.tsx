@@ -146,12 +146,14 @@ export const UserOverviewTab = ({
       targetCountries: student?.targetCountries ?? [],
       areasOfInterest: student?.areasOfInterest ?? [],
       expectedGraduationYear: student?.expectedGraduationYear ?? "",
+      status: (student?.status ?? "ACTIVE") as "ACTIVE" | "INACTIVE",
       extracurricular: student?.extracurricular ?? [],
     },
     onSubmit: async (vals) => {
       await updateStudentMutation.mutateAsync({
         ...vals.value,
         studyCurriculum: vals.value.curriculum,
+        status: vals.value.status,
         studentUserId,
       });
 

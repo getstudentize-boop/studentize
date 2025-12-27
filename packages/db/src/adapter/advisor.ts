@@ -6,10 +6,10 @@ import {
   desc,
   and,
   count,
+  asc,
 } from "..";
 
 import * as schema from "../schema";
-import { createdAt } from "../schema/utils";
 
 type AdvisorSelect = InferSelectModel<typeof schema.advisor>;
 type AdvisorInsert = InferInsertModel<typeof schema.advisor>;
@@ -330,9 +330,11 @@ export const getStudentList = async (input: { advisorUserId?: string }) => {
         studentUserId: schema.user.id,
         name: schema.user.name,
         curriculum: schema.student.studyCurriculum,
+        status: schema.student.status,
       })
       .from(schema.student)
-      .innerJoin(schema.user, eq(schema.user.id, schema.student.userId));
+      .innerJoin(schema.user, eq(schema.user.id, schema.student.userId))
+      .orderBy(asc(schema.student.status));
   }
 
   return db
@@ -340,6 +342,7 @@ export const getStudentList = async (input: { advisorUserId?: string }) => {
       studentUserId: schema.advisorStudentAccess.studentUserId,
       name: schema.user.name,
       curriculum: schema.student.studyCurriculum,
+      status: schema.student.status,
     })
     .from(schema.advisorStudentAccess)
     .innerJoin(
