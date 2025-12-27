@@ -1,0 +1,78 @@
+import Avvatar from "avvvatars-react";
+
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { DataTable } from "../table";
+import { RouterOutputs } from "orpc/client";
+import { Link } from "@tanstack/react-router";
+import { ArrowRightIcon, BrainIcon } from "@phosphor-icons/react";
+import { useTableHeight } from "@/hooks/use-table-height";
+
+const StudentCell = (props: { name: string }) => {
+  return (
+    <div className="flex gap-2 items-center">
+      <Avvatar size={24} value={props.name} style="shape" />
+      {props.name}
+    </div>
+  );
+};
+
+type Student = RouterOutputs["advisor"]["getStudentList"][number];
+
+const columnHelper = createColumnHelper<Student>();
+
+const columns = [
+  columnHelper.accessor("name", {
+    header: "Students",
+    cell: (info) => <StudentCell name={info.getValue() ?? "n/a"} />,
+  }),
+  columnHelper.accessor("studentUserId", {
+    header: "Guru",
+    cell: (info) => (
+      <Link to="/guru" search={{ userId: info.getValue() }}>
+        <BrainIcon className="size-4 hover:text-cyan-600 transition-colors" />
+      </Link>
+    ),
+  }),
+  columnHelper.accessor("studentUserId", {
+    header: "",
+    cell: (info) => (
+      <Link to="/student/$userId" params={{ userId: info.getValue() }}>
+        <ArrowRightIcon className="size-4 hover:text-cyan-600 transition-colors" />
+      </Link>
+    ),
+  }),
+];
+
+export const StudentHomeTable = ({
+  data,
+  isError,
+  isLoading,
+}: {
+  data: Student[];
+  isError: boolean;
+  isLoading?: boolean;
+}) => {
+  const { handleRef, tableHeight } = useTableHeight();
+
+  const table = useReactTable({
+    columns,
+    data,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  return (
+    <div
+      ref={handleRef}
+      className="text-left overflow-y-auto no-scrollbar h-full"
+      style={{ height: tableHeight ? tableHeight - 32 : undefined }}
+    >
+      {tableHeight ? (
+        <DataTable table={table} isLoading={isLoading} isError={isError} />
+      ) : null}
+    </div>
+  );
+};

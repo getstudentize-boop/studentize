@@ -2,7 +2,6 @@ import Avvatar from "avvvatars-react";
 
 import { format } from "date-fns";
 
-import { CircleIcon } from "@phosphor-icons/react";
 import {
   createColumnHelper,
   getCoreRowModel,

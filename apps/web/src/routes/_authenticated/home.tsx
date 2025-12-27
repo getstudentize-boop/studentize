@@ -17,6 +17,7 @@ import { format as dateFnFormat } from "date-fns";
 import { cn } from "@/utils/cn";
 import { z } from "zod";
 import { UserOverviewTab } from "@/features/user-tabs";
+import { StudentHomeTable } from "@/features/tables/student-home";
 
 export const Route = createFileRoute("/_authenticated/home")({
   component: RouteComponent,
@@ -205,19 +206,12 @@ function RouteComponent() {
         <AdvisorOverviewPanel />
         <div className="flex w-full h-full">
           <div className="w-10 bg-zinc-50 border-r border-bzinc" />
-          <div className="flex-1 p-4 overflow-y-auto custom-scrollbar pb-48">
-            <div className="grid grid-cols-2 2xl:grid-cols-3 gap-4">
-              {students.map((student) => (
-                <StudentCard key={student.studentUserId} student={student} />
-              ))}
-              {studentListQuery.isPending ? (
-                <>
-                  <StudentCardLoader />
-                  <StudentCardLoader />
-                  <StudentCardLoader />
-                </>
-              ) : null}
-            </div>
+          <div className="flex-1 p-4 overflow-y-auto custom-scrollbar pb-48 h-[90vh-100px]">
+            <StudentHomeTable
+              data={students}
+              isError={studentListQuery.isError}
+              isLoading={studentListQuery.isPending}
+            />
           </div>
         </div>
       </div>
