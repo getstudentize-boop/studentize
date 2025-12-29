@@ -14,6 +14,7 @@ import { Button } from "@/components/button";
 import { useAuthUser } from "@/routes/_authenticated";
 import { Switch } from "@/components/switch";
 import { useSessionSummary } from "@/hooks/use-session-summary";
+import { Loader } from "@/components/loader";
 
 export const Route = createFileRoute("/_authenticated/sessions/$autoSessionId")(
   {
@@ -41,7 +42,22 @@ function RouteComponent() {
   );
 
   const uploadTranscriptionMutation = useMutation(
-    orpc.session.createAutoSync.mutationOptions()
+    orpc.session.createAutoSync.mutationOptions({
+      onSuccess: () => {
+        return Promise.all([
+          utils.invalidateQueries({
+            queryKey: orpc.session.list.queryKey({
+              input: { studentUserId: student?.userId },
+            }),
+          }),
+          utils.invalidateQueries({
+            queryKey: orpc.session.listAutoSync.queryKey({
+              input: {},
+            }),
+          }),
+        ]);
+      },
+    })
   );
 
   const utils = useQueryClient();
@@ -67,22 +83,10 @@ function RouteComponent() {
         throw new Error("Student and Advisor are required");
       }
 
-      await uploadTranscriptionMutation.mutateAsync({
-        sessionId: autoSessionId,
-        studentUserId: student.userId,
+      await uploadTranscriptionMutation.mutate({
         advisorUserId: advisor.userId,
-      });
-
-      await utils.invalidateQueries({
-        queryKey: orpc.session.list.queryKey({
-          input: { studentUserId: student.userId },
-        }),
-      });
-
-      await utils.invalidateQueries({
-        queryKey: orpc.session.listAutoSync.queryKey({
-          input: {},
-        }),
+        studentUserId: student.userId,
+        sessionId: autoSessionId,
       });
     },
   });
@@ -112,6 +116,49 @@ function RouteComponent() {
     searchStudentsMutation.mutate({ query: "" });
     searchAdvisorsMutation.mutate({ query: "" });
   }, []);
+
+  if (
+    autoSyncSessionQuery.isPending ||
+    readTemporaryTranscriptionQuery.isPending
+  ) {
+    return (
+      <div className="w-[500px] border-l border-bzinc bg-white">
+        <div className="flex gap-4 items-center px-4 pt-7 pb-4 border-b border-bzinc">
+          <Link to="/sessions">
+            <ArrowLeftIcon />
+          </Link>
+          <div>
+            <div className="font-semibold">Create a new auto-sync session</div>
+          </div>
+        </div>
+
+        <div className="p-4 text-left">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <div className="font-semibold">Title</div>
+              <Loader className="w-full h-8" />
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <div>Student</div>
+                <Loader className="w-full h-8 mt-2" />
+              </div>
+              <div className="flex-1">
+                <div>Advisor</div>
+                <Loader className="w-full h-8 mt-2" />
+              </div>
+            </div>
+
+            <div>
+              <div>Transcription</div>
+              <Loader className="h-32 mt-2" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form
@@ -219,7 +266,7 @@ function RouteComponent() {
             <Button
               className="mt-auto rounded-lg"
               type="submit"
-              isLoading={isSubmitting}
+              isLoading={isSubmitting || uploadTranscriptionMutation.isPending}
             >
               Upload
             </Button>

@@ -1,5 +1,6 @@
 import { cn } from "@/utils/cn";
 import { ComponentProps } from "react";
+import { LoadingIndicator } from "./loading-indicator";
 
 type ButtonProps = ComponentProps<"button"> & {
   variant?:
@@ -38,8 +39,25 @@ export const Button = ({
     >
       {props.children}
       {isLoading ? (
-        <div className="absolute top-0 left-0 h-full w-full bg-white text-zinc-800 font-semibold">
-          ...
+        <div
+          className={cn(
+            "absolute top-0 left-0 h-full w-full bg-white text-zinc-800 font-semibold flex items-center justify-center",
+            { "bg-white": variant === "neutral" },
+            { "bg-zinc-800": variant === "secondary" },
+            { "bg-violet-700": variant === "primary" },
+            { "bg-violet-100": variant === "primaryLight" },
+            { "bg-rose-600": variant === "destructive" }
+          )}
+        >
+          <div className="flex gap-2 mx-auto">
+            <LoadingIndicator
+              className={cn(
+                variant === "neutral" || variant === "primaryLight"
+                  ? "text-zinc-800"
+                  : "text-white"
+              )}
+            />
+          </div>
         </div>
       ) : null}
     </button>
