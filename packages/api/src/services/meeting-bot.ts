@@ -14,6 +14,7 @@ type MeetingInformation = {
     id: string;
     media_shortcuts: {
       transcript: { id: string; data: { download_url: string } };
+      video_mixed: { id: string; data: { download_url: string } };
     };
   }>;
 };
@@ -92,5 +93,17 @@ export class MeetingBotService {
     );
 
     return data;
+  }
+
+  async getRecording(input: { recordingId: string }) {
+    const { recordingId } = input;
+
+    const response = await recallRequest({
+      endpoint: `/recording/${recordingId}`,
+    });
+
+    console.log("🔥", response);
+
+    return response;
   }
 }

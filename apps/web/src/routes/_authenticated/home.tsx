@@ -206,7 +206,7 @@ function RouteComponent() {
         <AdvisorOverviewPanel />
         <div className="flex w-full h-full">
           <div className="w-10 bg-zinc-50 border-r border-bzinc" />
-          <div className="flex-1 p-4 overflow-y-auto custom-scrollbar pb-48 h-[90vh-100px]">
+          <div className="flex-1 p-4 overflow-y-auto custom-scrollbar pb-48 h-[20vh-100px]">
             <StudentHomeTable
               data={students}
               isError={studentListQuery.isError}

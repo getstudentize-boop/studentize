@@ -60,8 +60,6 @@ function RouteComponent() {
         title: z.string().min(1, "Title is required"),
         studentQuery: z.string(),
         advisorQuery: z.string(),
-        transcription: z.string().min(1, "Transcription is required"),
-        summarize: z.boolean(),
       }),
     },
     onSubmit: async () => {
@@ -78,6 +76,12 @@ function RouteComponent() {
       await utils.invalidateQueries({
         queryKey: orpc.session.list.queryKey({
           input: { studentUserId: student.userId },
+        }),
+      });
+
+      await utils.invalidateQueries({
+        queryKey: orpc.session.listAutoSync.queryKey({
+          input: {},
         }),
       });
     },
@@ -202,7 +206,9 @@ function RouteComponent() {
             />
             <div className="border-t border-bzinc p-2 text-left flex justify-between items-center">
               <SubtitlesIcon size={18} />
-              <div className="flex gap-2 items-center">Count: 10 chars</div>
+              <div className="flex gap-2 items-center">
+                Count: {readTemporaryTranscriptionQuery.data?.length} chars
+              </div>
             </div>
           </div>
         </div>

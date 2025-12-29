@@ -112,14 +112,16 @@ import { listAutoSyncSessionsRoute } from "./list-auto-sync";
 import { GetOneAutoSyncSessionInputSchema } from "./get-one-auto-sync";
 import { getOneAutoSyncSessionRoute } from "./get-one-auto-sync";
 
-import {
-  readTemporaryTranscription,
-  ReadTemporaryTranscriptionSchema,
-} from "./read-temporary-transcription";
+import { readTemporaryTranscription } from "./read-temporary-transcription";
 import {
   CreateAutoSyncInputSchema,
   createAutoSyncRoute,
 } from "./create-auto-sync";
+
+import {
+  downloadReplayRoute,
+  DownloadReplayInputSchema,
+} from "./download-replay";
 
 // todo: move all the handlers above to this format
 export const session = {
@@ -139,4 +141,7 @@ export const session = {
   createAutoSync: privateRoute
     .input(CreateAutoSyncInputSchema)
     .handler(createAutoSyncRoute),
+  downloadReplay: privateRoute
+    .input(DownloadReplayInputSchema)
+    .handler(downloadReplayRoute),
 };

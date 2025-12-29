@@ -37,7 +37,14 @@ export const createTemporaryTranscriptionObjectKey = (input: {
   return `temporary/${input.sessionId}.${input.ext}`;
 };
 
-type Bucket = "transcription";
+export const createReplayObjectKey = (input: {
+  sessionId: string;
+  studentUserId: string;
+}) => {
+  return `replay/${input.studentUserId}/${input.sessionId}`;
+};
+
+type Bucket = "transcription" | "session-replay";
 
 export const getSignedUrl = (
   bucket: Bucket,
@@ -81,6 +88,18 @@ export const uploadTextFile = async (input: {
 }) => {
   const blob = new Blob([input.content], { type: "text/plain" });
   const file = new File([blob], "transcription.txt", { type: "text/plain" });
+
+  await fetch(input.uploadUrl, {
+    method: "PUT",
+    body: file,
+  });
+};
+
+export const uploadReplayFile = async (input: {
+  uploadUrl: string;
+  file: Blob;
+}) => {
+  const file = new File([input.file], "replay.mp4", { type: "video/mp4" });
 
   await fetch(input.uploadUrl, {
     method: "PUT",

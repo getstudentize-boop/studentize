@@ -88,8 +88,6 @@ export const StudentHomeTable = ({
   isError: boolean;
   isLoading?: boolean;
 }) => {
-  const { handleRef, tableHeight } = useTableHeight();
-
   const table = useReactTable({
     columns,
     data,
@@ -97,14 +95,8 @@ export const StudentHomeTable = ({
   });
 
   return (
-    <div
-      ref={handleRef}
-      className="text-left overflow-y-auto no-scrollbar h-full"
-      style={{ height: tableHeight ? tableHeight - 32 : undefined }}
-    >
-      {tableHeight ? (
-        <DataTable table={table} isLoading={isLoading} isError={isError} />
-      ) : null}
+    <div className="text-left overflow-y-auto no-scrollbar">
+      <DataTable table={table} isLoading={isLoading} isError={isError} />
     </div>
   );
 };

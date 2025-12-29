@@ -35,6 +35,19 @@ export const getSessionById = (input: { sessionId: string }) => {
   });
 };
 
+export const getBotIdBySessionId = async (input: { sessionId: string }) => {
+  const { sessionId } = input;
+
+  const session = db.query.scheduledSession.findFirst({
+    where: eq(schema.scheduledSession.createdSessionId, sessionId),
+    columns: {
+      botId: true,
+    },
+  });
+
+  return session;
+};
+
 export const getAutoSyncedSessions = async () => {
   return db
     .select({
