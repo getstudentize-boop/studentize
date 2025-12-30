@@ -16,7 +16,7 @@
     "vite": "^6.3.5"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^2.0.19",
+    "@ai-sdk/openai": "2.0.88",
     "@aws-sdk/client-s3": "^3.882.0",
     "@aws-sdk/s3-request-presigner": "^3.882.0",
     "@google-apps/meet": "^0.7.1",
@@ -25,7 +25,7 @@
     "@student/ai": "workspace:*",
     "@student/db": "workspace:*",
     "@workos-inc/node": "^7.69.2",
-    "ai": "^5.0.29",
+    "ai": "5.0.101",
     "date-fns": "^4.1.0",
     "jose": "^6.1.0",
     "wrangler": "^4.32.0",

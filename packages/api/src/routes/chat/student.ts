@@ -212,7 +212,7 @@ export const chatStudent = async (
   });
 
   const result = streamText({
-    model: openai("gpt-5.1"),
+    model: openai("gpt-5.2"),
     providerOptions: {
       // openai: {
       //   reasoning_effort: "low",

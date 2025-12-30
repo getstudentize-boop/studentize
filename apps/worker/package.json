@@ -11,7 +11,7 @@
     "@orpc/client": "^1.8.8",
     "@student/api": "workspace:*",
     "hono": "^4.9.7",
-    "zod": "^4.0.10"
+    "zod": "4.2.1"
   },
   "devDependencies": {
     "@orpc/server": "^1.8.8",

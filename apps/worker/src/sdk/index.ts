@@ -24,4 +24,19 @@ export const session = {
       body: JSON.stringify(input),
     });
   },
+  downloadReplay: async (
+    authAccessToken: string,
+    input: {
+      sessionId: string;
+    }
+  ) => {
+    await fetch(`${getWorkUrl().workUrl}/sessions/download-replay`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authAccessToken}`,
+      },
+      body: JSON.stringify(input),
+    });
+  },
 };

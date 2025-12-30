@@ -16,6 +16,10 @@ type Bindings = {
     scheduledSessionId: string;
     accessToken: string;
   }>;
+  DOWNLOAD_REPLAY_WORKFLOW: Workflow<{
+    sessionId: string;
+    accessToken: string;
+  }>;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -95,8 +99,33 @@ app.post(
   }
 );
 
+app.post(
+  "/sessions/download-replay",
+  zValidator(
+    "json",
+    z.object({
+      sessionId: z.string(),
+    })
+  ),
+  async (c) => {
+    const { sessionId } = c.req.valid("json");
+    const { accessToken } = await getAccessToken({ c });
+
+    if (!accessToken) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    await c.env.DOWNLOAD_REPLAY_WORKFLOW.create({
+      params: { sessionId, accessToken },
+    });
+
+    return c.json({ status: "ok" });
+  }
+);
+
 export { SummarizeSessionWorkflow } from "./workflows/session";
 export { AutoJoinSessionWorkflow } from "./workflows/scheduled-session";
+export { DownloadReplayWorkflow } from "./workflows/download-replay";
 
 // export default app;
 export default {

@@ -117,11 +117,7 @@ import {
   CreateAutoSyncInputSchema,
   createAutoSyncRoute,
 } from "./create-auto-sync";
-
-import {
-  downloadReplayRoute,
-  DownloadReplayInputSchema,
-} from "./download-replay";
+import { ReplayUrlInputSchema, replayUrlRoute } from "./reply-url";
 
 // todo: move all the handlers above to this format
 export const session = {
@@ -141,7 +137,5 @@ export const session = {
   createAutoSync: privateRoute
     .input(CreateAutoSyncInputSchema)
     .handler(createAutoSyncRoute),
-  downloadReplay: privateRoute
-    .input(DownloadReplayInputSchema)
-    .handler(downloadReplayRoute),
+  replayUrl: privateRoute.input(ReplayUrlInputSchema).handler(replayUrlRoute),
 };

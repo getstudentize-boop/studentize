@@ -1,6 +1,8 @@
 import { Button } from "@/components/button";
+import { Loader } from "@/components/loader";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Markdown } from "@/components/markdown";
+import { useSessionDownloadReplay } from "@/hooks/use-session";
 import {
   ArrowLineDownIcon,
   BrainIcon,
@@ -27,8 +29,12 @@ function RouteComponent() {
 
   const sessionId = params.sessionId;
 
-  const downloadReplayMutation = useMutation(
-    orpc.session.downloadReplay.mutationOptions({})
+  const { downloadSessionReplay } = useSessionDownloadReplay();
+
+  const replyUrlQuery = useQuery(
+    orpc.session.replayUrl.queryOptions({
+      input: { sessionId },
+    })
   );
 
   const sessionOverviewQuery = useQuery(
@@ -47,7 +53,13 @@ function RouteComponent() {
     <div className="flex-1 flex p-4 pl-0 gap-4 text-left">
       <div className="border border-bzinc bg-white flex-1 rounded-lg flex flex-col h-[100vh-100px] overflow-y-auto no-scrollbar">
         <div className="p-4">
-          <div className="rounded-lg h-96 bg-zinc-900" />
+          {replyUrlQuery.isPending ? (
+            <Loader className="h-96 rounded-lg" />
+          ) : (
+            <video className="w-full h-96 rounded-lg object-cover" controls>
+              <source src={replyUrlQuery.data} type="video/mp4" />
+            </video>
+          )}
         </div>
         <div className="px-4 py-3 border-y border-bzinc flex justify-between items-center">
           <div>{sessionOverview?.title}</div>
@@ -55,13 +67,9 @@ function RouteComponent() {
           <div className="flex gap-4 items-center">
             <button
               className=""
-              onClick={() => downloadReplayMutation.mutate({ sessionId })}
+              onClick={() => downloadSessionReplay({ sessionId })}
             >
-              {downloadReplayMutation.isPending ? (
-                <LoadingIndicator />
-              ) : (
-                <ArrowLineDownIcon className="size-4" />
-              )}
+              <ArrowLineDownIcon className="size-4" />
             </button>
             <Link
               to="/guru"

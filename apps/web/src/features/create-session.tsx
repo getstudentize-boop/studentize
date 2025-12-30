@@ -11,7 +11,7 @@ import { Button } from "@/components/button";
 
 import { useAuthUser } from "@/routes/_authenticated";
 import { Switch } from "@/components/switch";
-import { useSessionSummary } from "@/hooks/use-session-summary";
+import { useSessionSummary } from "@/hooks/use-session";
 
 type StudentOrAdvisor = { userId: string; name: string };
 

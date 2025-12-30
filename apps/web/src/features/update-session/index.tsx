@@ -1,5 +1,5 @@
 import { Button } from "@/components/button";
-import { useSessionSummary } from "@/hooks/use-session-summary";
+import { useSessionSummary } from "@/hooks/use-session";
 import { SparkleIcon } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";

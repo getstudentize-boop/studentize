@@ -14,8 +14,8 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "2.0.67",
-    "ai": "^5.0.29",
-    "zod": "^4.0.10"
+    "ai": "5.0.101",
+    "zod": "4.2.1"
   },
   "exports": {
     ".": "./src/index.ts",

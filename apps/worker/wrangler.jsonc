@@ -14,6 +14,11 @@
       "binding": "AUTO_JOIN_SESSION_WORKFLOW",
       "class_name": "AutoJoinSessionWorkflow",
     },
+    {
+      "name": "download-replay",
+      "binding": "DOWNLOAD_REPLAY_WORKFLOW",
+      "class_name": "DownloadReplayWorkflow",
+    },
   ],
   "compatibility_flags": ["nodejs_compat"],
   "vars": {

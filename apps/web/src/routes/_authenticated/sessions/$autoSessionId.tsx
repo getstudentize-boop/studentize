@@ -13,7 +13,7 @@ import { Button } from "@/components/button";
 
 import { useAuthUser } from "@/routes/_authenticated";
 import { Switch } from "@/components/switch";
-import { useSessionSummary } from "@/hooks/use-session-summary";
+import { useSessionSummary } from "@/hooks/use-session";
 import { Loader } from "@/components/loader";
 
 export const Route = createFileRoute("/_authenticated/sessions/$autoSessionId")(

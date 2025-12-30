@@ -16,6 +16,10 @@ import {
 } from "./save-scheduled-session";
 
 import { syncScheduledSessionsRoute } from "./sync";
+import {
+  DownloadReplayInputSchema,
+  downloadReplayRoute,
+} from "./download-replay";
 
 export const admin = {
   scheduledSessionTime: adminRoute
@@ -28,4 +32,7 @@ export const admin = {
     .input(SaveScheduledSessionInputSchema)
     .handler(saveScheduledSession),
   syncScheduledSessions: adminRoute.handler(syncScheduledSessionsRoute),
+  downloadReplay: adminRoute
+    .input(DownloadReplayInputSchema)
+    .handler(downloadReplayRoute),
 };

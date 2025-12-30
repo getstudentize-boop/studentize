@@ -18,14 +18,14 @@ export const downloadReplayRoute = createRouteHelper({
   execute: async ({ input }) => {
     const meetingBotService = new MeetingBotService();
 
-    // const session = await getBotIdBySessionId({ sessionId: input.sessionId });
+    const session = await getBotIdBySessionId({ sessionId: input.sessionId });
 
-    // if (!session?.botId) {
-    //   throw new ORPCError("BAD_REQUEST");
-    // }
+    if (!session?.botId) {
+      throw new ORPCError("BAD_REQUEST");
+    }
 
     const response = await meetingBotService.getMeetingInformation({
-      botId: "7e343fd5-f632-4cd8-8595-c876c8611e49",
+      botId: session.botId,
     });
 
     const recording = response.recordings[0];

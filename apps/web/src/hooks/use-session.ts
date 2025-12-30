@@ -17,3 +17,20 @@ export const useSessionSummary = () => {
 
   return { startSessionSummaryGeneration };
 };
+
+export const useSessionDownloadReplay = () => {
+  const user = useAuth();
+
+  const downloadSessionReplay = async ({
+    sessionId,
+  }: {
+    sessionId: string;
+  }) => {
+    const accessToken = await user.getAccessToken();
+    await workerSession.downloadReplay(accessToken, {
+      sessionId: sessionId,
+    });
+  };
+
+  return { downloadSessionReplay };
+};
