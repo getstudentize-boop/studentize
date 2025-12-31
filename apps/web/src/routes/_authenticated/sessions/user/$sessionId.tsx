@@ -8,9 +8,10 @@ import {
   BrainIcon,
   ListDashesIcon,
 } from "@phosphor-icons/react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { orpc } from "orpc/client";
+import { useState } from "react";
 import z from "zod";
 
 export const Route = createFileRoute(
@@ -26,6 +27,8 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const params = Route.useParams();
+
+  const [isDownloadedKickstarted, setIsDownloadKickstarted] = useState(false);
 
   const sessionId = params.sessionId;
 
@@ -47,6 +50,10 @@ function RouteComponent() {
     orpc.session.readTranscription.queryOptions({ input: { sessionId } })
   );
 
+  const isReplayDownloadQuery = useQuery(
+    orpc.session.isReplayDownloaded.queryOptions({ input: { sessionId } })
+  );
+
   const sessionOverview = sessionOverviewQuery.data;
 
   return (
@@ -65,12 +72,26 @@ function RouteComponent() {
           <div>{sessionOverview?.title}</div>
 
           <div className="flex gap-4 items-center">
-            <button
-              className=""
-              onClick={() => downloadSessionReplay({ sessionId })}
-            >
-              <ArrowLineDownIcon className="size-4" />
-            </button>
+            {isReplayDownloadQuery.isSuccess &&
+            !isReplayDownloadQuery.data.isDownloaded ? (
+              <>
+                {isDownloadedKickstarted ? (
+                  <div className="text-zinc-600">
+                    Download started in background (wait 5 minutes)
+                  </div>
+                ) : (
+                  <button
+                    onClick={async () => {
+                      await downloadSessionReplay({ sessionId });
+                      setIsDownloadKickstarted(true);
+                    }}
+                  >
+                    <ArrowLineDownIcon className="size-4" />
+                  </button>
+                )}
+              </>
+            ) : null}
+
             <Link
               to="/guru"
               search={{ userId: sessionOverview?.studentUserId ?? "" }}

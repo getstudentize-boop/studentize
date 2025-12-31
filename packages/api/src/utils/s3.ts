@@ -1,6 +1,7 @@
 import {
   DeleteObjectCommand,
   GetObjectCommand,
+  HeadObjectCommand,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
@@ -80,6 +81,25 @@ export const readFile = async (input: { bucket: Bucket; key: string }) => {
 
   const { Body } = await S3.send(command);
   return Body?.transformToString();
+};
+
+export const objectExists = async (input: { bucket: Bucket; key: string }) => {
+  const command = new HeadObjectCommand({
+    Bucket: input.bucket,
+    Key: input.key,
+  });
+
+  try {
+    await S3.send(command);
+    return true;
+  } catch (error: any) {
+    // If the error is 404 (NotFound), the object doesn't exist
+    if (error?.$metadata?.httpStatusCode === 404) {
+      return false;
+    }
+    // Re-throw other errors
+    throw error;
+  }
 };
 
 export const uploadTextFile = async (input: {
