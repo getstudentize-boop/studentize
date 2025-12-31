@@ -18,6 +18,7 @@ import {
 import { summarizeTranscript } from "@student/ai/services";
 
 import { format as _format } from "date-fns";
+import { downloadReplayRoute } from "./download-replay";
 
 export const SaveScheduledSessionInputSchema = z.object({
   botId: z.string(),
@@ -49,8 +50,6 @@ export const saveScheduledSession = createAdminRouteHelper({
     if (!doneStatusChange) {
       throw new Error("Meeting is not done yet");
     }
-
-    console.log("information 😅", response);
 
     const transcriptionData = await meetingBotService.getMeetingTranscription({
       information: response,
@@ -109,5 +108,14 @@ export const saveScheduledSession = createAdminRouteHelper({
       sessionId: newSession.id,
       summary,
     });
+
+    await downloadReplayRoute({
+      input: { sessionId: newSession.id },
+      context: { user: { id: "1", status: "ACTIVE", type: "ADMIN" } },
+    });
+
+    return {
+      sessionId: newSession.id,
+    };
   },
 });

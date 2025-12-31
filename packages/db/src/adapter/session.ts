@@ -42,6 +42,7 @@ export const getBotIdBySessionId = async (input: { sessionId: string }) => {
     where: eq(schema.scheduledSession.createdSessionId, sessionId),
     columns: {
       botId: true,
+      studentUserId: true,
     },
   });
 

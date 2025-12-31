@@ -32,23 +32,17 @@ export const downloadReplayRoute = createRouteHelper({
 
     const video = recording.media_shortcuts.video_mixed;
 
-    console.log("🔥".repeat(10), video.data.download_url);
-
     // download the video
     const videoResponse = await fetch(video.data.download_url);
     const videoBlob = await videoResponse.blob();
-
-    console.log("downloading...");
 
     const uploadUrl = await getSignedUrl(
       "session-replay",
       createReplayObjectKey({
         sessionId: input.sessionId,
-        studentUserId: "test",
+        studentUserId: session.studentUserId ?? "",
       })
     );
-
-    console.log("Uploading...");
 
     await uploadReplayFile({
       uploadUrl,
