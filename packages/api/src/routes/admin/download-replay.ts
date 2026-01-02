@@ -1,7 +1,4 @@
-import {
-  createAdminRouteHelper,
-  createRouteHelper,
-} from "../../utils/middleware";
+import { createAdminRouteHelper } from "../../utils/middleware";
 import z from "zod";
 import { MeetingBotService } from "../../services/meeting-bot";
 import { getBotIdBySessionId } from "@student/db";
@@ -38,6 +35,16 @@ export const downloadReplayRoute = createAdminRouteHelper({
     // download the video
     const videoResponse = await fetch(video.data.download_url);
     const videoBlob = await videoResponse.blob();
+
+    console.log(
+      "🔥",
+      createReplayObjectKey({
+        sessionId: input.sessionId,
+        studentUserId: session.studentUserId ?? "",
+      }),
+      input.sessionId,
+      session.studentUserId ?? ""
+    );
 
     const uploadUrl = await getSignedUrl(
       "session-replay",
