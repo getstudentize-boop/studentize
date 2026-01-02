@@ -1,4 +1,7 @@
-import { createRouteHelper } from "../../utils/middleware";
+import {
+  createAdminRouteHelper,
+  createRouteHelper,
+} from "../../utils/middleware";
 import z from "zod";
 import { MeetingBotService } from "../../services/meeting-bot";
 import { getBotIdBySessionId } from "@student/db";
@@ -13,7 +16,7 @@ export const DownloadReplayInputSchema = z.object({
   sessionId: z.string(),
 });
 
-export const downloadReplayRoute = createRouteHelper({
+export const downloadReplayRoute = createAdminRouteHelper({
   inputSchema: DownloadReplayInputSchema,
   execute: async ({ input }) => {
     const meetingBotService = new MeetingBotService();
