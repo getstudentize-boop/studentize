@@ -74,9 +74,12 @@ function RouteComponent() {
             {isReplayDownloadQuery.isSuccess &&
             !isReplayDownloadQuery.data.isDownloaded ? (
               <>
-                {isDownloadedKickstarted ? (
+                {isDownloadedKickstarted ||
+                !isReplayDownloadQuery.data.isBotAttached ? (
                   <div className="text-zinc-600">
-                    Download started in background (wait 5 minutes)
+                    {isDownloadedKickstarted
+                      ? "Download started in background (wait 5 minutes)"
+                      : "No history of bot attached to the session"}
                   </div>
                 ) : (
                   <button

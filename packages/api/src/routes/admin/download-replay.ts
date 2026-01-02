@@ -29,10 +29,16 @@ export const downloadReplayRoute = createAdminRouteHelper({
 
     const session = await getSessionById({ sessionId: input.sessionId });
 
-    console.log("🔥", scheduledSession, session);
+    if (!scheduledSession?.botId) {
+      throw new ORPCError("BAD_REQUEST", {
+        message: "Bot is not attached to the session",
+      });
+    }
 
-    if (!scheduledSession?.botId || !session?.studentUserId) {
-      throw new ORPCError("BAD_REQUEST");
+    if (!session?.studentUserId) {
+      throw new ORPCError("BAD_REQUEST", {
+        message: "Student user ID is not found",
+      });
     }
 
     const response = await meetingBotService.getMeetingInformation({

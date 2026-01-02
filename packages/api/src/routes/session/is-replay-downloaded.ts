@@ -1,4 +1,7 @@
-import { getSessionById } from "@student/db";
+import {
+  getScheduledSessionByCreatedSessionId,
+  getSessionById,
+} from "@student/db";
 import { createRouteHelper } from "../../utils/middleware";
 import { createReplayObjectKey, objectExists } from "../../utils/s3";
 
@@ -13,6 +16,9 @@ export const isReplayDownloadedRoute = createRouteHelper({
   inputSchema: IsReplayDownloadedInputSchema,
   execute: async ({ input }) => {
     const session = await getSessionById({ sessionId: input.sessionId });
+    const scheduledSession = await getScheduledSessionByCreatedSessionId({
+      sessionId: input.sessionId,
+    });
 
     if (!session?.studentUserId) {
       throw new ORPCError("BAD_REQUEST");
@@ -26,6 +32,6 @@ export const isReplayDownloadedRoute = createRouteHelper({
       }),
     });
 
-    return { isDownloaded: exists };
+    return { isDownloaded: exists, isBotAttached: !!scheduledSession?.botId };
   },
 });
