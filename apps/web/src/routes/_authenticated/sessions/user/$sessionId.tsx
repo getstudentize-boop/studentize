@@ -82,8 +82,8 @@ function RouteComponent() {
                 ) : (
                   <button
                     onClick={async () => {
-                      await downloadSessionReplay({ sessionId });
                       setIsDownloadKickstarted(true);
+                      await downloadSessionReplay({ sessionId });
                     }}
                   >
                     <ArrowLineDownIcon className="size-4" />
