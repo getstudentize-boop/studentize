@@ -1,7 +1,12 @@
 import { createAdminRouteHelper } from "../../utils/middleware";
 import z from "zod";
 import { MeetingBotService } from "../../services/meeting-bot";
-import { getBotIdBySessionId } from "@student/db";
+import {
+  getBotIdBySessionId,
+  getScheduledSessionByBotId,
+  getScheduledSessionByCreatedSessionId,
+  getSessionById,
+} from "@student/db";
 import { ORPCError } from "@orpc/server";
 import {
   createReplayObjectKey,
@@ -18,14 +23,18 @@ export const downloadReplayRoute = createAdminRouteHelper({
   execute: async ({ input }) => {
     const meetingBotService = new MeetingBotService();
 
-    const session = await getBotIdBySessionId({ sessionId: input.sessionId });
+    const scheduledSession = await getScheduledSessionByCreatedSessionId({
+      sessionId: input.sessionId,
+    });
 
-    if (!session?.botId) {
+    const session = await getSessionById({ sessionId: input.sessionId });
+
+    if (!scheduledSession?.botId || !session?.studentUserId) {
       throw new ORPCError("BAD_REQUEST");
     }
 
     const response = await meetingBotService.getMeetingInformation({
-      botId: session.botId,
+      botId: scheduledSession.botId,
     });
 
     const recording = response.recordings[0];
@@ -35,16 +44,6 @@ export const downloadReplayRoute = createAdminRouteHelper({
     // download the video
     const videoResponse = await fetch(video.data.download_url);
     const videoBlob = await videoResponse.blob();
-
-    console.log(
-      "🔥",
-      createReplayObjectKey({
-        sessionId: input.sessionId,
-        studentUserId: session.studentUserId ?? "",
-      }),
-      input.sessionId,
-      session.studentUserId ?? ""
-    );
 
     const uploadUrl = await getSignedUrl(
       "session-replay",

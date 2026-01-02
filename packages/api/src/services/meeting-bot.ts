@@ -102,8 +102,6 @@ export class MeetingBotService {
       endpoint: `/recording/${recordingId}`,
     });
 
-    console.log("🔥", response);
-
     return response;
   }
 }

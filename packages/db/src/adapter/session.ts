@@ -35,7 +35,9 @@ export const getSessionById = (input: { sessionId: string }) => {
   });
 };
 
-export const getBotIdBySessionId = async (input: { sessionId: string }) => {
+export const getScheduledSessionByCreatedSessionId = async (input: {
+  sessionId: string;
+}) => {
   const { sessionId } = input;
 
   const session = db.query.scheduledSession.findFirst({
@@ -43,6 +45,7 @@ export const getBotIdBySessionId = async (input: { sessionId: string }) => {
     columns: {
       botId: true,
       studentUserId: true,
+      createdSessionId: true,
     },
   });
 
