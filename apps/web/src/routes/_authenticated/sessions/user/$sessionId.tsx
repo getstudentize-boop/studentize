@@ -1,6 +1,5 @@
 import { Button } from "@/components/button";
 import { Loader } from "@/components/loader";
-import { LoadingIndicator } from "@/components/loading-indicator";
 import { Markdown } from "@/components/markdown";
 import { useSessionDownloadReplay } from "@/hooks/use-session";
 import {

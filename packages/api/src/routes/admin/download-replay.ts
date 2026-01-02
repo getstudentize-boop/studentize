@@ -29,6 +29,8 @@ export const downloadReplayRoute = createAdminRouteHelper({
 
     const session = await getSessionById({ sessionId: input.sessionId });
 
+    console.log("🔥", scheduledSession, session);
+
     if (!scheduledSession?.botId || !session?.studentUserId) {
       throw new ORPCError("BAD_REQUEST");
     }
