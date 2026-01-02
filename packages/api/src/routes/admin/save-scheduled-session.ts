@@ -111,7 +111,6 @@ export const saveScheduledSession = createAdminRouteHelper({
 
     await downloadReplayRoute({
       input: { sessionId: newSession.id },
-      context: { user: { id: "1", status: "ACTIVE", type: "ADMIN" } },
     });
 
     return {
