@@ -12,7 +12,7 @@ export const getScheduledSessionsRoute = createRouteHelper({
     const userId = ctx.user.id;
 
     const scheduledSessions = await getAdvisorsSessions({
-      advisorUserId: userId,
+      advisorUserId: ctx.user.type === "ADMIN" ? undefined : userId,
       timePeriod: input.timePeriod,
       today: new Date(),
     });

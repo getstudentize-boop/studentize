@@ -131,7 +131,7 @@ export const deleteScheduledSessionById = async (input: {
 };
 
 export const getAdvisorsSessions = (input: {
-  advisorUserId: string;
+  advisorUserId?: string;
   today: Date;
   timePeriod: "past" | "upcoming";
 }) => {
@@ -147,8 +147,11 @@ export const getAdvisorsSessions = (input: {
     .from(schema.scheduledSession)
     .where(
       and(
-        eq(schema.scheduledSession.advisorUserId, input.advisorUserId),
+        input.advisorUserId
+          ? eq(schema.scheduledSession.advisorUserId, input.advisorUserId)
+          : undefined,
         ltOrGt(schema.scheduledSession.createdAt, input.today)
       )
-    );
+    )
+    .orderBy(desc(schema.scheduledSession.scheduledAt));
 };

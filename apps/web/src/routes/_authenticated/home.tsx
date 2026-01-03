@@ -37,10 +37,8 @@ type ScheduledSession =
   RouterOutputs["advisor"]["getScheduledSessions"][number];
 
 const SessionCard = ({
-  isPast,
   scheduledSession,
 }: {
-  isPast?: boolean;
   scheduledSession: ScheduledSession;
 }) => {
   return (
@@ -53,25 +51,22 @@ const SessionCard = ({
             {dateFnFormat(scheduledSession.scheduledAt, "eeee MMM dd, yyyy")}
           </div>
         </div>
-        <div className="flex gap-2 items-center">
-          <ClockIcon className="size-4" />
-          <div>{dateFnFormat(scheduledSession.scheduledAt, "hh:mm aa")}</div>
+        <div className="justify-between flex">
+          <div className="flex gap-2 items-center">
+            <ClockIcon className="size-4" />
+            <div>{dateFnFormat(scheduledSession.scheduledAt, "hh:mm aa")}</div>
+          </div>
+
+          <a
+            href={`https://meet.google.com/${scheduledSession.meetingCode}`}
+            target="_blank"
+            rel="noreferrer"
+            className="border p-1 px-2 rounded-md text-sm border-bzinc"
+          >
+            Join Meeting
+          </a>
         </div>
       </div>
-      {!isPast ? (
-        <Button
-          className="mt-4 rounded-md w-full"
-          variant="neutral"
-          onClick={() => {
-            window.open(
-              `https://meet.google.com/${scheduledSession.meetingCode}`,
-              "_blank"
-            );
-          }}
-        >
-          Join Meeting ({scheduledSession.meetingCode})
-        </Button>
-      ) : null}
     </div>
   );
 };
@@ -165,26 +160,29 @@ const UpcomingOrPastSessions = ({
       })}
     >
       <div className="px-4 py-3 bg-zinc-50 border-b border-zinc-200">
-        {timePeriod === "upcoming" ? "Upcoming Sessions" : "Past Sessions"}
+        Scheduled Sessions
       </div>
-      {!scheduleSessionQuery.isPending ? (
-        <>
-          {scheduledSession.map((session) => (
-            <SessionCard
-              key={session.meetingCode}
-              scheduledSession={session}
-              isPast={timePeriod === "past"}
-            />
-          ))}
-          {scheduledSession.length === 0 ? (
-            <div className="px-6 py-4 border-b border-bzinc text-center text-zinc-500">
-              No {timePeriod} sessions
-            </div>
-          ) : null}
-        </>
-      ) : (
-        <SessionCardLoader />
-      )}
+      <div className="h-[calc(100vh-10rem)]">
+        <div className="overflow-y-auto custom-scrollbar">
+          {!scheduleSessionQuery.isPending ? (
+            <>
+              {scheduledSession.map((session) => (
+                <SessionCard
+                  key={session.meetingCode}
+                  scheduledSession={session}
+                />
+              ))}
+              {scheduledSession.length === 0 ? (
+                <div className="px-6 py-4 border-b border-bzinc text-center text-zinc-500">
+                  No {timePeriod} sessions
+                </div>
+              ) : null}
+            </>
+          ) : (
+            <SessionCardLoader />
+          )}
+        </div>
+      </div>
     </div>
   );
 };
@@ -228,7 +226,6 @@ function RouteComponent() {
         />
       ) : (
         <div className="flex-1 space-y-4 flex flex-col">
-          <UpcomingOrPastSessions timePeriod="upcoming" />
           <UpcomingOrPastSessions timePeriod="past" />
         </div>
       )}
