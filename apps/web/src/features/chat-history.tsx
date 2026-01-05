@@ -1,6 +1,7 @@
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
+  CaretLeftIcon,
   MagnifyingGlassIcon,
   PlusIcon,
   SparkleIcon,
@@ -11,7 +12,12 @@ import { useQuery } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 
 import { format, isSameDay, subDays } from "date-fns";
-import { Link, useSearch } from "@tanstack/react-router";
+import {
+  Link,
+  useCanGoBack,
+  useRouter,
+  useSearch,
+} from "@tanstack/react-router";
 import { cn } from "@/utils/cn";
 
 const ChatLoader = () => {
@@ -143,10 +149,23 @@ export const StudentList = () => {
 };
 
 export const ChatHistory = ({ studentUserId }: { studentUserId?: string }) => {
+  const router = useRouter();
+  const isCanGoBack = useCanGoBack();
+
   return (
     <div className="border-r border-zinc-100 w-56 flex flex-col pr-4 py-[1.7rem] text-left ml-4">
       <div className="flex justify-between items-center">
-        <div>Chat</div>
+        <button
+          className="flex items-center gap-2"
+          onClick={() => {
+            if (isCanGoBack) {
+              router.history.back();
+            }
+          }}
+        >
+          {isCanGoBack ? <CaretLeftIcon /> : null}
+          <div>Chat</div>
+        </button>
         <MagnifyingGlassIcon className="size-3.5 text-zinc-600" weight="bold" />
       </div>
       <Link to="/guru">

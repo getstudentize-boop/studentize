@@ -93,7 +93,7 @@ export const SessionTable = ({
             isRowSelected={(row) => row.original.sessionId === currentSessionId}
             onRowClick={(row) => {
               navigate({
-                to: "/sessions/user/$sessionId",
+                to: "/sessions/user-session/$sessionId",
                 params: { sessionId: row.original.sessionId },
               });
             }}
