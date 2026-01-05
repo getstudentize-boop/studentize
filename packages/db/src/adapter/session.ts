@@ -141,6 +141,7 @@ export const getSessionSummaryById = async (input: { sessionId: string }) => {
       createdAt: true,
       title: true,
       studentUserId: true,
+      advisorUserId: true,
     },
   });
 };

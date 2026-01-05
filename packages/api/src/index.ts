@@ -31,6 +31,7 @@ import {
   userDisplayHandler,
   userCurrentHandler,
   userGetOneHandler,
+  userGetNameHandler,
 } from "./routes/user";
 import { scheduledSession } from "./routes/scheduled-session";
 import { admin } from "./routes/admin";
@@ -70,6 +71,7 @@ export const router = {
     display: userDisplayHandler,
     current: userCurrentHandler,
     getOne: userGetOneHandler,
+    getName: userGetNameHandler,
   },
   chat: {
     student: chatStudentHandler,

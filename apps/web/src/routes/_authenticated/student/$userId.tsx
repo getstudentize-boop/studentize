@@ -36,7 +36,7 @@ function RouteComponent() {
       <Breadcrumb
         paths={[
           { label: "Sessions", to: "/students/$userId" },
-          { label: student?.name ?? "", to: "/students/$userId" },
+          { label: student?.name ?? "", to: "/student/$userId" },
         ]}
       />
       <div className="flex flex-1 text-left h-[calc(100vh-100px)]">

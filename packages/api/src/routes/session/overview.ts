@@ -25,10 +25,10 @@ export const getSessionOverviewRoute = createRouteHelper({
     if (ctx.user.type === "ADVISOR") {
       const access = await getOneStudentAccess({
         advisorUserId: ctx.user.id,
-        studentUserId: session?.studentUserId,
+        studentUserId: session?.studentUserId ?? "",
       });
 
-      if (!access) {
+      if (!access && !session?.studentUserId) {
         throw new ORPCError("UNAUTHORIZED");
       }
     }

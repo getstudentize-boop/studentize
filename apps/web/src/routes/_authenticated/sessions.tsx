@@ -35,7 +35,7 @@ function RouteComponent() {
 
   const navigate = useNavigate();
 
-  const isUserSession = route({ to: "/sessions/user/$sessionId" });
+  const isUserSession = route({ to: "/sessions/user-session/$sessionId" });
 
   const listSessionsQuery = useQuery(
     orpc.session.list.queryOptions({ input: {} })

@@ -25,7 +25,7 @@ import { Route as AuthenticatedStudentUserIdRouteImport } from './routes/_authen
 import { Route as AuthenticatedSessionsSessionIdRouteImport } from './routes/_authenticated/sessions/$sessionId'
 import { Route as AuthenticatedSessionsAutoSessionIdRouteImport } from './routes/_authenticated/sessions/$autoSessionId'
 import { Route as AuthenticatedAdvisorsUserIdRouteImport } from './routes/_authenticated/advisors/$userId'
-import { Route as AuthenticatedSessionsUserSessionIdRouteImport } from './routes/_authenticated/sessions/user/$sessionId'
+import { Route as AuthenticatedSessionsUserSessionSessionIdRouteImport } from './routes/_authenticated/sessions/user-session/$sessionId'
 import { ServerRoute as ApiGoogle_oauth_callbackServerRouteImport } from './routes/api/google_oauth_callback'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as ApiAuthLoginServerRouteImport } from './routes/api/auth/login'
@@ -108,10 +108,10 @@ const AuthenticatedAdvisorsUserIdRoute =
     path: '/$userId',
     getParentRoute: () => AuthenticatedAdvisorsRoute,
   } as any)
-const AuthenticatedSessionsUserSessionIdRoute =
-  AuthenticatedSessionsUserSessionIdRouteImport.update({
-    id: '/user/$sessionId',
-    path: '/user/$sessionId',
+const AuthenticatedSessionsUserSessionSessionIdRoute =
+  AuthenticatedSessionsUserSessionSessionIdRouteImport.update({
+    id: '/user-session/$sessionId',
+    path: '/user-session/$sessionId',
     getParentRoute: () => AuthenticatedSessionsRoute,
   } as any)
 const ApiGoogle_oauth_callbackServerRoute =
@@ -150,7 +150,7 @@ export interface FileRoutesByFullPath {
   '/student/$userId': typeof AuthenticatedStudentUserIdRoute
   '/students/$userId': typeof AuthenticatedStudentsUserIdRoute
   '/schedule': typeof AuthenticatedScheduleIndexRoute
-  '/sessions/user/$sessionId': typeof AuthenticatedSessionsUserSessionIdRoute
+  '/sessions/user-session/$sessionId': typeof AuthenticatedSessionsUserSessionSessionIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -166,7 +166,7 @@ export interface FileRoutesByTo {
   '/student/$userId': typeof AuthenticatedStudentUserIdRoute
   '/students/$userId': typeof AuthenticatedStudentsUserIdRoute
   '/schedule': typeof AuthenticatedScheduleIndexRoute
-  '/sessions/user/$sessionId': typeof AuthenticatedSessionsUserSessionIdRoute
+  '/sessions/user-session/$sessionId': typeof AuthenticatedSessionsUserSessionSessionIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -184,7 +184,7 @@ export interface FileRoutesById {
   '/_authenticated/student/$userId': typeof AuthenticatedStudentUserIdRoute
   '/_authenticated/students/$userId': typeof AuthenticatedStudentsUserIdRoute
   '/_authenticated/schedule/': typeof AuthenticatedScheduleIndexRoute
-  '/_authenticated/sessions/user/$sessionId': typeof AuthenticatedSessionsUserSessionIdRoute
+  '/_authenticated/sessions/user-session/$sessionId': typeof AuthenticatedSessionsUserSessionSessionIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -202,7 +202,7 @@ export interface FileRouteTypes {
     | '/student/$userId'
     | '/students/$userId'
     | '/schedule'
-    | '/sessions/user/$sessionId'
+    | '/sessions/user-session/$sessionId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -218,7 +218,7 @@ export interface FileRouteTypes {
     | '/student/$userId'
     | '/students/$userId'
     | '/schedule'
-    | '/sessions/user/$sessionId'
+    | '/sessions/user-session/$sessionId'
   id:
     | '__root__'
     | '/'
@@ -235,7 +235,7 @@ export interface FileRouteTypes {
     | '/_authenticated/student/$userId'
     | '/_authenticated/students/$userId'
     | '/_authenticated/schedule/'
-    | '/_authenticated/sessions/user/$sessionId'
+    | '/_authenticated/sessions/user-session/$sessionId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -389,11 +389,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdvisorsUserIdRouteImport
       parentRoute: typeof AuthenticatedAdvisorsRoute
     }
-    '/_authenticated/sessions/user/$sessionId': {
-      id: '/_authenticated/sessions/user/$sessionId'
-      path: '/user/$sessionId'
-      fullPath: '/sessions/user/$sessionId'
-      preLoaderRoute: typeof AuthenticatedSessionsUserSessionIdRouteImport
+    '/_authenticated/sessions/user-session/$sessionId': {
+      id: '/_authenticated/sessions/user-session/$sessionId'
+      path: '/user-session/$sessionId'
+      fullPath: '/sessions/user-session/$sessionId'
+      preLoaderRoute: typeof AuthenticatedSessionsUserSessionSessionIdRouteImport
       parentRoute: typeof AuthenticatedSessionsRoute
     }
   }
@@ -447,15 +447,15 @@ const AuthenticatedAdvisorsRouteWithChildren =
 interface AuthenticatedSessionsRouteChildren {
   AuthenticatedSessionsAutoSessionIdRoute: typeof AuthenticatedSessionsAutoSessionIdRoute
   AuthenticatedSessionsSessionIdRoute: typeof AuthenticatedSessionsSessionIdRoute
-  AuthenticatedSessionsUserSessionIdRoute: typeof AuthenticatedSessionsUserSessionIdRoute
+  AuthenticatedSessionsUserSessionSessionIdRoute: typeof AuthenticatedSessionsUserSessionSessionIdRoute
 }
 
 const AuthenticatedSessionsRouteChildren: AuthenticatedSessionsRouteChildren = {
   AuthenticatedSessionsAutoSessionIdRoute:
     AuthenticatedSessionsAutoSessionIdRoute,
   AuthenticatedSessionsSessionIdRoute: AuthenticatedSessionsSessionIdRoute,
-  AuthenticatedSessionsUserSessionIdRoute:
-    AuthenticatedSessionsUserSessionIdRoute,
+  AuthenticatedSessionsUserSessionSessionIdRoute:
+    AuthenticatedSessionsUserSessionSessionIdRoute,
 }
 
 const AuthenticatedSessionsRouteWithChildren =

@@ -116,7 +116,9 @@ export const searchUserByName = async (data: {
   return users;
 };
 
-export const getUserName = async (userId: string) => {
+export const getUserName = async (input: { userId: string }) => {
+  const { userId } = input;
+
   const user = await db.query.user.findFirst({
     columns: {
       name: true,
