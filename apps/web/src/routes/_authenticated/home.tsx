@@ -168,6 +168,9 @@ const UpcomingOrPastSessions = ({
         Scheduled Sessions
       </div>
       <div className="h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
+        <div className="bg-zinc-50 font-semibold border-b border-bzinc text-violet-700 px-5 py-2 sticky top-0 z-10">
+          Upcoming
+        </div>
         {!scheduleSessionQuery.isPending ? (
           <>
             {scheduledSession.map((session, idx) => {
@@ -194,8 +197,9 @@ const UpcomingOrPastSessions = ({
               return (
                 <>
                   {isFirstPastSession ? (
-                    <div className="bg-zinc-50 font-semibold border-b border-bzinc text-violet-700 px-5 py-2">
-                      Past Sessions
+                    <div className="bg-zinc-50 font-semibold border-b border-bzinc text-violet-700 px-5 py-2 sticky top-0 z-10">
+                      Past Sessions{" "}
+                      <span className="text-violet-500">(Last 2 Weeks)</span>
                     </div>
                   ) : null}
                   <SessionCard

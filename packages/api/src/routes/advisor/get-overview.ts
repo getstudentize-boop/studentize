@@ -1,7 +1,6 @@
 import {
   getOverviewByUserId,
   getOverviewStats,
-  getUserById,
   getUserName,
 } from "@student/db";
 
