@@ -5,7 +5,6 @@ import {
   ArrowRightIcon,
   BrainIcon,
   CalendarBlankIcon,
-  ChatCircleTextIcon,
   ClockIcon,
 } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
@@ -13,7 +12,13 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { orpc, RouterOutputs } from "orpc/client";
 
-import { format as dateFnFormat } from "date-fns";
+import {
+  format as dateFnFormat,
+  isWithinInterval,
+  endOfWeek,
+  startOfWeek,
+  isPast,
+} from "date-fns";
 import { cn } from "@/utils/cn";
 import { z } from "zod";
 import { UserOverviewTab } from "@/features/user-tabs";
@@ -162,26 +167,53 @@ const UpcomingOrPastSessions = ({
       <div className="px-4 py-3 bg-zinc-50 border-b border-zinc-200">
         Scheduled Sessions
       </div>
-      <div className="h-[calc(100vh-10rem)]">
-        <div className="overflow-y-auto custom-scrollbar">
-          {!scheduleSessionQuery.isPending ? (
-            <>
-              {scheduledSession.map((session) => (
-                <SessionCard
-                  key={session.meetingCode}
-                  scheduledSession={session}
-                />
-              ))}
-              {scheduledSession.length === 0 ? (
-                <div className="px-6 py-4 border-b border-bzinc text-center text-zinc-500">
-                  No {timePeriod} sessions
-                </div>
-              ) : null}
-            </>
-          ) : (
-            <SessionCardLoader />
-          )}
-        </div>
+      <div className="h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
+        {!scheduleSessionQuery.isPending ? (
+          <>
+            {scheduledSession.map((session, idx) => {
+              // is the session within this week and not already passed?
+              const isWithinWeek = isWithinInterval(session.scheduledAt, {
+                start: startOfWeek(new Date()),
+                end: endOfWeek(new Date()),
+              });
+
+              const previousSession = scheduledSession[idx - 1];
+
+              const isPreviousSessionPast = previousSession
+                ? isPast(previousSession.scheduledAt)
+                : false;
+              const isPastSession = isPast(session.scheduledAt);
+
+              const isFirstPastSession =
+                !isPreviousSessionPast && isPastSession;
+
+              if (!isWithinWeek) {
+                return null;
+              }
+
+              return (
+                <>
+                  {isFirstPastSession ? (
+                    <div className="bg-zinc-50 font-semibold border-b border-bzinc text-violet-700 px-5 py-2">
+                      Past Sessions
+                    </div>
+                  ) : null}
+                  <SessionCard
+                    key={session.meetingCode}
+                    scheduledSession={session}
+                  />
+                </>
+              );
+            })}
+            {scheduledSession.length === 0 ? (
+              <div className="px-6 py-4 border-b border-bzinc text-center text-zinc-500">
+                No {timePeriod} sessions
+              </div>
+            ) : null}
+          </>
+        ) : (
+          <SessionCardLoader />
+        )}
       </div>
     </div>
   );
