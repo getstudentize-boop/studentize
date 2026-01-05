@@ -153,7 +153,7 @@ export const ChatHistory = ({ studentUserId }: { studentUserId?: string }) => {
   const isCanGoBack = useCanGoBack();
 
   return (
-    <div className="border-r border-zinc-100 w-56 flex flex-col pr-4 py-[1.7rem] text-left ml-4">
+    <div className="border-r border-zinc-100 w-56 flex flex-col pr-4 py-[1.5rem] text-left ml-4">
       <div className="flex justify-between items-center">
         <button
           className="flex items-center gap-2"

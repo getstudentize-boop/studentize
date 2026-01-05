@@ -9,6 +9,6 @@ export const UserDisplayInputSchema = z.object({
 export const getUserDisplay = async (
   data: z.infer<typeof UserDisplayInputSchema>
 ) => {
-  const user = await getUserName(data.userId);
+  const user = await getUserName({ userId: data.userId });
   return user;
 };

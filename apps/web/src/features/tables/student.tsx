@@ -8,7 +8,7 @@ import {
 import { DataTable } from "../table";
 import { RouterOutputs } from "orpc/client";
 import { Link } from "@tanstack/react-router";
-import { ArrowRightIcon } from "@phosphor-icons/react";
+import { ArrowRightIcon, CaretCircleRightIcon } from "@phosphor-icons/react";
 import { useTableHeight } from "@/hooks/use-table-height";
 
 const StudentCell = (props: { name: string }) => {
@@ -83,23 +83,6 @@ const columns = [
     },
   }),
   columnHelper.accessor("userId", {
-    header: "Session Summary",
-    cell: (info) => {
-      const userId = info.getValue();
-
-      return (
-        <Link
-          to="/students/$userId"
-          params={{ userId }}
-          search={{ tab: "sessions" }}
-          className="underline"
-        >
-          View
-        </Link>
-      );
-    },
-  }),
-  columnHelper.accessor("userId", {
     header: " ",
     cell: (info) => {
       const userId = info.getValue();
@@ -111,10 +94,8 @@ const columns = [
           search={{ tab: "sessions" }}
           className="py-0.5 px-1.5 rounded-sm border-bzinc border inline-flex group bg-white gap-2 items-center"
         >
-          <span className="group-hover:translate-x-0.5 transition-transform duration-300">
-            Open
-          </span>
-          <ArrowRightIcon className="group-hover:-translate-x-0.5 transition-transform duration-300" />
+          <span>Open</span>
+          <CaretCircleRightIcon size={16} />
         </Link>
       );
     },

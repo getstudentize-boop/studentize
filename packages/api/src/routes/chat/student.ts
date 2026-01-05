@@ -192,7 +192,7 @@ export const chatStudent = async (
 
   const modelMessages = convertToModelMessages(input.messages);
 
-  const user = await getUserName(input.studentUserId);
+  const user = await getUserName({ userId: input.studentUserId });
 
   if (isNewMessage) {
     await createNewChat({

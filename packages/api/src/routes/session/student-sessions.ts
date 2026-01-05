@@ -31,7 +31,7 @@ export const getStudentSessionsRoute = createRouteHelper({
     }
 
     const sessions = await getSessions({ studentUserId: input.studentUserId });
-    const user = await getUserName(input.studentUserId);
+    const user = await getUserName({ userId: input.studentUserId });
 
     return {
       ...user,

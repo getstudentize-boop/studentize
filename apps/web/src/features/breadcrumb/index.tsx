@@ -3,17 +3,26 @@ import { CaretLeftIcon } from "@phosphor-icons/react";
 import { Link, useCanGoBack, useRouter } from "@tanstack/react-router";
 import { ReactNode } from "react";
 
+type Path = {
+  label: string;
+  to: string;
+  component?: ReactNode;
+  params?: Record<string, string>;
+};
+
 export const Breadcrumb = ({
   paths,
   rightComponent,
   className,
 }: {
-  paths: Array<{ label: string; to: string; component?: ReactNode }>;
+  paths: Array<Path | undefined>;
   className?: string;
   rightComponent?: ReactNode;
 }) => {
   const router = useRouter();
   const isCanGoBack = useCanGoBack();
+
+  const filteredPaths = paths.filter(Boolean) as Array<Path>;
 
   return (
     <div
@@ -27,8 +36,9 @@ export const Breadcrumb = ({
           <CaretLeftIcon />
         </button>
       ) : null}
-      {paths.map((path, idx) => {
-        const isLast = idx === paths.length - 1;
+      {filteredPaths.map((path, idx) => {
+        const isLast =
+          idx === filteredPaths.length - 1 && filteredPaths.length > 1;
 
         const Component = path.component;
 
@@ -38,6 +48,7 @@ export const Breadcrumb = ({
             <Link
               key={path.to}
               to={path.to}
+              params={path.params}
               className={cn(
                 isLast ? "text-zinc-600" : "hover:underline decoration-dotted"
               )}

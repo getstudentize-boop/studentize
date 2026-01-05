@@ -6,6 +6,7 @@ import {
   SparkleIcon,
   CaretCircleRightIcon,
   ExportIcon,
+  BrainIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
 import { UserSearch } from "@/features/user-search";
@@ -211,7 +212,7 @@ function App() {
       <div className="flex flex-1 flex-col p-4 pt-2.5 h-screen">
         <div className="justify-between items-center flex p-2.5">
           <div className="flex gap-2 items-center">
-            <CaretCircleRightIcon className="size-[1.1rem]" />
+            <BrainIcon className="size-[1.1rem]" />
             {!isPendingOrError ? (
               isNewChat ? (
                 "New Chat"

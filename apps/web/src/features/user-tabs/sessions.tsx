@@ -75,7 +75,7 @@ export const UserSessionsTab = ({
   const isPendingOrError = summaryQuery.isPending || summaryQuery.isError;
 
   return (
-    <div className="rounded-md p-6 flex flex-col gap-4">
+    <div className="rounded-md p-4 pr-2.5 flex flex-col gap-4">
       {isPendingOrError ? (
         <Repeat
           component={

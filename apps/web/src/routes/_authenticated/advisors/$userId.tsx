@@ -74,17 +74,8 @@ function RouteComponent() {
         ev.stopPropagation();
         form.handleSubmit();
       }}
-      className="w-[30rem] bg-white border-l border-bzinc flex flex-col"
+      className="w-[30rem] bg-white border-l border-bzinc overflow-y-auto custom-scrollbar"
     >
-      <div className="p-4 pt-5 border-b border-bzinc flex gap-4 items-center justify-between">
-        <Link to="/advisors">
-          <ArrowLeftIcon />
-        </Link>
-        <Button variant="neutral" type="button">
-          {params.userId}
-          <CopyIcon />
-        </Button>
-      </div>
       <div className="p-4 flex flex-col gap-4 border-b border-bzinc">
         <div className="flex w-full gap-2">
           <form.Field
@@ -192,13 +183,15 @@ function RouteComponent() {
       <form.Subscribe
         selector={(state) => [state.isSubmitting]}
         children={([isSubmitting]) => (
-          <Button
-            type="submit"
-            className="rounded-md mx-4 mb-4"
-            isLoading={isSubmitting}
-          >
-            Save Changes
-          </Button>
+          <div className="px-4">
+            <Button
+              type="submit"
+              className="rounded-md mb-4 w-full"
+              isLoading={isSubmitting}
+            >
+              Save Changes
+            </Button>
+          </div>
         )}
       />
     </form>

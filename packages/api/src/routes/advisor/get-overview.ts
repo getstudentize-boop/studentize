@@ -13,7 +13,7 @@ export const getOverviewRoute = createRouteHelper({
     let data = await getOverviewByUserId({ advisorUserId: userId });
 
     if (ctx.user.type === "ADMIN") {
-      const user = await getUserName(ctx.user.id);
+      const user = await getUserName({ userId: ctx.user.id });
 
       data = {
         id: ctx.user.id,

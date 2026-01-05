@@ -170,49 +170,6 @@ export const UserOverviewTab = ({
         className
       )}
     >
-      {!!goBack || !isSettingsDisabled ? (
-        <div
-          className={cn(
-            "border-b mt-2 px-4 border-bzinc flex justify-between items-center",
-            isHeaderFixedHeightDisabled ? "py-4 mt-0" : "h-14"
-          )}
-        >
-          {goBack ? (
-            <Link to={goBack} search={{ studentUserId: undefined }}>
-              <ArrowLeftIcon />
-            </Link>
-          ) : null}
-
-          {!isSettingsDisabled ? (
-            <div className="flex gap-4 items-center">
-              <StudentSettingsDialog
-                email=""
-                location={student?.location ?? ""}
-                userId={studentUserId}
-                isOpen={isUserSettingsOpen}
-                onOpenChange={setIsUserSettingsOpen}
-              />
-              <form.Subscribe
-                selector={(val) => [val.isDirty, val.isSubmitting]}
-                children={([isDirty, isSubmitting]) =>
-                  isDirty ? (
-                    <Button
-                      variant="primary"
-                      isLoading={isSubmitting}
-                      onClick={async () => {
-                        await form.handleSubmit();
-                        form.reset();
-                      }}
-                    >
-                      <FloppyDiskIcon /> Save
-                    </Button>
-                  ) : null
-                }
-              />
-            </div>
-          ) : null}
-        </div>
-      ) : null}
       <div className="flex-1 overflow-auto custom-scrollbar">
         <div className="flex p-4 gap-4">
           <Avvvatars value="student name" size={50} style="shape" />
@@ -226,6 +183,37 @@ export const UserOverviewTab = ({
                 </div>
               </div>
             </div>
+          </div>
+          <div>
+            {!isSettingsDisabled ? (
+              <div className="flex gap-4 items-center">
+                <StudentSettingsDialog
+                  email=""
+                  location={student?.location ?? ""}
+                  userId={studentUserId}
+                  isOpen={isUserSettingsOpen}
+                  onOpenChange={setIsUserSettingsOpen}
+                />
+                <form.Subscribe
+                  selector={(val) => [val.isDirty, val.isSubmitting]}
+                  children={([isDirty, isSubmitting]) =>
+                    isDirty ? (
+                      <Button
+                        variant="primary"
+                        isLoading={isSubmitting}
+                        className="rounded-lg"
+                        onClick={async () => {
+                          await form.handleSubmit();
+                          form.reset();
+                        }}
+                      >
+                        <FloppyDiskIcon /> Save
+                      </Button>
+                    ) : null
+                  }
+                />
+              </div>
+            ) : null}
           </div>
         </div>
         <div className="pt-2.5 flex px-5 border-b border-bzinc sticky top-0 bg-white">

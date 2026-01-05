@@ -69,13 +69,14 @@ function RouteComponent() {
           {
             label: sessionOverview?.studentUserId ?? "",
             to: "/student/$userId",
+            params: { userId: sessionOverview?.studentUserId ?? "" },
             component: (
               <UserCrumb userId={sessionOverview?.studentUserId ?? ""} />
             ),
           },
           {
             label: sessionOverview?.title ?? "",
-            to: "/sessions/user-session/$sessionId",
+            to: ".",
           },
         ]}
         rightComponent={

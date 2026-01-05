@@ -41,7 +41,7 @@ export const UserExtracurricularTab = withStudentForm({
     const isLoadingOrError = isLoading || isError;
 
     return (
-      <div className="p-6 flex flex-col gap-4">
+      <div className="p-4 pr-2.5 flex flex-col gap-4">
         <form.Field name="extracurricular" mode="array">
           {(field) => {
             return (
