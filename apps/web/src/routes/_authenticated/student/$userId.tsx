@@ -1,6 +1,7 @@
 import { Breadcrumb } from "@/features/breadcrumb";
 import { StudentSessionTable } from "@/features/tables/student-session";
 import { UserOverviewTab } from "@/features/user-tabs";
+import { HeadsetIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { orpc } from "orpc/client";
@@ -35,7 +36,16 @@ function RouteComponent() {
     <div className="flex-1 h-screen flex flex-col">
       <Breadcrumb
         paths={[
-          { label: "Sessions", to: "/sessions" },
+          {
+            label: "Sessions",
+            to: "/sessions",
+            component: (
+              <div className="flex gap-2.5 items-center">
+                <HeadsetIcon />
+                Sessions
+              </div>
+            ),
+          },
           { label: student?.name ?? "", to: "." },
         ]}
       />

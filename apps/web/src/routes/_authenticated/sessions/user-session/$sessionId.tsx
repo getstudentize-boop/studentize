@@ -9,6 +9,7 @@ import { cn } from "@/utils/cn";
 import {
   ArrowLineDownIcon,
   BrainIcon,
+  HeadsetIcon,
   ListDashesIcon,
 } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
@@ -65,7 +66,16 @@ function RouteComponent() {
       <Breadcrumb
         className="py-3.5"
         paths={[
-          { label: "Sessions", to: "/sessions" },
+          {
+            label: "Sessions",
+            to: "/sessions",
+            component: (
+              <div className="flex gap-2.5 items-center">
+                <HeadsetIcon />
+                Sessions
+              </div>
+            ),
+          },
           {
             label: sessionOverview?.studentUserId ?? "",
             to: "/student/$userId",
