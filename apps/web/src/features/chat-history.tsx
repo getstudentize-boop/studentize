@@ -144,7 +144,7 @@ export const StudentList = () => {
 
 export const ChatHistory = ({ studentUserId }: { studentUserId?: string }) => {
   return (
-    <div className="border-r border-zinc-100 w-56 flex flex-col pr-4 py-[1.7rem] text-left">
+    <div className="border-r border-zinc-100 w-56 flex flex-col pr-4 py-[1.7rem] text-left ml-4">
       <div className="flex justify-between items-center">
         <div>Chat</div>
         <MagnifyingGlassIcon className="size-3.5 text-zinc-600" weight="bold" />

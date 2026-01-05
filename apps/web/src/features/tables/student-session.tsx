@@ -10,6 +10,7 @@ import {
 import { DataTable } from "../table";
 import { useTableHeight } from "@/hooks/use-table-height";
 import { useNavigate } from "@tanstack/react-router";
+import { Tooltip } from "@/components/tooltip";
 
 const StudentCell = (props: { name: string }) => {
   return (
@@ -17,6 +18,23 @@ const StudentCell = (props: { name: string }) => {
       <Avvatar size={24} value={props.name} style="shape" />
       {props.name}
     </div>
+  );
+};
+
+const CreatedAtCell = (props: { createdAt: Date | null }) => {
+  const date = props.createdAt ?? new Date();
+
+  const formattedDate = format(date, "MMM dd, yyyy");
+  const formattedTime = format(date, "HH:mm aa");
+
+  return (
+    <Tooltip
+      className="px-2 py-1"
+      side="bottom"
+      trigger={<span>{formattedDate}</span>}
+    >
+      {formattedTime}
+    </Tooltip>
   );
 };
 
@@ -40,8 +58,7 @@ const columns = [
   }),
   columnHelper.accessor("createdAt", {
     header: "Created At",
-    cell: (info) =>
-      format(info.getValue() ?? new Date(), "MMM dd, yyyy HH:mm aa"),
+    cell: (info) => <CreatedAtCell createdAt={info.getValue()} />,
   }),
 ];
 

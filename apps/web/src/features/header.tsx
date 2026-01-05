@@ -79,12 +79,12 @@ export const Header = ({
 
   return (
     <div
-      className={cn("text-center flex gap-4 h-screen", {
+      className={cn("text-center flex h-screen", {
         "bg-zinc-50": !isGuru,
       })}
     >
       <div className="w-[3.8rem] bg-zinc-50 border-r border-bzinc" />
-      <div className="outline-r outline-zinc-100 px-3.5 py-6 gap-2 flex flex-col bg-white w-[3.8rem] absolute left-0 top-0 h-full shadow-sm hover:w-40 transition-all duration-300 z-100 group">
+      <div className="outline-r outline-zinc-100 px-3.5 pb-6 pt-5 gap-2 flex flex-col bg-white w-[3.8rem] absolute left-0 top-0 h-full shadow-sm hover:w-40 transition-all duration-300 z-100 group">
         <div className="mb-2.5 translate-x-[0.2rem]">
           <img src="/logo.png" alt="Studentize Logo" className="w-6" />
         </div>
