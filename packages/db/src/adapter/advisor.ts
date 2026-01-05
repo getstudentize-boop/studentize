@@ -309,16 +309,24 @@ export const getOverviewByUserId = async (input: { advisorUserId: string }) => {
   return advisor;
 };
 
-export const getOverviewStats = async (input: { advisorUserId: string }) => {
+export const getOverviewStats = async (input: { advisorUserId?: string }) => {
   const [students] = await db
     .select({ count: count() })
     .from(schema.advisorStudentAccess)
-    .where(eq(schema.advisorStudentAccess.advisorUserId, input.advisorUserId));
+    .where(
+      input.advisorUserId
+        ? eq(schema.advisorStudentAccess.advisorUserId, input.advisorUserId)
+        : undefined
+    );
 
   const [sessions] = await db
     .select({ count: count() })
     .from(schema.session)
-    .where(eq(schema.session.advisorUserId, input.advisorUserId));
+    .where(
+      input.advisorUserId
+        ? eq(schema.session.advisorUserId, input.advisorUserId)
+        : undefined
+    );
 
   return { totalStudents: students.count, totalSessions: sessions.count };
 };

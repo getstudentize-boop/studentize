@@ -88,9 +88,7 @@ export const AdvisorOverviewPanel = () => {
         <div>
           <div className="font-semibold text-2xl flex items-center gap-2">
             <BrainIcon className="size-4" />
-            <span className="text-indigo-800">
-              {overview?.totalStudents ?? 0}
-            </span>
+            <span className="text-indigo-800">{overview?.totalStudents}</span>
           </div>
           <div>No. of Students</div>
         </div>

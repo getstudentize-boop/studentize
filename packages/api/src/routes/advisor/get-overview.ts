@@ -17,14 +17,20 @@ export const getOverviewRoute = createRouteHelper({
       const user = await getUserName(ctx.user.id);
 
       data = {
+        id: ctx.user.id,
         university: "n/a",
         courseMajor: "n/a",
         createdAt: new Date(),
-        user,
+        user: {
+          name: user?.name ?? "",
+          email: user?.email ?? "",
+        },
       };
     }
 
-    const stats = await getOverviewStats({ advisorUserId: userId });
+    const stats = await getOverviewStats({
+      advisorUserId: ctx.user.type === "ADMIN" ? undefined : userId,
+    });
 
     return {
       ...data,
