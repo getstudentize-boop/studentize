@@ -18,6 +18,7 @@ import {
   endOfWeek,
   startOfWeek,
   isPast,
+  addWeeks,
 } from "date-fns";
 import { cn } from "@/utils/cn";
 import { z } from "zod";
@@ -156,7 +157,11 @@ const UpcomingOrPastSessions = ({
     })
   );
 
-  const scheduledSession = scheduleSessionQuery.data ?? [];
+  const tomorrowSessions = scheduleSessionQuery.data?.tomorrow ?? [];
+  const inNext2WeeksSessions = scheduleSessionQuery.data?.inNext2Weeks ?? [];
+
+  const isNoSessions =
+    tomorrowSessions.length === 0 && inNext2WeeksSessions.length === 0;
 
   return (
     <div
@@ -169,47 +174,33 @@ const UpcomingOrPastSessions = ({
       </div>
       <div className="h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
         <div className="bg-zinc-50 font-semibold border-b border-bzinc text-violet-700 px-5 py-2 sticky top-0 z-10">
-          Upcoming
+          Tomorrow
         </div>
         {!scheduleSessionQuery.isPending ? (
           <>
-            {scheduledSession.map((session, idx) => {
-              // is the session within this week and not already passed?
-              const isWithinWeek = isWithinInterval(session.scheduledAt, {
-                start: startOfWeek(new Date()),
-                end: endOfWeek(new Date()),
-              });
-
-              const previousSession = scheduledSession[idx - 1];
-
-              const isPreviousSessionPast = previousSession
-                ? isPast(previousSession.scheduledAt)
-                : false;
-              const isPastSession = isPast(session.scheduledAt);
-
-              const isFirstPastSession =
-                !isPreviousSessionPast && isPastSession;
-
-              if (!isWithinWeek) {
-                return null;
-              }
-
+            {tomorrowSessions.map((session) => {
               return (
-                <>
-                  {isFirstPastSession ? (
-                    <div className="bg-zinc-50 font-semibold border-b border-bzinc text-violet-700 px-5 py-2 sticky top-0 z-10">
-                      Past Sessions{" "}
-                      <span className="text-violet-500">(Last 2 Weeks)</span>
-                    </div>
-                  ) : null}
-                  <SessionCard
-                    key={session.meetingCode}
-                    scheduledSession={session}
-                  />
-                </>
+                <SessionCard
+                  key={session.meetingCode}
+                  scheduledSession={session}
+                />
               );
             })}
-            {scheduledSession.length === 0 ? (
+
+            <div className="bg-zinc-50 font-semibold border-b border-bzinc text-violet-700 px-5 py-2 sticky top-0 z-10">
+              In Next 2 Weeks
+            </div>
+
+            {inNext2WeeksSessions.map((session) => {
+              return (
+                <SessionCard
+                  key={session.meetingCode}
+                  scheduledSession={session}
+                />
+              );
+            })}
+
+            {isNoSessions ? (
               <div className="px-6 py-4 border-b border-bzinc text-center text-zinc-500">
                 No {timePeriod} sessions
               </div>

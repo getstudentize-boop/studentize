@@ -152,6 +152,5 @@ export const getAdvisorsSessions = (input: {
           : undefined,
         ltOrGt(schema.scheduledSession.createdAt, input.today)
       )
-    )
-    .orderBy(desc(schema.scheduledSession.scheduledAt));
+    );
 };

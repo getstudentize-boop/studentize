@@ -1,6 +1,13 @@
 import { getAdvisorsSessions } from "@student/db";
 import { createRouteHelper } from "../../utils/middleware";
 import z from "zod";
+import {
+  addWeeks,
+  endOfWeek,
+  isWithinInterval,
+  startOfWeek,
+  isTomorrow,
+} from "date-fns";
 
 export const GetScheduledSessionsInputSchema = z.object({
   timePeriod: z.enum(["past", "upcoming"]),
@@ -17,6 +24,25 @@ export const getScheduledSessionsRoute = createRouteHelper({
       today: new Date(),
     });
 
-    return scheduledSessions;
+    const scheduledSessionsTomorrow = scheduledSessions.filter((session) => {
+      return isTomorrow(session.scheduledAt);
+    });
+
+    const scheduledSessionsInNext2Weeks = scheduledSessions.filter(
+      (session) => {
+        return (
+          !isTomorrow(session.scheduledAt) &&
+          isWithinInterval(session.scheduledAt, {
+            start: startOfWeek(new Date()),
+            end: endOfWeek(addWeeks(new Date(), 2)),
+          })
+        );
+      }
+    );
+
+    return {
+      tomorrow: scheduledSessionsTomorrow,
+      inNext2Weeks: scheduledSessionsInNext2Weeks,
+    };
   },
 });
