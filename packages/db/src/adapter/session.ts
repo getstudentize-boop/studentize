@@ -159,10 +159,12 @@ export const getLatestSessionSummaryByStudent = async (input: {
 export const updateSessionById = async (
   input: { sessionId: string } & Partial<SessionInsert>
 ) => {
+  const { sessionId, ...data } = input;
+
   return db
     .update(schema.session)
-    .set(input)
-    .where(eq(schema.session.id, input.sessionId));
+    .set(data)
+    .where(eq(schema.session.id, sessionId));
 };
 
 export const deleteSessionById = async (input: { sessionId: string }) => {
