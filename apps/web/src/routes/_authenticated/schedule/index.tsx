@@ -19,7 +19,6 @@ import Avvatar from "avvvatars-react";
 import { cn } from "@/utils/cn";
 import { Loader } from "@/components/loader";
 import { Tooltip } from "@/components/tooltip";
-import { Breadcrumb } from "@/features/breadcrumb";
 
 export const Route = createFileRoute("/_authenticated/schedule/")({
   component: RouteComponent,
@@ -55,7 +54,7 @@ const CalendarCard = ({
         <div
           className={cn(
             "text-zinc-700 font-semibold text-center rounded-md px-2 py-1",
-            isLatest ? "text-white bg-purple-700" : ""
+            isLatest ? "text-zinc-900 bg-[#BCFAF9]" : ""
           )}
         >
           <div>{day}</div>
@@ -307,98 +306,82 @@ function RouteComponent() {
   );
 
   return (
-    <div className="flex-1">
-      <Breadcrumb
-        paths={[
-          {
-            label: "Schedule",
-            to: "/schedule",
-            component: (
-              <div className="flex gap-2.5 items-center">
-                <VideoCameraIcon />
-                Schedule
-              </div>
-            ),
-          },
-        ]}
-      />
-      <div className="flex flex-1 overflow-y-auto h-[calc(100vh-65px)]">
-        <div className="flex flex-1 flex-col items-center p-10 overflow-y-auto no-scrollbar">
-          <div className="max-w-2xl w-full bg-white rounded-xl shadow-xs outline outline-bzinc">
-            {!isLinkRequired ? <Settings /> : null}
+    <div className="flex flex-1 overflow-y-auto">
+      <div className="flex flex-1 flex-col items-center p-10 overflow-y-auto no-scrollbar">
+        <div className="max-w-2xl w-full bg-white rounded-xl shadow-xs outline outline-bzinc">
+          {!isLinkRequired ? <Settings /> : null}
 
-            {isLinkRequired ? (
-              <div className="p-4 text-left">
-                <Input
-                  placeholder="https://meet.google.com/qbt-kaqz-nho"
-                  label="Paste meeting link"
-                  className="w-full"
-                  value={meetingCode}
-                  onChange={(ev) => setmeetingCode(ev.target.value)}
-                />
-              </div>
-            ) : null}
+          {isLinkRequired ? (
+            <div className="p-4 text-left">
+              <Input
+                placeholder="https://meet.google.com/qbt-kaqz-nho"
+                label="Paste meeting link"
+                className="w-full"
+                value={meetingCode}
+                onChange={(ev) => setmeetingCode(ev.target.value)}
+              />
+            </div>
+          ) : null}
 
-            <div className="p-8 border-t border-bzinc bg-zinc-100 flex items-center justify-center z-1">
-              <Button
-                className="rounded-md"
-                variant={isLinkRequired ? "primary" : "secondary"}
-                isLoading={createSessionMutation.isPending}
-                onClick={handleCreateSession}
-              >
-                Schedule a Session
-                <VideoCameraIcon />
-              </Button>
-            </div>
-            <div className="p-4 border-t border-bzinc bg-zinc-100 flex gap-2">
-              <button
-                className={cn(
-                  "border border-zinc-300 rounded-lg p-1 px-2",
-                  filter === "all" ? "bg-white" : ""
-                )}
-                onClick={() => setFilter("all")}
-              >
-                All ({sessionList.length})
-              </button>
-              <button
-                className={cn(
-                  "border border-zinc-300 rounded-lg p-1 px-2",
-                  filter === "manually-created" ? "bg-white" : ""
-                )}
-                onClick={() => setFilter("manually-created")}
-              >
-                Manually created
-              </button>
-              <button
-                className={cn(
-                  "border border-zinc-300 rounded-lg p-1 px-2",
-                  filter === "synced-with-google" ? "bg-white" : ""
-                )}
-                onClick={() => setFilter("synced-with-google")}
-              >
-                Synced with Google Calendar
-              </button>
-            </div>
+          <div className="p-8 border-t border-bzinc bg-zinc-100 flex items-center justify-center z-1">
+            <Button
+              className="rounded-md"
+              variant={isLinkRequired ? "primary" : "secondary"}
+              isLoading={createSessionMutation.isPending}
+              onClick={handleCreateSession}
+            >
+              Schedule a Session
+              <VideoCameraIcon />
+            </Button>
           </div>
-          <div className="mt-4 max-w-2xl w-full grid-cols-2 grid gap-4 text-left">
-            {sessionList?.map((session) => {
-              const isGoogleSynced = !!session.googleEventId;
-
-              if (filter === "manually-created" && isGoogleSynced) {
-                return null;
-              }
-
-              if (filter === "synced-with-google" && !isGoogleSynced) {
-                return null;
-              }
-
-              return <ScheduleCard key={session.id} session={session} />;
-            })}
+          <div className="p-4 border-t border-bzinc bg-zinc-100 flex gap-2">
+            <button
+              className={cn(
+                "border border-zinc-300 rounded-lg p-1 px-2",
+                filter === "all" ? "bg-white" : ""
+              )}
+              onClick={() => setFilter("all")}
+            >
+              All ({sessionList.length})
+            </button>
+            <button
+              className={cn(
+                "border border-zinc-300 rounded-lg p-1 px-2",
+                filter === "manually-created" ? "bg-white" : ""
+              )}
+              onClick={() => setFilter("manually-created")}
+            >
+              Manually created
+            </button>
+            <button
+              className={cn(
+                "border border-zinc-300 rounded-lg p-1 px-2",
+                filter === "synced-with-google" ? "bg-white" : ""
+              )}
+              onClick={() => setFilter("synced-with-google")}
+            >
+              Synced with Google Calendar
+            </button>
           </div>
         </div>
+        <div className="mt-4 max-w-2xl w-full grid-cols-2 grid gap-4 text-left">
+          {sessionList?.map((session) => {
+            const isGoogleSynced = !!session.googleEventId;
 
-        <ListCalendar />
+            if (filter === "manually-created" && isGoogleSynced) {
+              return null;
+            }
+
+            if (filter === "synced-with-google" && !isGoogleSynced) {
+              return null;
+            }
+
+            return <ScheduleCard key={session.id} session={session} />;
+          })}
+        </div>
       </div>
+
+      <ListCalendar />
     </div>
   );
 }

@@ -32,6 +32,16 @@ export const ServerRoute = createServerFileRoute("/api/auth/callback").methods({
       return redirect({ to: "/guru" });
     } catch (error: any) {
       console.error("Error during authentication:", error);
+      // In development, surface the error to the browser for easier debugging.
+      if (process.env.NODE_ENV !== 'production') {
+        const message = error?.message || String(error);
+        const details = error?.response?.data || error?.stack || null;
+        return new Response(
+          JSON.stringify({ error: message, details }, null, 2),
+          { status: 500, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+
       return redirect({ to: "/" });
     }
   },

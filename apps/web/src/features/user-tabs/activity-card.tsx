@@ -190,7 +190,7 @@ export const ActivityCard = ({
               name="description"
               children={(field) => (
                 <textarea
-                  className="w-full border border-bzinc rounded-md p-2.5 h-24 resize-none focus:outline-violet-300 bg-white"
+                  className="w-full border border-bzinc rounded-md p-2.5 h-24 resize-none focus:outline-[#BCFAF9] bg-white"
                   placeholder="Describe your role, achievements, or other details about this activity"
                   onChange={(val) => field.handleChange(val.target.value)}
                   value={field.state.value}

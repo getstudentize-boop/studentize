@@ -1,7 +1,5 @@
-import { Tooltip } from "@/components/tooltip";
 import { cn } from "@/utils/cn";
 import {
-  AddressBookTabsIcon,
   BrainIcon,
   ChalkboardTeacherIcon,
   CircleNotchIcon,
@@ -10,11 +8,12 @@ import {
   SignOutIcon,
   StudentIcon,
   VideoCameraIcon,
+  PencilIcon,
 } from "@phosphor-icons/react";
 import { Link, useMatchRoute, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@workos-inc/authkit-react";
 import { RouterOutputs } from "orpc/client";
-import { ReactNode, useTransition } from "react";
+import { ReactNode, useState, useTransition } from "react";
 
 type UserType = RouterOutputs["user"]["current"]["type"];
 
@@ -26,6 +25,7 @@ export const Header = ({
   userType: UserType;
 }) => {
   const [isLoading, startTransition] = useTransition();
+  const [isHovered, setIsHovered] = useState(false);
 
   const route = useMatchRoute();
   const navigate = useNavigate();
@@ -34,103 +34,156 @@ export const Header = ({
 
   const isGuru = route({ to: "/guru" });
 
-  const icons: any = [
-    {
-      to: "/home",
-      icon: <HouseIcon className="size-4" />,
-      isActive: route({ to: "/home" }),
-    },
-    {
-      to: "/guru",
-      icon: <BrainIcon className="size-4" />,
-      isActive: route({ to: "/guru" }),
-    },
-    userType === "ADMIN"
-      ? {
-          to: "/schedule",
-          icon: <VideoCameraIcon className="size-4" />,
-          isActive: route({ to: "/schedule" }),
-          isDivider: true,
-        }
-      : null,
-    userType === "ADMIN"
-      ? {
-          to: "/sessions",
+  const icons: any = userType === "STUDENT"
+    ? [
+        // Student-specific navigation
+        {
+          to: "/student/dashboard",
+          icon: <HouseIcon className="size-4" />,
+          label: "Dashboard",
+          isActive: route({ to: "/student/dashboard" }),
+        },
+        {
+          to: "/essays",
+          icon: <PencilIcon className="size-4" />,
+          label: "Essays",
+          isActive: route({ to: "/essays" }) || route({ to: "/essays/$essayId" }),
+        },
+        {
+          to: "/student/sessions",
           icon: <HeadsetIcon className="size-4" />,
-          isActive: route({ to: "/sessions" }),
-        }
-      : null,
-    userType === "ADMIN"
-      ? {
-          to: "/students",
-          icon: <StudentIcon className="size-4" />,
-          isActive: route({ to: "/students" }),
-          isDivider: true,
-        }
-      : null,
-    userType === "ADMIN"
-      ? {
-          to: "/advisors",
-          icon: <ChalkboardTeacherIcon className="size-4" />,
-          isActive: route({ to: "/advisors" }),
-        }
-      : null,
-  ].filter(Boolean);
+          label: "Sessions",
+          isActive: route({ to: "/student/sessions" }) || route({ to: "/student/sessions/$sessionId" }),
+        },
+        {
+          to: "/guru",
+          icon: <BrainIcon className="size-4" />,
+          label: "Guru",
+          isActive: route({ to: "/guru" }),
+        },
+      ]
+    : [
+        // Admin/Advisor navigation
+        {
+          to: "/home",
+          icon: <HouseIcon className="size-4" />,
+          label: "Home",
+          isActive: route({ to: "/home" }),
+        },
+        {
+          to: "/guru",
+          icon: <BrainIcon className="size-4" />,
+          label: "Guru",
+          isActive: route({ to: "/guru" }),
+        },
+        userType === "ADMIN"
+          ? {
+              to: "/sessions",
+              icon: <HeadsetIcon className="size-4" />,
+              label: "Sessions",
+              isActive: route({ to: "/sessions" }),
+            }
+          : null,
+        userType === "ADMIN"
+          ? {
+              to: "/schedule",
+              icon: <VideoCameraIcon className="size-4" />,
+              label: "Schedule",
+              isActive: route({ to: "/schedule" }),
+            }
+          : null,
+        userType === "ADMIN"
+          ? {
+              to: "/students",
+              icon: <StudentIcon className="size-4" />,
+              label: "Students",
+              isActive: route({ to: "/students" }),
+            }
+          : null,
+        userType === "ADMIN"
+          ? {
+              to: "/advisors",
+              icon: <ChalkboardTeacherIcon className="size-4" />,
+              label: "Advisors",
+              isActive: route({ to: "/advisors" }),
+            }
+          : null,
+      ].filter(Boolean);
 
   return (
     <div
-      className={cn("text-center flex h-screen", {
+      className={cn("text-center flex gap-0 h-screen", {
         "bg-zinc-50": !isGuru,
       })}
     >
-      <div className="w-[3.8rem] bg-zinc-50 border-r border-bzinc" />
-      <div className="outline-r outline-zinc-100 px-3.5 pb-6 pt-5 gap-2 flex flex-col bg-white w-[3.8rem] absolute left-0 top-0 h-full shadow-sm hover:w-40 transition-all duration-300 z-100 group">
-        <div className="mb-2.5 translate-x-[0.2rem]">
-          <img src="/logo.png" alt="Studentize Logo" className="w-6" />
+      <div
+        className={cn(
+          "border-r border-zinc-200 px-3 py-5 gap-2 flex flex-col items-start bg-white transition-all duration-300 ease-out overflow-hidden",
+          isHovered ? "w-44" : "w-[60px]"
+        )}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className="mb-4 flex items-center gap-3 w-full">
+          <img src="/logo.png" alt="Studentize Logo" className="w-7 flex-shrink-0" />
+          <span className={cn(
+            "text-sm font-semibold text-zinc-900 whitespace-nowrap transition-opacity duration-300",
+            isHovered ? "opacity-100" : "opacity-0"
+          )}>
+            Studentize
+          </span>
         </div>
 
-        {icons.map(({ to, icon, isActive, isDivider }: any) => (
-          <>
-            {isDivider ? (
-              <div className="h-px w-full bg-zinc-200 scale-x-50 group-hover:scale-x-90 transition-transform duration-300" />
-            ) : null}
-            <Link
-              to={to}
-              key={to}
-              className={cn(
-                "p-2 bg-linear-to-br from-zinc-800 to-zinc-700 text-white rounded-xl flex items-center h-8 gap-2 overflow-hidden transition-colors duration-300",
-                !isActive ? "hover:from-zinc-100 hover:to-zinc-100" : undefined,
-                {
-                  "bg-linear-to-br from-white to-white text-zinc-800":
-                    !isActive,
-                }
-              )}
-              activeProps={{ className: "bg-white" }}
-            >
-              <div>{icon}</div>
-              <div>{to.slice(1)}</div>
-            </Link>
-          </>
+        {icons.map(({ to, icon, label, isActive }: any) => (
+          <Link
+            to={to}
+            key={to}
+            className={cn(
+              "p-2.5 rounded-lg transition-all duration-200 ease-out",
+              "flex items-center gap-3 w-full",
+              isActive
+                ? "bg-zinc-900 text-white shadow-sm"
+                : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+            )}
+            activeProps={{ className: "bg-zinc-900 text-white" }}
+          >
+            <span className="flex-shrink-0">{icon}</span>
+            <span className={cn(
+              "text-sm font-medium whitespace-nowrap transition-opacity duration-300",
+              isHovered ? "opacity-100" : "opacity-0"
+            )}>
+              {label}
+            </span>
+          </Link>
         ))}
 
-        <div className="mt-auto flex">
-          <button
-            onClick={async () => {
-              startTransition(async () => {
-                await signOut({ navigate: false });
-                navigate({ to: "/" });
-              });
-            }}
-            className="rounded-md bg-zinc-100 p-2 shadow-sm outline outline-bzinc/80"
-            disabled={isLoading}
-          >
+        <button
+          onClick={async () => {
+            startTransition(async () => {
+              await signOut({ navigate: false });
+              navigate({ to: "/" });
+            });
+          }}
+          className={cn(
+            "rounded-lg bg-zinc-100 p-2.5 text-zinc-700 hover:bg-zinc-200 hover:text-zinc-900 transition-all duration-200 ease-out mt-auto disabled:opacity-50",
+            "flex items-center gap-3 w-full"
+          )}
+          disabled={isLoading}
+        >
+          <span className="flex-shrink-0">
             {isLoading ? (
-              <CircleNotchIcon className="animate-spin" />
+              <CircleNotchIcon className="animate-spin size-4" />
             ) : (
-              <SignOutIcon />
+              <SignOutIcon className="size-4" />
             )}
-          </button>
-        </div>
+          </span>
+          <span className={cn(
+            "text-sm font-medium whitespace-nowrap transition-opacity duration-300",
+            isHovered ? "opacity-100" : "opacity-0"
+          )}>
+            Sign Out
+          </span>
+        </button>
       </div>
       {children}
     </div>

@@ -3,6 +3,8 @@ import {
   Scripts,
   createRootRouteWithContext,
 } from "@tanstack/react-router";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { TanstackDevtools } from "@tanstack/react-devtools";
 
 import appCss from "../styles.css?url";
 import { QueryClient } from "@tanstack/react-query";
@@ -30,9 +32,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           rel: "stylesheet",
           href: appCss,
         },
-        // favicon
         {
           rel: "icon",
+          type: "image/png",
+          href: "/logo.png",
+        },
+        {
+          rel: "apple-touch-icon",
+          href: "/logo.png",
+        },
+        {
+          rel: "shortcut icon",
           href: "/logo.png",
         },
       ],
@@ -47,7 +57,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     notFoundComponent: () => <div>404 - Not Found</div>,
     pendingComponent: () => (
       <div className="flex h-screen items-center justify-center">
-        <img src="/cube.png" className="w-36 animate-float" />
+        <img src="/logo.png" alt="Studentize Logo" className="w-24 animate-spin" />
       </div>
     ),
   }
