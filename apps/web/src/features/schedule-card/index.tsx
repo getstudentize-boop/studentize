@@ -13,6 +13,7 @@ import { orpc, RouterOutputs } from "orpc/client";
 import { format as _format } from "date-fns";
 import { Popover } from "@/components/popover";
 import { DeleteSession } from "./delete";
+import { Tooltip } from "@/components/tooltip";
 
 export const ScheduleCard = ({
   session,
@@ -26,7 +27,13 @@ export const ScheduleCard = ({
   );
 
   const endMeetingMutation = useMutation(
-    orpc.scheduledSession.endMeeting.mutationOptions()
+    orpc.scheduledSession.endMeeting.mutationOptions({
+      onSuccess: () => {
+        utils.invalidateQueries({
+          queryKey: orpc.scheduledSession.list.queryKey(),
+        });
+      },
+    })
   );
 
   return (
@@ -101,19 +108,25 @@ export const ScheduleCard = ({
       </div>
 
       <div className="flex gap-2 items-center p-4 border-t border-bzinc">
-        <button
-          className="p-2 rounded-md border border-bzinc bg-zinc-50 transition-colors"
-          onClick={() => {
-            utils.invalidateQueries({
-              queryKey: orpc.scheduledSession.list.queryKey(),
-            });
-          }}
+        <Tooltip
+          trigger={
+            <button
+              className="p-2 rounded-md border border-bzinc bg-zinc-50 transition-colors"
+              onClick={() => {
+                utils.invalidateQueries({
+                  queryKey: orpc.scheduledSession.list.queryKey(),
+                });
+              }}
+            >
+              <RobotIcon
+                size={18}
+                className={session.botId ? "text-indigo-600" : ""}
+              />
+            </button>
+          }
         >
-          <RobotIcon
-            size={18}
-            className={session.botId ? "text-indigo-600" : ""}
-          />
-        </button>
+          {session.botId}
+        </Tooltip>
         <Button
           variant="neutral"
           className="rounded-md w-full"
