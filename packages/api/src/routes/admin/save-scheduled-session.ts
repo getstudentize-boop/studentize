@@ -79,16 +79,18 @@ export const saveScheduledSession = createAdminRouteHelper({
 
     const isGoogleSynced = scheduledSession.googleEventId !== null;
 
+    const isTemporaryUpload = isGoogleSynced || !scheduledSession.studentUserId;
+
     const upload = await getSignedUrl(
       "transcription",
-      isGoogleSynced || !scheduledSession.studentUserId
+      isTemporaryUpload
         ? createTemporaryTranscriptionObjectKey({
             ext: "txt",
             sessionId: newSession.id,
           })
         : createTranscriptionObjectKey({
             ext: "txt",
-            studentUserId: scheduledSession.studentUserId,
+            studentUserId: scheduledSession.studentUserId!,
             sessionId: newSession.id,
           }),
       { type: "put" }
@@ -109,9 +111,11 @@ export const saveScheduledSession = createAdminRouteHelper({
       summary,
     });
 
-    await downloadReplayRoute({
-      input: { sessionId: newSession.id },
-    });
+    if (!isTemporaryUpload) {
+      await downloadReplayRoute({
+        input: { sessionId: newSession.id },
+      });
+    }
 
     return {
       sessionId: newSession.id,

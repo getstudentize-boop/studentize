@@ -14,8 +14,6 @@ export const endMeetingRoute = createRouteHelper({
   execute: async ({ input }) => {
     const { scheduledSessionId } = input;
 
-    console.log("scheduledSessionId 😅", scheduledSessionId);
-
     const scheduleSession = await getScheduledSessionById({
       scheduledSessionId,
     });

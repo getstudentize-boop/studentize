@@ -11,6 +11,7 @@ import {
   readFile,
   uploadTextFile,
 } from "../../utils/s3";
+import { downloadReplayRoute } from "../admin/download-replay";
 
 export const CreateAutoSyncInputSchema = z.object({
   sessionId: z.string(),
@@ -62,5 +63,7 @@ export const createAutoSyncRoute = createRouteHelper({
       bucket: "transcription",
       key: temporaryTranscriptionKey,
     });
+
+    await downloadReplayRoute({ input: { sessionId } });
   },
 });
