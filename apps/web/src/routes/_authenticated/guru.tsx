@@ -283,12 +283,12 @@ function App() {
                 }
               }}
             >
-              {isEmptyState && !!userId ? (
+              {isEmptyState && !!userId && userDisplay?.name ? (
                 <div className="flex flex-col p-4 gap-4">
                   {[
-                    `Where is ${userDisplay?.name?.split(" ")[0]}'s in the applying?`,
+                    `Where is ${userDisplay.name?.split(" ")[0]} in the application process?`,
                     "What should we prioritize in our next session?",
-                    "Where are you in the application process (tests, essays, recommendations)?",
+                    "What deadlines should we be aware of?",
                   ].map((text) => (
                     <div key={text}>
                       <button
