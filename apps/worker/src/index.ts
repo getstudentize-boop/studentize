@@ -20,8 +20,6 @@ type Bindings = {
     sessionId: string;
     accessToken: string;
   }>;
-  ADMIN_TOKEN: string;
-  API_URL: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -118,7 +116,7 @@ app.post(
     }
 
     await c.env.DOWNLOAD_REPLAY_WORKFLOW.create({
-      params: { sessionId, accessToken: c.env.ADMIN_TOKEN },
+      params: { sessionId, accessToken },
     });
 
     return c.json({ status: "ok" });

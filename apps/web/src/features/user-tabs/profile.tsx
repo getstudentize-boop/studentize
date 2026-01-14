@@ -226,7 +226,7 @@ export const UserProfileTab = withStudentForm({
     }
 
     return (
-      <div className="p-4 pr-2.5">
+      <div className="p-6">
         <div className="mb-4">
           <form.Field
             name="status"

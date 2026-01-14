@@ -31,7 +31,7 @@ export const TableRow = forwardRef<
   return (
     <tr
       ref={ref}
-      className={cn("border-b border-secondary-b border-zinc-100", className)}
+      className={cn("border-b border-zinc-100 hover:bg-zinc-50/50 transition-colors duration-150", className)}
       {...rest}
     />
   );
@@ -42,7 +42,7 @@ export const TableCell = forwardRef<
   HTMLAttributes<HTMLTableCellElement>
 >((props, ref) => {
   const { className, ...rest } = props;
-  return <td ref={ref} className={cn("h-10 px-4", className)} {...rest} />;
+  return <td ref={ref} className={cn("h-12 px-4 text-sm text-zinc-700", className)} {...rest} />;
 });
 
 export const TableHeader = forwardRef<
@@ -63,7 +63,7 @@ export const TableHead = forwardRef<HTMLTableCellElement, TableHeadProps>(
       <th
         ref={ref}
         className={cn(
-          "font-semibold h-10 border-secondary-b border-zinc-100 bg-clip-padding first:pl-4 last:pr-4",
+          "font-semibold h-12 border-b border-zinc-200 bg-zinc-50/50 text-xs text-zinc-600 uppercase tracking-wide bg-clip-padding first:pl-4 last:pr-4",
           className
         )}
         {...rest}

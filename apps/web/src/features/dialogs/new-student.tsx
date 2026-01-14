@@ -40,7 +40,7 @@ export const NewStudentDialog = () => {
   return (
     <Dialog
       trigger={
-        <button className="px-3 py-1.5 shadow border-b-2 border-zinc-950 flex gap-2 rounded-lg text-white bg-zinc-800 items-center">
+        <button className="px-3 py-1.5 shadow border-b-2 border-zinc-950 flex gap-2 rounded-full text-white bg-zinc-800 items-center">
           New Student
           <PlusIcon />
         </button>

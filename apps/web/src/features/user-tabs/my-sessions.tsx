@@ -62,13 +62,9 @@ const Card = ({
   );
 };
 
-export const UserSessionsTab = ({
-  studentUserId,
-}: {
-  studentUserId: string;
-}) => {
+export const MySessionsTab = () => {
   const summaryQuery = useQuery(
-    orpc.session.summaryList.queryOptions({ input: { studentUserId } })
+    orpc.student.getMySessionSummaries.queryOptions({ input: {} })
   );
 
   const session = summaryQuery.data;
@@ -99,7 +95,7 @@ export const UserSessionsTab = ({
           ) : null}
 
           {session?.summaries.map((s) => (
-            <Card title={s.title} variant="zinc">
+            <Card key={s.id} title={s.title} variant="zinc">
               {s.summary ?? ""}
             </Card>
           ))}

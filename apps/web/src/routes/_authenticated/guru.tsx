@@ -26,6 +26,7 @@ import { Markdown } from "@/components/markdown";
 import { Loader } from "@/components/loader";
 import { Tool } from "@/features/tools";
 import { LoadingIndicator } from "@/components/loading-indicator";
+import { useAuthUser } from "../_authenticated";
 
 export const Route = createFileRoute("/_authenticated/guru")({
   component: App,
@@ -35,12 +36,24 @@ export const Route = createFileRoute("/_authenticated/guru")({
       .parse(search),
 });
 
-const EmptyMessage = () => {
+const EmptyMessage = ({ isStudent }: { isStudent: boolean }) => {
   return (
     <>
-      <div className="size-14 rounded-full bg-gradient-to-tl to-violet-100 from-sky-600" />
-      <div className="text-2xl font-semibold mb-1 mt-5">Hi, there 🎓</div>
-      <div>Ask me questions about a user's sessions.</div>
+      <div className="size-16 rounded-full bg-gradient-to-br from-[#BCFAF9]/30 to-[#BCFAF9]/50 flex items-center justify-center mb-4">
+        <BrainIcon
+          className="size-8"
+          weight="fill"
+          style={{ color: "#BCFAF9", filter: "brightness(0.7)" }}
+        />
+      </div>
+      <div className="text-2xl font-semibold mb-2 mt-2 text-zinc-900">
+        Hi, there 🎓
+      </div>
+      <div className="text-zinc-600">
+        {isStudent
+          ? "Ask me anything about your academic journey and college applications."
+          : "Ask me questions about a user's sessions."}
+      </div>
     </>
   );
 };
@@ -61,10 +74,11 @@ const Message = ({
   return (
     <div
       className={cn(
-        "py-3 px-4 rounded-xl text-left max-w-xl",
+        "py-3.5 px-4 rounded-xl text-left max-w-xl shadow-sm",
+        "transition-all duration-200",
         role === "assistant"
-          ? "mr-auto rounded-bl-none bg-white"
-          : "ml-auto rounded-br-none bg-linear-to-t to-cyan-600 from-cyan-700/80 text-white"
+          ? "mr-auto rounded-bl-none bg-white border border-zinc-100"
+          : "ml-auto rounded-br-none bg-[#BCFAF9] text-zinc-900"
       )}
     >
       <Markdown>{content}</Markdown>
@@ -102,7 +116,10 @@ function App() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const [input, setInput] = useState("");
 
-  const userId = searchParams.userId;
+  const { user } = useAuthUser();
+
+  // For students, automatically set userId to their own ID
+  const userId = user.type === "STUDENT" ? user.id : searchParams.userId;
 
   const queryClient = useQueryClient();
 
@@ -207,12 +224,12 @@ function App() {
   }, [chat.messages.length]);
 
   return (
-    <>
+    <div className="flex flex-1 h-screen overflow-hidden">
       <ChatHistory studentUserId={userId} />
-      <div className="flex flex-1 flex-col p-4 pt-2.5 h-screen">
-        <div className="justify-between items-center flex p-2.5">
-          <div className="flex gap-2 items-center">
-            <BrainIcon className="size-[1.1rem]" />
+      <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
+        <div className="justify-between items-center flex px-6 py-4 border-b border-zinc-200 bg-white flex-shrink-0">
+          <div className="flex gap-2 items-center text-sm font-medium text-zinc-900">
+            <CaretCircleRightIcon className="size-4 text-zinc-400" />
             {!isPendingOrError ? (
               isNewChat ? (
                 "New Chat"
@@ -228,23 +245,23 @@ function App() {
           </div>
 
           <div className="flex gap-2">
-            <Button variant="neutral">
+            <Button variant="neutral" className="text-xs">
               Share
-              <ExportIcon />
+              <ExportIcon className="size-3.5" />
             </Button>
             <Link to="/guru">
-              <Button>
+              <Button variant="primary" className="text-xs">
                 New Chat
-                <SparkleIcon weight="fill" />
+                <SparkleIcon weight="fill" className="size-3.5" />
               </Button>
             </Link>
           </div>
         </div>
-        <div className="flex-1 h-[90vh] rounded-lg bg-gradient-to-b from-zinc-100/80 to-zinc-100 p-10 pt-0">
-          <div className="max-w-3xl mx-auto w-full flex flex-col h-full relative">
+        <div className="flex-1 flex flex-col min-h-0 bg-gradient-to-b from-zinc-50 to-white overflow-hidden">
+          <div className="max-w-3xl mx-auto w-full flex flex-col h-full px-6 py-6 overflow-hidden">
             <div
               className={cn(
-                "flex-1 flex flex-col px-4 pt-10 pb-36 overflow-y-auto no-scrollbar",
+                "flex-1 flex flex-col overflow-y-auto custom-scrollbar min-h-0",
                 chat.messages.length ? "gap-4" : "items-center justify-center"
               )}
             >
@@ -260,17 +277,16 @@ function App() {
                   />
                 </div>
               ) : null}
-              {isEmptyState ? <EmptyMessage /> : null}
+              {isEmptyState ? (
+                <EmptyMessage isStudent={user.type === "STUDENT"} />
+              ) : null}
               {chat.messages.map((msg) => (
                 <Message key={msg.id} role={msg.role} message={msg} />
               ))}
               <div className="h-1" ref={bottomRef} />
             </div>
             <form
-              className={cn(
-                "transition-transform duration-500 ease-in-out absolute bottom-0 left-0 w-full",
-                !isEmptyState ? "translate-y-5" : undefined
-              )}
+              className="flex-shrink-0 mt-4"
               onSubmit={(ev) => {
                 ev.preventDefault();
 
@@ -294,7 +310,7 @@ function App() {
                       <button
                         type="button"
                         onClick={() => setInput(text)}
-                        className="text-zinc-900 bg-zinc-50 border border-bzinc rounded-lg p-1 px-2 font-semibold"
+                        className="text-zinc-700 bg-zinc-50 border border-zinc-200 rounded-lg px-3 py-2 text-sm font-medium hover:bg-zinc-100 hover:border-zinc-300 transition-all duration-150"
                       >
                         {text}
                       </button>
@@ -302,7 +318,7 @@ function App() {
                   ))}
                 </div>
               ) : null}
-              <div className="rounded-2xl bg-white p-4 outline-[1px] outline-zinc-100 shadow-xs">
+              <div className="rounded-xl bg-white p-4 border border-zinc-200 shadow-sm">
                 <AutosizeTextArea
                   placeholder="Ask me anything..."
                   value={input}
@@ -316,66 +332,72 @@ function App() {
                   rows={3}
                 />
 
-                <div className="flex justify-between">
-                  <form.Field
-                    name="studentQuery"
-                    asyncDebounceMs={300}
-                    listeners={{
-                      onChange: ({ value }) => {
-                        searchStudentMutation.mutate({ query: value });
-                      },
-                    }}
-                    children={(field) => (
-                      <UserSearch
-                        placeholder="Select student"
-                        data={searchedStudents}
-                        onSearch={field.handleChange}
-                        isLoading={searchStudentMutation.isPending}
-                        isTriggerDisabled={isUserSelectionDisabled}
-                        onSelect={(user) => {
-                          queryClient.setQueryData(
-                            orpc.user.display.queryKey({
-                              input: { userId: user.userId },
-                            }),
-                            () => ({ email: "xxx", name: user.name })
-                          );
+                <div className="flex justify-between items-center mt-3 gap-3">
+                  {user.type !== "STUDENT" && (
+                    <form.Field
+                      name="studentQuery"
+                      asyncDebounceMs={300}
+                      listeners={{
+                        onChange: ({ value }) => {
+                          searchStudentMutation.mutate({ query: value });
+                        },
+                      }}
+                      children={(field) => (
+                        <UserSearch
+                          placeholder="Select student"
+                          data={searchedStudents}
+                          onSearch={field.handleChange}
+                          isLoading={searchStudentMutation.isPending}
+                          isTriggerDisabled={isUserSelectionDisabled}
+                          onSelect={(user) => {
+                            queryClient.setQueryData(
+                              orpc.user.display.queryKey({
+                                input: { userId: user.userId },
+                              }),
+                              () => ({ email: "xxx", name: user.name })
+                            );
 
-                          navigate({
-                            to: "/guru",
-                            search: { userId: user.userId },
-                          });
-                        }}
-                        user={
-                          userDisplay && userId
-                            ? {
-                                userId,
-                                name: userDisplay.name,
-                              }
-                            : undefined
-                        }
-                        side="left"
-                        align="end"
-                        className="w-72 h-50"
-                        trigger={(user) => (
-                          <Button
-                            type="button"
-                            variant="neutral"
-                            className="rounded-lg"
-                          >
-                            {user ? user.name : "Select a student"}
-                            {isUserSelectionDisabled ? null : (
-                              <CaretDownIcon weight="bold" />
-                            )}
-                          </Button>
-                        )}
-                      />
-                    )}
-                  />
+                            navigate({
+                              to: "/guru",
+                              search: { userId: user.userId },
+                            });
+                          }}
+                          user={
+                            userDisplay && userId
+                              ? {
+                                  userId,
+                                  name: userDisplay.name,
+                                }
+                              : undefined
+                          }
+                          side="left"
+                          align="end"
+                          className="w-72 h-50"
+                          trigger={(user) => (
+                            <Button
+                              type="button"
+                              variant="neutral"
+                              className="rounded-lg flex-shrink-0"
+                            >
+                              {user ? user.name : "Select a student"}
+                              {isUserSelectionDisabled ? null : (
+                                <CaretDownIcon weight="bold" />
+                              )}
+                            </Button>
+                          )}
+                        />
+                      )}
+                    />
+                  )}
 
                   <Button
                     ref={submitRef}
                     type="submit"
                     disabled={!input.trim() || !userId}
+                    className={cn(
+                      "flex-shrink-0",
+                      user.type === "STUDENT" && "ml-auto"
+                    )}
                   >
                     <ArrowUpIcon weight="bold" />
                     Send
@@ -386,6 +408,6 @@ function App() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -1,7 +1,6 @@
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
-  CaretLeftIcon,
   MagnifyingGlassIcon,
   PlusIcon,
   SparkleIcon,
@@ -12,12 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 
 import { format, isSameDay, subDays } from "date-fns";
-import {
-  Link,
-  useCanGoBack,
-  useRouter,
-  useSearch,
-} from "@tanstack/react-router";
+import { Link, useSearch } from "@tanstack/react-router";
 import { cn } from "@/utils/cn";
 
 const ChatLoader = () => {
@@ -51,14 +45,14 @@ const ChatList = ({ studentUserId }: { studentUserId: string }) => {
           <ArrowLeftIcon />
           <span className="text-zinc-500">Select a student</span>
         </Link>
-        <hr className="mb-0 mt-3 border-bzinc" />
+        <hr className="mb-0 mt-3 border-zinc-200" />
       </div>
       {chatsQuery.isPending ? (
         <div className="mt-2">
           <ChatLoader />
         </div>
       ) : null}
-      <div className="h-[calc(100vh-5rem)] overflow-y-auto no-scrollbar pr-1">
+      <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
         {chats.map((c, idx) => {
           const prevChat = chats[idx - 1];
           const isDifferentDay = prevChat
@@ -86,8 +80,8 @@ const ChatList = ({ studentUserId }: { studentUserId: string }) => {
             <>
               {title ? (
                 <div
-                  className={cn("text-zinc-400 mb-2.5", {
-                    "mt-2": title !== "Today",
+                  className={cn("text-zinc-400 mb-2.5 text-xs font-medium uppercase tracking-wide", {
+                    "mt-3": title !== "Today",
                   })}
                 >
                   {title}
@@ -96,12 +90,13 @@ const ChatList = ({ studentUserId }: { studentUserId: string }) => {
               <Link
                 to="/guru"
                 search={{ chatId: c.id, userId: c.studentUserId }}
-                className={cn("mb-2.5", {
-                  "font-semibold text-cyan-600 transition-transform":
+                className={cn("mb-2.5 block px-2 py-1.5 rounded-lg text-sm transition-all duration-150", {
+                  "font-semibold text-zinc-900 bg-[#BCFAF9]/30":
                     c.id === searchParams.chatId,
+                  "text-zinc-700 hover:bg-zinc-50": c.id !== searchParams.chatId,
                 })}
               >
-                <div className="w-52 truncate">{c.title}</div>
+                <div className="truncate">{c.title}</div>
               </Link>
               <div className="mb-2.5" />
             </>
@@ -122,7 +117,7 @@ export const StudentList = () => {
   return (
     <>
       {studentListQuery.isPending ? <ChatLoader /> : null}
-      <div className="h-[calc(100vh-5rem)] overflow-y-auto no-scrollbar pr-1">
+      <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
         {!studentListQuery.isPending ? (
           <div className="text-zinc-400 mb-2.5">Select a student</div>
         ) : null}
@@ -132,12 +127,12 @@ export const StudentList = () => {
               <Link
                 to="/guru"
                 search={{ userId: student.studentUserId }}
-                className="mb-2.5 flex justify-between items-center group"
+                className="mb-2.5 flex justify-between items-center group px-2 py-1.5 rounded-lg hover:bg-zinc-50 transition-all duration-150 min-w-0"
               >
-                <div className="w-52 truncate group-hover:translate-x-1 transition-transform">
+                <div className="truncate text-sm text-zinc-700 group-hover:text-zinc-900 font-medium flex-1 min-w-0 mr-2">
                   {student.name}
                 </div>
-                <ArrowRightIcon className="size-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRightIcon className="size-4 text-zinc-400 group-hover:text-zinc-600 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
               </Link>
               <div className="mb-2.5" />
             </>
@@ -149,34 +144,21 @@ export const StudentList = () => {
 };
 
 export const ChatHistory = ({ studentUserId }: { studentUserId?: string }) => {
-  const router = useRouter();
-  const isCanGoBack = useCanGoBack();
-
   return (
-    <div className="border-r border-zinc-100 w-56 flex flex-col pr-4 py-[1.5rem] text-left ml-4">
-      <div className="flex justify-between items-center">
-        <button
-          className="flex items-center gap-2"
-          onClick={() => {
-            if (isCanGoBack) {
-              router.history.back();
-            }
-          }}
-        >
-          {isCanGoBack ? <CaretLeftIcon /> : null}
-          <div>Chat</div>
-        </button>
-        <MagnifyingGlassIcon className="size-3.5 text-zinc-600" weight="bold" />
+    <div className="border-r border-zinc-200 w-72 flex flex-col px-4 py-5 text-left bg-white flex-shrink-0 h-full overflow-hidden">
+      <div className="flex justify-between items-center mb-3">
+        <div className="text-sm font-semibold text-zinc-900">Chat</div>
+        <MagnifyingGlassIcon className="size-4 text-zinc-400" weight="bold" />
       </div>
-      <Link to="/guru">
-        <Button className="my-4 w-full">
-          <PlusIcon />
+      <Link to="/guru" className="w-full">
+        <Button variant="primary" className="w-full text-xs justify-center">
+          <PlusIcon className="size-3.5" />
           New Chat
-          <SparkleIcon weight="fill" />
+          <SparkleIcon weight="fill" className="size-3.5" />
         </Button>
       </Link>
 
-      <hr className="border-bzinc border-b border-t-0 mb-4" />
+      <hr className="border-zinc-200 border-b border-t-0 my-4" />
 
       {studentUserId ? (
         <ChatList studentUserId={studentUserId} />

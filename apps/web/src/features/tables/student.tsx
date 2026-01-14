@@ -8,7 +8,7 @@ import {
 import { DataTable } from "../table";
 import { RouterOutputs } from "orpc/client";
 import { Link } from "@tanstack/react-router";
-import { ArrowRightIcon, CaretCircleRightIcon } from "@phosphor-icons/react";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 import { useTableHeight } from "@/hooks/use-table-height";
 
 const StudentCell = (props: { name: string }) => {
@@ -35,7 +35,7 @@ const columns = [
       const curriculum = info.getValue();
 
       return (
-        <span className="py-1 px-2 border border-bzinc rounded-md text-xs inline-flex gap-2 bg-white">
+        <span className="py-1 px-2 border border-zinc-200 rounded-md text-xs inline-flex gap-2 bg-white shadow-sm">
           {
             {
               IB: "🎓",
@@ -66,7 +66,7 @@ const columns = [
           {countries.map((country) => (
             <span
               key={country}
-              className="py-1 px-2 border border-bzinc rounded-md text-xs bg-white"
+              className="py-1 px-2 border border-zinc-200 rounded-md text-xs bg-white shadow-sm"
             >
               {
                 {
@@ -83,6 +83,23 @@ const columns = [
     },
   }),
   columnHelper.accessor("userId", {
+    header: "Session Summary",
+    cell: (info) => {
+      const userId = info.getValue();
+
+      return (
+        <Link
+          to="/students/$userId"
+          params={{ userId }}
+          search={{ tab: "sessions" }}
+          className="underline"
+        >
+          View
+        </Link>
+      );
+    },
+  }),
+  columnHelper.accessor("userId", {
     header: " ",
     cell: (info) => {
       const userId = info.getValue();
@@ -92,10 +109,12 @@ const columns = [
           to="/students/$userId"
           params={{ userId }}
           search={{ tab: "sessions" }}
-          className="py-0.5 px-1.5 rounded-sm border-bzinc border inline-flex group bg-white gap-2 items-center"
+          className="py-1.5 px-3 rounded-lg border border-zinc-200 inline-flex group bg-white gap-2 items-center text-sm font-medium text-zinc-700 hover:bg-zinc-50 hover:border-zinc-300 transition-all duration-150"
         >
-          <span>Open</span>
-          <CaretCircleRightIcon size={16} />
+          <span className="group-hover:translate-x-0.5 transition-transform duration-300">
+            Open
+          </span>
+          <ArrowRightIcon className="group-hover:-translate-x-0.5 transition-transform duration-300" />
         </Link>
       );
     },
@@ -124,7 +143,7 @@ export const StudentTable = ({
   return (
     <div
       ref={handleRef}
-      className="border border-bzinc bg-white rounded-lg flex-1 text-left overflow-y-auto no-scrollbar"
+      className="border border-zinc-200 bg-white rounded-lg flex-1 text-left overflow-y-auto no-scrollbar shadow-sm"
       style={{ height: tableHeight ? tableHeight - 32 : undefined }}
     >
       {tableHeight ? (

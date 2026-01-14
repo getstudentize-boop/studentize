@@ -1,7 +1,5 @@
-import { Breadcrumb } from "@/features/breadcrumb";
 import { StudentSessionTable } from "@/features/tables/student-session";
 import { UserOverviewTab } from "@/features/user-tabs";
-import { HeadsetIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { orpc } from "orpc/client";
@@ -33,38 +31,24 @@ function RouteComponent() {
   const student = studentQuery.data;
 
   return (
-    <div className="flex-1 h-screen flex flex-col">
-      <Breadcrumb
-        paths={[
-          {
-            label: "Sessions",
-            to: "/sessions",
-            component: (
-              <div className="flex gap-2.5 items-center">
-                <HeadsetIcon />
-                Sessions
-              </div>
-            ),
-          },
-          { label: student?.name ?? "", to: "." },
-        ]}
-      />
-      <div className="flex flex-1 text-left h-[calc(100vh-100px)]">
-        <div className="flex-1 flex-col flex p-4">
-          <div className="rounded-md bg-white flex-1 flex flex-col border border-bzinc overflow-hidden">
-            <StudentSessionTable
-              data={student?.sessions ?? []}
-              isError={studentQuery.isError}
-            />
-          </div>
+    <div className="flex flex-1 h-screen text-left gap-4">
+      <div className="flex-1 flex-col flex p-4 pt-2.5">
+        <div className="flex items-center justify-between p-2.5">
+          <div>Sessions ({student?.name})</div>
         </div>
-        <UserOverviewTab
-          className="max-w-md"
-          studentUserId={params.userId}
-          currentTab={search.tab ?? "profile"}
-          isSettingsDisabled
-        />
+        <div className="rounded-md bg-white flex-1 flex flex-col border border-bzinc overflow-hidden">
+          <StudentSessionTable
+            data={student?.sessions ?? []}
+            isError={studentQuery.isError}
+          />
+        </div>
       </div>
+      <UserOverviewTab
+        className="max-w-md"
+        studentUserId={params.userId}
+        currentTab={search.tab ?? "profile"}
+        isSettingsDisabled
+      />
     </div>
   );
 }

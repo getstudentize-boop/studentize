@@ -1,5 +1,6 @@
 import { Loader } from "@/components/loader";
 import { Repeat } from "@/components/repeat";
+import { TableSkeletonBody } from "@/components/skeletons";
 import {
   Table,
   TableHeader,
@@ -33,9 +34,9 @@ export const DataTable = ({
 
   return (
     <Table>
-      <TableHeader className="sticky top-0 bg-white border-b border-bzinc">
+      <TableHeader className="sticky top-0 bg-white border-b border-zinc-200 z-10">
         {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id}>
+          <TableRow key={headerGroup.id} className="hover:bg-transparent">
             {headerGroup.headers.map((header) => (
               <TableHead key={header.id}>
                 {flexRender(
@@ -47,7 +48,7 @@ export const DataTable = ({
           </TableRow>
         ))}
       </TableHeader>
-      <TableBody className="overflow-y-auto custom-scrollbar">
+      <TableBody className="overflow-y-auto custom-scrollbar bg-white">
         {isLoadingOrError ? (
           <>
             <tr>
@@ -57,18 +58,7 @@ export const DataTable = ({
                 </td>
               ))}
             </tr>
-            <Repeat
-              component={
-                <tr>
-                  {table.getAllColumns().map((c) => (
-                    <td key={c.id} className="pr-4 first:pl-4 py-2">
-                      <Loader isError={isError} />
-                    </td>
-                  ))}
-                </tr>
-              }
-              times={15}
-            />
+            <TableSkeletonBody columns={table.getAllColumns().length} rows={12} />
           </>
         ) : null}
         {!isLoadingOrError &&
@@ -77,9 +67,9 @@ export const DataTable = ({
               key={row.id}
               onClick={() => onRowClick?.(row)}
               className={cn(
-                "transition-colors group",
-                !!onRowClick && "cursor-pointer hover:bg-zinc-50",
-                isRowSelected?.(row) && "bg-zinc-100"
+                "transition-colors duration-150 group",
+                !!onRowClick && "cursor-pointer",
+                isRowSelected?.(row) && "bg-[#BCFAF9]/20 border-l-2 border-l-[#BCFAF9]"
               )}
             >
               {row.getAllCells().map((cell) => {
