@@ -1,4 +1,3 @@
-import { Button } from "@/components/button";
 import { Loader } from "@/components/loader";
 import { AdvisorOverviewPanel } from "@/features/overview-panel/advisor";
 import {
@@ -12,14 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { orpc, RouterOutputs } from "orpc/client";
 
-import {
-  format as dateFnFormat,
-  isWithinInterval,
-  endOfWeek,
-  startOfWeek,
-  isPast,
-  addWeeks,
-} from "date-fns";
+import { format as dateFnFormat } from "date-fns";
 import { cn } from "@/utils/cn";
 import { z } from "zod";
 import { UserOverviewTab } from "@/features/user-tabs";
@@ -40,7 +32,7 @@ export const Route = createFileRoute("/_authenticated/home")({
 });
 
 type ScheduledSession =
-  RouterOutputs["advisor"]["getScheduledSessions"][number];
+  RouterOutputs["advisor"]["getScheduledSessions"]["today"][number];
 
 const SessionCard = ({
   scheduledSession,
@@ -111,21 +103,6 @@ const StudentCard = ({
   );
 };
 
-const StudentCardLoader = () => {
-  return (
-    <div className="border border-bzinc rounded-lg">
-      <div className="p-4 flex flex-col gap-4">
-        <div className="flex justify-between">
-          <Loader className="w-32" />
-        </div>
-      </div>
-      <div className="px-4 py-3 border-t border-bzinc flex justify-center gap-4 items-center">
-        <Loader className="w-36" />
-      </div>
-    </div>
-  );
-};
-
 const SessionCardLoader = () => {
   return (
     <div className="px-6 py-4 border-b border-bzinc">
@@ -157,11 +134,14 @@ const UpcomingOrPastSessions = ({
     })
   );
 
+  const todaySessions = scheduleSessionQuery.data?.today ?? [];
   const tomorrowSessions = scheduleSessionQuery.data?.tomorrow ?? [];
   const inNext2WeeksSessions = scheduleSessionQuery.data?.inNext2Weeks ?? [];
 
   const isNoSessions =
-    tomorrowSessions.length === 0 && inNext2WeeksSessions.length === 0;
+    todaySessions.length === 0 &&
+    tomorrowSessions.length === 0 &&
+    inNext2WeeksSessions.length === 0;
 
   return (
     <div
@@ -173,32 +153,55 @@ const UpcomingOrPastSessions = ({
         Scheduled Sessions
       </div>
       <div className="h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
-        <div className="bg-zinc-50 font-semibold border-b border-bzinc text-violet-700 px-5 py-2 sticky top-0 z-10">
-          Tomorrow
-        </div>
         {!scheduleSessionQuery.isPending ? (
           <>
-            {tomorrowSessions.map((session) => {
-              return (
+            <div className="bg-zinc-50 font-semibold border-b border-bzinc text-violet-700 px-5 py-2 sticky top-0 z-10">
+              Today
+            </div>
+            {todaySessions.length > 0 ? (
+              todaySessions.map((session) => (
                 <SessionCard
                   key={session.meetingCode}
                   scheduledSession={session}
                 />
-              );
-            })}
+              ))
+            ) : (
+              <div className="px-6 py-4 border-b border-bzinc text-center text-zinc-400 text-sm">
+                No sessions today
+              </div>
+            )}
+
+            <div className="bg-zinc-50 font-semibold border-b border-bzinc text-violet-700 px-5 py-2 sticky top-0 z-10">
+              Tomorrow
+            </div>
+            {tomorrowSessions.length > 0 ? (
+              tomorrowSessions.map((session) => (
+                <SessionCard
+                  key={session.meetingCode}
+                  scheduledSession={session}
+                />
+              ))
+            ) : (
+              <div className="px-6 py-4 border-b border-bzinc text-center text-zinc-400 text-sm">
+                No sessions tomorrow
+              </div>
+            )}
 
             <div className="bg-zinc-50 font-semibold border-b border-bzinc text-violet-700 px-5 py-2 sticky top-0 z-10">
               In Next 2 Weeks
             </div>
-
-            {inNext2WeeksSessions.map((session) => {
-              return (
+            {inNext2WeeksSessions.length > 0 ? (
+              inNext2WeeksSessions.map((session) => (
                 <SessionCard
                   key={session.meetingCode}
                   scheduledSession={session}
                 />
-              );
-            })}
+              ))
+            ) : (
+              <div className="px-6 py-4 border-b border-bzinc text-center text-zinc-400 text-sm">
+                No upcoming sessions
+              </div>
+            )}
 
             {isNoSessions ? (
               <div className="px-6 py-4 border-b border-bzinc text-center text-zinc-500">
