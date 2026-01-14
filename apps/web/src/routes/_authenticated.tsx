@@ -27,22 +27,18 @@ export const Route = createFileRoute("/_authenticated")({
   },
   pendingComponent: () => (
     <div className="flex h-screen items-center justify-center">
-      <img src="/logo.png" alt="Studentize Logo" className="w-24 animate-spin" />
+      <img
+        src="/logo.png"
+        alt="Studentize Logo"
+        className="w-24 animate-spin"
+      />
     </div>
   ),
 });
 
 export const useAuthUser = () => {
-  try {
-    const data = Route.useLoaderData();
-    if (!data || !data.user) {
-      throw new Error("User data is not available. Please ensure you are authenticated.");
-    }
-    return data;
-  } catch (error) {
-    // If useLoaderData throws, it means we're not in the right route context
-    throw new Error("useAuthUser must be used within an authenticated route. " + (error instanceof Error ? error.message : ""));
-  }
+  const data = Route.useLoaderData();
+  return data;
 };
 
 function App() {

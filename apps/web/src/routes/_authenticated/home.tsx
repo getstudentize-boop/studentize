@@ -1,5 +1,4 @@
 import { Loader } from "@/components/loader";
-import { CardSkeleton } from "@/components/skeletons";
 import { AdvisorOverviewPanel } from "@/features/overview-panel/advisor";
 import {
   ArrowRightIcon,
@@ -18,44 +17,6 @@ import { z } from "zod";
 import { UserOverviewTab } from "@/features/user-tabs";
 import { StudentHomeTable } from "@/features/tables/student-home";
 
-type DateCategory = "today" | "tomorrow" | "next-week";
-
-const getDateCategory = (sessionDate: Date): DateCategory => {
-  if (isToday(sessionDate)) return "today";
-  if (isTomorrow(sessionDate)) return "tomorrow";
-  return "next-week";
-};
-
-const groupSessionsByDate = (
-  sessions: (ScheduledSession | GoogleCalendarEvent)[]
-): Record<DateCategory, (ScheduledSession | GoogleCalendarEvent)[]> => {
-  const grouped: Record<DateCategory, (ScheduledSession | GoogleCalendarEvent)[]> = {
-    today: [],
-    tomorrow: [],
-    "next-week": [],
-  };
-
-  sessions.forEach((session) => {
-    const isGoogleEvent = 'raw' in session;
-    const scheduledAt = isGoogleEvent ? new Date(session.start_time) : new Date(session.scheduledAt);
-    const category = getDateCategory(scheduledAt);
-    grouped[category].push(session);
-  });
-
-  return grouped;
-};
-
-const getCategoryLabel = (category: DateCategory): string => {
-  switch (category) {
-    case "today":
-      return "Today";
-    case "tomorrow":
-      return "Tomorrow";
-    case "next-week":
-      return "Next Week";
-  }
-};
-
 export const Route = createFileRoute("/_authenticated/home")({
   component: RouteComponent,
   validateSearch: (search) =>
@@ -73,47 +34,36 @@ export const Route = createFileRoute("/_authenticated/home")({
 type ScheduledSession =
   RouterOutputs["advisor"]["getScheduledSessions"]["today"][number];
 
-type GoogleCalendarEvent = RouterOutputs["scheduledSession"]["listGoogleCalendar"][number];
-
 const SessionCard = ({
-  isPast,
   scheduledSession,
 }: {
-  isPast?: boolean;
-  scheduledSession: ScheduledSession | GoogleCalendarEvent;
+  scheduledSession: ScheduledSession;
 }) => {
-  const isGoogleEvent = 'raw' in scheduledSession;
-  const title = isGoogleEvent ? scheduledSession.raw.summary : scheduledSession.title;
-  const meetingUrl = isGoogleEvent ? scheduledSession.meeting_url : `https://meet.google.com/${scheduledSession.meetingCode}`;
-  const scheduledAt = isGoogleEvent ? new Date(scheduledSession.start_time) : new Date(scheduledSession.scheduledAt);
-  
   return (
-    <div className="px-6 py-4 border-b border-zinc-100 hover:bg-zinc-50/50 transition-colors duration-150">
-      <div className="font-semibold mb-3 text-base text-zinc-900">{title}</div>
-      <div className="flex gap-3 items-start justify-between">
-        <div className="text-sm text-zinc-600 space-y-2">
-          <div className="flex gap-2 items-center">
-            <CalendarBlankIcon className="size-4 text-zinc-400" />
-            <div className="text-zinc-700">
-              {dateFnFormat(scheduledAt, "MMM dd")}
-            </div>
-          </div>
-          <div className="flex gap-2 items-center">
-            <ClockIcon className="size-4 text-zinc-400" />
-            <div className="text-zinc-700">{dateFnFormat(scheduledAt, "hh:mm aa")}</div>
+    <div className="px-6 py-4 border-b border-bzinc">
+      <div className="font-semibold mb-4">{scheduledSession.title}</div>
+      <div>
+        <div className="flex gap-2 items-center mb-2">
+          <CalendarBlankIcon className="size-4" />
+          <div>
+            {dateFnFormat(scheduledSession.scheduledAt, "eeee MMM dd, yyyy")}
           </div>
         </div>
-        {!isPast ? (
-          <Button
-            variant="primary"
-            className="h-8 text-sm py-0 px-4 flex-shrink-0"
-            onClick={() => {
-              window.open(meetingUrl, "_blank");
-            }}
+        <div className="justify-between flex">
+          <div className="flex gap-2 items-center">
+            <ClockIcon className="size-4" />
+            <div>{dateFnFormat(scheduledSession.scheduledAt, "hh:mm aa")}</div>
+          </div>
+
+          <a
+            href={`https://meet.google.com/${scheduledSession.meetingCode}`}
+            target="_blank"
+            rel="noreferrer"
+            className="border p-1 px-2 rounded-md text-sm border-bzinc"
           >
-            Join
-          </Button>
-        ) : null}
+            Join Meeting
+          </a>
+        </div>
       </div>
     </div>
   );
@@ -125,19 +75,18 @@ const StudentCard = ({
   student: RouterOutputs["advisor"]["getStudentList"][number];
 }) => {
   return (
-    <div className="border border-zinc-200 rounded-lg bg-white hover:border-zinc-300 hover:shadow-sm transition-all duration-200">
-      <div className="p-5 flex flex-col gap-4">
-        <div className="flex justify-between items-center">
-          <div className="font-semibold text-base text-zinc-900">{student.name}</div>
+    <div className="border border-bzinc rounded-lg">
+      <div className="p-4 py-3 flex flex-col gap-4">
+        <div className="flex justify-between">
+          <div className="font-semibold text-[16px]">{student.name}</div>
           <Link
             to="/guru"
             search={{ userId: student.studentUserId }}
-            className="p-1.5 rounded-lg hover:bg-zinc-100 transition-colors"
+            className="underline flex gap-2 items-center"
           >
             <BrainIcon
-              size={18}
-              className="transition-colors"
-              style={{ color: '#BCFAF9', filter: 'brightness(0.7)' }}
+              size={16}
+              className="hover:text-cyan-600 transition-colors"
             />
           </Link>
         </div>
@@ -145,10 +94,10 @@ const StudentCard = ({
       <Link
         to="/student/$userId"
         params={{ userId: student.studentUserId }}
-        className="px-4 py-3 border-t border-zinc-100 flex justify-center gap-2 items-center text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors rounded-b-lg"
+        className="px-4 py-3 border-t border-bzinc flex justify-center gap-4 items-center"
       >
         View Student
-        <ArrowRightIcon className="size-4" />
+        <ArrowRightIcon />
       </Link>
     </div>
   );
@@ -157,17 +106,15 @@ const StudentCard = ({
 const SessionCardLoader = () => {
   return (
     <div className="px-6 py-4 border-b border-bzinc">
-      <div className="mb-4">
-        <Loader className="w-48 h-6" />
-      </div>
-      <div className="space-y-2">
+      <Loader className="mb-4 w-50" />
+      <div>
         <div className="flex gap-2 items-center mb-2">
           <CalendarBlankIcon className="size-4" />
-          <Loader className="w-40 h-5" />
+          <Loader className="w-50" />
         </div>
         <div className="flex gap-2 items-center">
           <ClockIcon className="size-4" />
-          <Loader className="w-20 h-5" />
+          <Loader className="w-14" />
         </div>
       </div>
 
@@ -181,9 +128,10 @@ const UpcomingOrPastSessions = ({
 }: {
   timePeriod: "upcoming" | "past";
 }) => {
-  // Use Google Calendar for upcoming sessions to match the schedule tab
-  const googleCalendarQuery = useQuery(
-    orpc.scheduledSession.listGoogleCalendar.queryOptions()
+  const scheduleSessionQuery = useQuery(
+    orpc.advisor.getScheduledSessions.queryOptions({
+      input: { timePeriod },
+    })
   );
 
   const todaySessions = scheduleSessionQuery.data?.today ?? [];
@@ -196,9 +144,13 @@ const UpcomingOrPastSessions = ({
     inNext2WeeksSessions.length === 0;
 
   return (
-    <div className="border border-zinc-200 rounded-lg bg-white overflow-hidden flex flex-col flex-1 shadow-sm">
-      <div className="px-5 py-3.5 bg-zinc-50/50 border-b border-zinc-200 font-semibold text-sm text-zinc-900">
-        {timePeriod === "upcoming" ? "Upcoming Sessions" : "Past Sessions"}
+    <div
+      className={cn("border border-bzinc rounded-lg bg-white overflow-hidden", {
+        "flex-1": timePeriod === "past",
+      })}
+    >
+      <div className="px-4 py-3 bg-zinc-50 border-b border-zinc-200">
+        Scheduled Sessions
       </div>
       <div className="h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
         {!scheduleSessionQuery.isPending ? (
@@ -255,7 +207,7 @@ const UpcomingOrPastSessions = ({
               <div className="px-6 py-4 border-b border-bzinc text-center text-zinc-500">
                 No {timePeriod} sessions
               </div>
-            )}
+            ) : null}
           </>
         ) : (
           <SessionCardLoader />
@@ -277,12 +229,12 @@ function RouteComponent() {
   const currentTab = search.tab ?? "profile";
 
   return (
-    <div className="py-8 px-6 pr-8 flex-1 flex gap-6 text-left">
-      <div className="flex-[2] flex flex-col border border-zinc-200 rounded-xl bg-white overflow-hidden shadow-sm">
+    <div className="py-10 px-5 pr-10 flex-1 flex gap-4 text-left">
+      <div className="flex-[2] flex flex-col border border-bzinc rounded-lg bg-white overflow-hidden">
         <AdvisorOverviewPanel />
         <div className="flex w-full h-full">
-          <div className="w-12 bg-zinc-50/50 border-r border-zinc-100" />
-          <div className="flex-1 p-5 overflow-y-auto custom-scrollbar pb-48 h-[20vh-100px]">
+          <div className="w-10 bg-zinc-50 border-r border-bzinc" />
+          <div className="flex-1 p-4 overflow-y-auto custom-scrollbar pb-48 h-[20vh-100px]">
             <StudentHomeTable
               data={students}
               isError={studentListQuery.isError}
@@ -296,15 +248,15 @@ function RouteComponent() {
         <UserOverviewTab
           studentUserId={search.studentUserId ?? ""}
           currentTab={currentTab}
-          className="flex-1 border border-zinc-200 rounded-xl shadow-sm"
+          className="flex-1 border border-zinc-200 rounded-lg"
           isHeaderFixedHeightDisabled
           goBack="/home"
           isSettingsDisabled
           search={{ studentUserId: search.studentUserId }}
         />
       ) : (
-        <div className="flex-1 flex flex-col">
-          <UpcomingOrPastSessions timePeriod="upcoming" />
+        <div className="flex-1 space-y-4 flex flex-col">
+          <UpcomingOrPastSessions timePeriod="past" />
         </div>
       )}
     </div>

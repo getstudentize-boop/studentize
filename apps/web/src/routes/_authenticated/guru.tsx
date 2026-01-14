@@ -26,6 +26,7 @@ import { Markdown } from "@/components/markdown";
 import { Loader } from "@/components/loader";
 import { Tool } from "@/features/tools";
 import { LoadingIndicator } from "@/components/loading-indicator";
+import { useAuthUser } from "../_authenticated";
 
 export const Route = createFileRoute("/_authenticated/guru")({
   component: App,
@@ -39,9 +40,15 @@ const EmptyMessage = ({ isStudent }: { isStudent: boolean }) => {
   return (
     <>
       <div className="size-16 rounded-full bg-gradient-to-br from-[#BCFAF9]/30 to-[#BCFAF9]/50 flex items-center justify-center mb-4">
-        <BrainIcon className="size-8" weight="fill" style={{ color: '#BCFAF9', filter: 'brightness(0.7)' }} />
+        <BrainIcon
+          className="size-8"
+          weight="fill"
+          style={{ color: "#BCFAF9", filter: "brightness(0.7)" }}
+        />
       </div>
-      <div className="text-2xl font-semibold mb-2 mt-2 text-zinc-900">Hi, there 🎓</div>
+      <div className="text-2xl font-semibold mb-2 mt-2 text-zinc-900">
+        Hi, there 🎓
+      </div>
       <div className="text-zinc-600">
         {isStudent
           ? "Ask me anything about your academic journey and college applications."
@@ -109,12 +116,10 @@ function App() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const [input, setInput] = useState("");
 
-  // Get current user to check if they're a student
-  const currentUserQuery = useQuery(orpc.user.current.queryOptions());
-  const currentUser = currentUserQuery.data;
+  const { user } = useAuthUser();
 
   // For students, automatically set userId to their own ID
-  const userId = currentUser?.type === "STUDENT" ? currentUser.id : searchParams.userId;
+  const userId = user.type === "STUDENT" ? user.id : searchParams.userId;
 
   const queryClient = useQueryClient();
 
@@ -272,7 +277,9 @@ function App() {
                   />
                 </div>
               ) : null}
-              {isEmptyState ? <EmptyMessage isStudent={currentUser?.type === "STUDENT"} /> : null}
+              {isEmptyState ? (
+                <EmptyMessage isStudent={user.type === "STUDENT"} />
+              ) : null}
               {chat.messages.map((msg) => (
                 <Message key={msg.id} role={msg.role} message={msg} />
               ))}
@@ -326,7 +333,7 @@ function App() {
                 />
 
                 <div className="flex justify-between items-center mt-3 gap-3">
-                  {currentUser?.type !== "STUDENT" && (
+                  {user.type !== "STUDENT" && (
                     <form.Field
                       name="studentQuery"
                       asyncDebounceMs={300}
@@ -387,7 +394,10 @@ function App() {
                     ref={submitRef}
                     type="submit"
                     disabled={!input.trim() || !userId}
-                    className={cn("flex-shrink-0", currentUser?.type === "STUDENT" && "ml-auto")}
+                    className={cn(
+                      "flex-shrink-0",
+                      user.type === "STUDENT" && "ml-auto"
+                    )}
                   >
                     <ArrowUpIcon weight="bold" />
                     Send
