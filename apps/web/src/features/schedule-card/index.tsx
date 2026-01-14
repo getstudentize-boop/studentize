@@ -13,6 +13,7 @@ import { orpc, RouterOutputs } from "orpc/client";
 import { format as _format } from "date-fns";
 import { Popover } from "@/components/popover";
 import { DeleteSession } from "./delete";
+import { Tooltip } from "@/components/tooltip";
 
 export const ScheduleCard = ({
   session,
@@ -26,7 +27,13 @@ export const ScheduleCard = ({
   );
 
   const endMeetingMutation = useMutation(
-    orpc.scheduledSession.endMeeting.mutationOptions()
+    orpc.scheduledSession.endMeeting.mutationOptions({
+      onSuccess: () => {
+        utils.invalidateQueries({
+          queryKey: orpc.scheduledSession.list.queryKey(),
+        });
+      },
+    })
   );
 
   return (
@@ -101,21 +108,26 @@ export const ScheduleCard = ({
         </div>
       </div>
 
-      <div className="flex gap-2 items-center p-4 border-t border-zinc-100 bg-zinc-50/50 rounded-b-xl">
-        <button
-          className="p-2 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 hover:border-zinc-300 transition-all duration-150"
-          onClick={() => {
-            utils.invalidateQueries({
-              queryKey: orpc.scheduledSession.list.queryKey(),
-            });
-          }}
+      <div className="flex gap-2 items-center p-4 border-t border-bzinc">
+        <Tooltip
+          trigger={
+            <button
+              className="p-2 rounded-md border border-bzinc bg-zinc-50 transition-colors"
+              onClick={() => {
+                utils.invalidateQueries({
+                  queryKey: orpc.scheduledSession.list.queryKey(),
+                });
+              }}
+            >
+              <RobotIcon
+                size={18}
+                className={session.botId ? "text-indigo-600" : ""}
+              />
+            </button>
+          }
         >
-          <RobotIcon
-            size={18}
-            className={session.botId ? "text-zinc-700" : "text-zinc-400"}
-            style={session.botId ? { color: '#BCFAF9', filter: 'brightness(0.7)' } : undefined}
-          />
-        </button>
+          {session.botId}
+        </Tooltip>
         <Button
           variant="primary"
           className="rounded-lg w-full"

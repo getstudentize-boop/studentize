@@ -1,4 +1,4 @@
-import { and, db, desc, eq, gte, isNull, lt, schema } from "..";
+import { and, asc, db, desc, eq, gte, isNull, lt, schema } from "..";
 
 export const createScheduleSession = async ({
   scheduledAt,
@@ -136,6 +136,7 @@ export const getAdvisorsSessions = (input: {
   timePeriod: "past" | "upcoming";
 }) => {
   const ltOrGt = input.timePeriod === "past" ? lt : gte;
+  const orderDirection = input.timePeriod === "past" ? desc : asc;
 
   return db
     .select({
@@ -150,7 +151,8 @@ export const getAdvisorsSessions = (input: {
         input.advisorUserId
           ? eq(schema.scheduledSession.advisorUserId, input.advisorUserId)
           : undefined,
-        ltOrGt(schema.scheduledSession.createdAt, input.today)
+        ltOrGt(schema.scheduledSession.scheduledAt, input.today)
       )
-    );
+    )
+    .orderBy(orderDirection(schema.scheduledSession.scheduledAt));
 };

@@ -1,4 +1,3 @@
-import { Button } from "@/components/button";
 import { Loader } from "@/components/loader";
 import { CardSkeleton } from "@/components/skeletons";
 import { AdvisorOverviewPanel } from "@/features/overview-panel/advisor";
@@ -13,7 +12,8 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { orpc, RouterOutputs } from "orpc/client";
 
-import { format as dateFnFormat, isToday, isTomorrow } from "date-fns";
+import { format as dateFnFormat } from "date-fns";
+import { cn } from "@/utils/cn";
 import { z } from "zod";
 import { UserOverviewTab } from "@/features/user-tabs";
 import { StudentHomeTable } from "@/features/tables/student-home";
@@ -71,7 +71,7 @@ export const Route = createFileRoute("/_authenticated/home")({
 });
 
 type ScheduledSession =
-  RouterOutputs["advisor"]["getScheduledSessions"][number];
+  RouterOutputs["advisor"]["getScheduledSessions"]["today"][number];
 
 type GoogleCalendarEvent = RouterOutputs["scheduledSession"]["listGoogleCalendar"][number];
 
@@ -154,7 +154,6 @@ const StudentCard = ({
   );
 };
 
-
 const SessionCardLoader = () => {
   return (
     <div className="px-6 py-4 border-b border-bzinc">
@@ -187,75 +186,73 @@ const UpcomingOrPastSessions = ({
     orpc.scheduledSession.listGoogleCalendar.queryOptions()
   );
 
-  const allCalendarEvents = googleCalendarQuery.data ?? [];
-  
-  // Filter for upcoming sessions only (within 7 days from now)
-  const upcomingEvents = timePeriod === "upcoming" 
-    ? allCalendarEvents.filter((event) => {
-        const eventDate = new Date(event.start_time);
-        const today = new Date();
-        const sevenDaysFromNow = new Date(today);
-        sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
-        return eventDate >= today && eventDate < sevenDaysFromNow;
-      }).sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime())
-    : [];
+  const todaySessions = scheduleSessionQuery.data?.today ?? [];
+  const tomorrowSessions = scheduleSessionQuery.data?.tomorrow ?? [];
+  const inNext2WeeksSessions = scheduleSessionQuery.data?.inNext2Weeks ?? [];
 
-  const scheduledSession = upcomingEvents;
-  const groupedSessions = groupSessionsByDate(scheduledSession);
+  const isNoSessions =
+    todaySessions.length === 0 &&
+    tomorrowSessions.length === 0 &&
+    inNext2WeeksSessions.length === 0;
 
   return (
     <div className="border border-zinc-200 rounded-lg bg-white overflow-hidden flex flex-col flex-1 shadow-sm">
       <div className="px-5 py-3.5 bg-zinc-50/50 border-b border-zinc-200 font-semibold text-sm text-zinc-900">
         {timePeriod === "upcoming" ? "Upcoming Sessions" : "Past Sessions"}
       </div>
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
-        {!googleCalendarQuery.isPending ? (
+      <div className="h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
+        {!scheduleSessionQuery.isPending ? (
           <>
-            {scheduledSession.length > 0 ? (
-              <>
-                {timePeriod === "upcoming" ? (
-                  <>
-                    {(["today", "tomorrow", "next-week"] as DateCategory[]).map(
-                      (category) => (
-                        groupedSessions[category].length > 0 && (
-                          <div key={category}>
-                            <div className="px-6 py-2.5 bg-zinc-50 font-medium text-xs text-zinc-600 border-b border-zinc-100 uppercase tracking-wide">
-                              {getCategoryLabel(category)}
-                            </div>
-                            {groupedSessions[category].map((session) => {
-                              const isGoogleEvent = 'raw' in session;
-                              const key = isGoogleEvent ? session.id : session.meetingCode;
-                              return (
-                                <SessionCard
-                                  key={key}
-                                  scheduledSession={session}
-                                  isPast={false}
-                                />
-                              );
-                            })}
-                          </div>
-                        )
-                      )
-                    )}
-                  </>
-                ) : (
-                  <>
-                    {scheduledSession.map((session) => {
-                      const isGoogleEvent = 'raw' in session;
-                      const key = isGoogleEvent ? session.id : session.meetingCode;
-                      return (
-                        <SessionCard
-                          key={key}
-                          scheduledSession={session}
-                          isPast={true}
-                        />
-                      );
-                    })}
-                  </>
-                )}
-              </>
+            <div className="bg-zinc-50 font-semibold border-b border-bzinc text-violet-700 px-5 py-2 sticky top-0 z-10">
+              Today
+            </div>
+            {todaySessions.length > 0 ? (
+              todaySessions.map((session) => (
+                <SessionCard
+                  key={session.meetingCode}
+                  scheduledSession={session}
+                />
+              ))
             ) : (
-              <div className="px-6 py-12 text-center text-zinc-400 text-sm">
+              <div className="px-6 py-4 border-b border-bzinc text-center text-zinc-400 text-sm">
+                No sessions today
+              </div>
+            )}
+
+            <div className="bg-zinc-50 font-semibold border-b border-bzinc text-violet-700 px-5 py-2 sticky top-0 z-10">
+              Tomorrow
+            </div>
+            {tomorrowSessions.length > 0 ? (
+              tomorrowSessions.map((session) => (
+                <SessionCard
+                  key={session.meetingCode}
+                  scheduledSession={session}
+                />
+              ))
+            ) : (
+              <div className="px-6 py-4 border-b border-bzinc text-center text-zinc-400 text-sm">
+                No sessions tomorrow
+              </div>
+            )}
+
+            <div className="bg-zinc-50 font-semibold border-b border-bzinc text-violet-700 px-5 py-2 sticky top-0 z-10">
+              In Next 2 Weeks
+            </div>
+            {inNext2WeeksSessions.length > 0 ? (
+              inNext2WeeksSessions.map((session) => (
+                <SessionCard
+                  key={session.meetingCode}
+                  scheduledSession={session}
+                />
+              ))
+            ) : (
+              <div className="px-6 py-4 border-b border-bzinc text-center text-zinc-400 text-sm">
+                No upcoming sessions
+              </div>
+            )}
+
+            {isNoSessions ? (
+              <div className="px-6 py-4 border-b border-bzinc text-center text-zinc-500">
                 No {timePeriod} sessions
               </div>
             )}
