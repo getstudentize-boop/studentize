@@ -1,29 +1,16 @@
 import { cn } from "@/utils/cn";
 import { ComponentProps } from "react";
 
-type InputProps = ComponentProps<"input"> & {
-  label?: string;
-  error?: string;
-};
-
-export const Input = ({ label, error, ...props }: InputProps) => {
+export const Input = ({ className, ...props }: ComponentProps<"input">) => {
   return (
-    <div>
-      {label ? (
-        <label className="mb-2 mx-1 flex justify-between">
-          {label}
-          {error ? <span className="text-rose-700"> [{error}]</span> : null}
-        </label>
-      ) : null}
-      <input
-        type="text"
-        {...props}
-        className={cn(
-          "border border-bzinc rounded-md p-2 w-full focus:outline-violet-300 bg-white",
-          { "focus:outline-rose-300": error },
-          props.className
-        )}
-      />
-    </div>
+    <input
+      {...props}
+      className={cn(
+        "w-full px-3 py-2 border border-zinc-300 rounded-md text-sm",
+        "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+        "disabled:opacity-50 disabled:cursor-not-allowed",
+        className
+      )}
+    />
   );
 };

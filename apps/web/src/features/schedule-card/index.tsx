@@ -37,42 +37,42 @@ export const ScheduleCard = ({
   );
 
   return (
-    <div className="rounded-lg bg-white outline outline-bzinc">
-      <div className="p-4">
-        <div className="font-semibold text-lg px-2 truncate">
+    <div className="rounded-xl bg-white border border-zinc-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+      <div className="p-5">
+        <div className="font-semibold text-lg mb-1 text-zinc-900 truncate">
           {session.title}
         </div>
 
-        <div className="mt-4 space-y-2 px-2">
-          <div className="flex gap-2 items-center">
-            <CalendarBlankIcon className="size-4 text-zinc-500" />
+        <div className="mt-4 space-y-2.5">
+          <div className="flex gap-2 items-center text-sm text-zinc-700">
+            <CalendarBlankIcon className="size-4 text-zinc-400" />
             <div>
               {_format(new Date(session.scheduledAt), "eeee MMMM d, yyyy")}
             </div>
           </div>
           <div className="flex justify-between items-end">
-            <div className="flex gap-2 items-center">
-              <ClockIcon className="size-4 text-zinc-500" />
+            <div className="flex gap-2 items-center text-sm text-zinc-700">
+              <ClockIcon className="size-4 text-zinc-400" />
               <div>{_format(new Date(session.scheduledAt), "h:mm a")}</div>
               {!!session.googleEventId ? (
                 <>
-                  <div className="bg-zinc-400 w-[1px] h-4 rounded-full" />
-                  <div className="flex gap-2 items-center text-green-600">
-                    <GoogleLogoIcon weight="bold" />
-                    <div>Synced</div>
+                  <div className="bg-zinc-300 w-[1px] h-4 rounded-full" />
+                  <div className="flex gap-2 items-center text-green-600 font-medium">
+                    <GoogleLogoIcon weight="bold" className="size-4" />
+                    <div className="text-xs">Synced</div>
                   </div>
                 </>
               ) : null}
             </div>
 
             <Popover
-              trigger={<DotsThreeOutlineIcon weight="fill" />}
+              trigger={<DotsThreeOutlineIcon weight="fill" className="text-zinc-600 hover:text-zinc-900 transition-colors" />}
               className="flex flex-col gap-2 rounded-lg"
               align="end"
             >
               <Button
                 variant="neutral"
-                className="rounded-md"
+                className="rounded-lg"
                 onClick={() =>
                   sendBotToMeetingMutation.mutate({
                     scheduledSessionId: session.id,
@@ -87,10 +87,11 @@ export const ScheduleCard = ({
 
               {session.botId ? (
                 <>
-                  <hr className="border border-bzinc" />
+                  <hr className="border border-zinc-200" />
 
                   <Button
-                    className="rounded-md"
+                    variant="primary"
+                    className="rounded-lg"
                     isLoading={endMeetingMutation.isPending}
                     onClick={() =>
                       endMeetingMutation.mutate({
@@ -128,8 +129,8 @@ export const ScheduleCard = ({
           {session.botId}
         </Tooltip>
         <Button
-          variant="neutral"
-          className="rounded-md w-full"
+          variant="primary"
+          className="rounded-lg w-full"
           onClick={() => {
             window.open(
               `https://meet.google.com/${session.meetingCode}`,
