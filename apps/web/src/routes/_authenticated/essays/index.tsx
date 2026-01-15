@@ -2,7 +2,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import {
-  PencilIcon,
   PlusIcon,
   ClockIcon,
   TrashIcon,
@@ -83,7 +82,10 @@ function EssaysPage() {
 
       // For Common App, use selected prompt or custom prompt
       let prompt = value.prompt;
-      if (newEssayType === ESSAY_TYPES.COMMON_APP && value.selectedPromptIndex) {
+      if (
+        newEssayType === ESSAY_TYPES.COMMON_APP &&
+        value.selectedPromptIndex
+      ) {
         const index = parseInt(value.selectedPromptIndex);
         prompt = COMMON_APP_PROMPTS[index];
       }
@@ -117,23 +119,28 @@ function EssaysPage() {
   );
 
   // Group supplemental essays by university
-  const groupedSupplementals = supplementalEssays.reduce((acc: any, essay: any) => {
-    const university = essay.title.split(" - ")[0] || "Other";
-    if (!acc[university]) {
-      acc[university] = [];
-    }
-    acc[university].push(essay);
-    return acc;
-  }, {});
+  const groupedSupplementals = supplementalEssays.reduce(
+    (acc: any, essay: any) => {
+      const university = essay.title.split(" - ")[0] || "Other";
+      if (!acc[university]) {
+        acc[university] = [];
+      }
+      acc[university].push(essay);
+      return acc;
+    },
+    {}
+  );
 
   const EssayCard = ({ essay }: { essay: any }) => {
     const wordCount = essay.content ? countWordsInTiptap(essay.content) : 0;
-    
+
     return (
       <div className="bg-white rounded-lg border border-zinc-200 p-4 hover:border-zinc-300 hover:shadow-sm transition-all group">
         <div className="flex items-start justify-between mb-2">
           <h4 className="font-medium text-zinc-900 text-sm line-clamp-1 flex-1">
-            {essay.title.includes(" - ") ? essay.title.split(" - ")[1] : essay.title}
+            {essay.title.includes(" - ")
+              ? essay.title.split(" - ")[1]
+              : essay.title}
           </h4>
           <button
             type="button"
@@ -184,9 +191,7 @@ function EssaysPage() {
       <div className="flex-1 flex flex-col p-6 overflow-auto bg-zinc-50">
         <div className="max-w-5xl mx-auto w-full">
           <div className="mb-6">
-            <h1 className="text-2xl font-semibold text-zinc-900">
-              My Essays
-            </h1>
+            <h1 className="text-2xl font-semibold text-zinc-900">My Essays</h1>
             <p className="text-zinc-600 text-sm mt-1">
               Organize and write your college application essays
             </p>
@@ -266,7 +271,9 @@ function EssaysPage() {
                                   name="prompt"
                                   value={String(index)}
                                   checked={field.state.value === String(index)}
-                                  onChange={(e) => field.handleChange(e.target.value)}
+                                  onChange={(e) =>
+                                    field.handleChange(e.target.value)
+                                  }
                                   className="mt-1 flex-shrink-0"
                                 />
                                 <span className="text-sm text-zinc-700">
@@ -343,7 +350,10 @@ function EssaysPage() {
                       setNewEssayType(ESSAY_TYPES.COMMON_APP);
                       setShowNewEssayDialog(true);
                       form.reset();
-                      form.setFieldValue("title", "Common App Personal Statement");
+                      form.setFieldValue(
+                        "title",
+                        "Common App Personal Statement"
+                      );
                     }}
                     className="text-sm"
                   >
@@ -370,7 +380,10 @@ function EssaysPage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-purple-50 rounded-lg">
-                    <GraduationCapIcon className="size-5 text-purple-600" weight="fill" />
+                    <GraduationCapIcon
+                      className="size-5 text-purple-600"
+                      weight="fill"
+                    />
                   </div>
                   <div>
                     <h2 className="font-semibold text-zinc-900">
@@ -430,7 +443,10 @@ function EssaysPage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-green-50 rounded-lg">
-                    <BookOpenIcon className="size-5 text-green-600" weight="fill" />
+                    <BookOpenIcon
+                      className="size-5 text-green-600"
+                      weight="fill"
+                    />
                   </div>
                   <div>
                     <h2 className="font-semibold text-zinc-900">
