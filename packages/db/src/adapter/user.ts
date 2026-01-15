@@ -8,6 +8,8 @@ export const findOrCreateUser = async (data: { email: string }) => {
   const user = await db.query.user.findFirst({
     columns: {
       id: true,
+      email: true,
+      name: true,
       status: true,
       type: true,
     },
@@ -22,6 +24,8 @@ export const findOrCreateUser = async (data: { email: string }) => {
       .values({ email: data.email, type: "ADVISOR" })
       .returning({
         id: schema.user.id,
+        email: schema.user.email,
+        name: schema.user.name,
         status: schema.user.status,
         type: schema.user.type,
       });

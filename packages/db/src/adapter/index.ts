@@ -3,3 +3,6 @@ export * from "./student";
 export * from "./advisor";
 export * from "./session";
 export * from "./scheduled-session";
+export * from "./college";
+export * from "./shortlist";
+export * from "./essay";
