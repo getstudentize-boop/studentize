@@ -7,7 +7,6 @@ import {
   isWithinInterval,
   startOfWeek,
   isTomorrow,
-  isToday,
 } from "date-fns";
 
 export const GetScheduledSessionsInputSchema = z.object({
@@ -25,10 +24,6 @@ export const getScheduledSessionsRoute = createRouteHelper({
       today: new Date(),
     });
 
-    const scheduledSessionsToday = scheduledSessions.filter((session) => {
-      return isToday(session.scheduledAt);
-    });
-
     const scheduledSessionsTomorrow = scheduledSessions.filter((session) => {
       return isTomorrow(session.scheduledAt);
     });
@@ -36,7 +31,6 @@ export const getScheduledSessionsRoute = createRouteHelper({
     const scheduledSessionsInNext2Weeks = scheduledSessions.filter(
       (session) => {
         return (
-          !isToday(session.scheduledAt) &&
           !isTomorrow(session.scheduledAt) &&
           isWithinInterval(session.scheduledAt, {
             start: startOfWeek(new Date()),
@@ -47,7 +41,6 @@ export const getScheduledSessionsRoute = createRouteHelper({
     );
 
     return {
-      today: scheduledSessionsToday,
       tomorrow: scheduledSessionsTomorrow,
       inNext2Weeks: scheduledSessionsInNext2Weeks,
     };
