@@ -12,7 +12,6 @@ import {
 } from "./routes/session";
 
 import { student } from "./routes/student";
-import { shortlist } from "./routes/shortlist";
 import { essay } from "./routes/essay";
 import { grades } from "./routes/grades";
 
@@ -57,7 +56,6 @@ export const router = {
   },
   scheduledSession,
   student,
-  shortlist,
   essay,
   grades,
   advisor: {
