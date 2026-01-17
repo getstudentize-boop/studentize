@@ -122,6 +122,10 @@ import {
   IsReplayDownloadedInputSchema,
   isReplayDownloadedRoute,
 } from "./is-replay-downloaded";
+import {
+  RegenerateTranscriptionInputSchema,
+  regenerateTranscription,
+} from "./regenerate-transcription";
 
 // todo: move all the handlers above to this format
 export const session = {
@@ -145,4 +149,9 @@ export const session = {
   isReplayDownloaded: privateRoute
     .input(IsReplayDownloadedInputSchema)
     .handler(isReplayDownloadedRoute),
+  regenerateTranscription: privateRoute
+    .input(RegenerateTranscriptionInputSchema)
+    .handler(async ({ context, input }) => {
+      return regenerateTranscription(context, input);
+    }),
 };
