@@ -4,6 +4,7 @@ import { Markdown } from "@/components/markdown";
 import { useSessionDownloadReplay } from "@/hooks/use-session";
 import {
   ArrowLineDownIcon,
+  ArrowClockwiseIcon,
   BrainIcon,
   ListDashesIcon,
   SparkleIcon,
@@ -43,6 +44,17 @@ function RouteComponent() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: orpc.session.overview.queryOptions({ input: { sessionId } }).queryKey,
+      });
+    },
+  });
+
+  const regenerateTranscriptionMutation = useMutation({
+    mutationFn: async () => {
+      return await client.session.regenerateTranscription({ sessionId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: orpc.session.readTranscription.queryOptions({ input: { sessionId } }).queryKey,
       });
     },
   });
@@ -225,10 +237,35 @@ function RouteComponent() {
                 ))}
               </div>
             )
+          ) : sessionQuery.isPending ? (
+            <div className="text-zinc-500">Loading transcription...</div>
+          ) : sessionQuery.data?.content ? (
+            <Markdown>{sessionQuery.data.content}</Markdown>
           ) : (
-            <Markdown>
-              {sessionQuery.data?.content || "No transcription available."}
-            </Markdown>
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <p className="text-zinc-500 mb-4">
+                No transcription available for this session.
+              </p>
+              <Button
+                onClick={() => regenerateTranscriptionMutation.mutate()}
+                disabled={regenerateTranscriptionMutation.isPending}
+                className="rounded-md"
+              >
+                {regenerateTranscriptionMutation.isPending ? (
+                  <>Generating...</>
+                ) : (
+                  <>
+                    <ArrowClockwiseIcon className="size-4" />
+                    Generate Transcription
+                  </>
+                )}
+              </Button>
+              {regenerateTranscriptionMutation.isError && (
+                <p className="text-red-500 text-sm mt-2">
+                  {regenerateTranscriptionMutation.error?.message || "Failed to generate transcription. Please try again."}
+                </p>
+              )}
+            </div>
           )}
         </div>
       </div>
