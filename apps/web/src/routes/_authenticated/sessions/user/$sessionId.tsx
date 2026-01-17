@@ -6,10 +6,11 @@ import {
   ArrowLineDownIcon,
   BrainIcon,
   ListDashesIcon,
+  SparkleIcon,
 } from "@phosphor-icons/react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { orpc } from "orpc/client";
+import { orpc, client } from "orpc/client";
 import { useState } from "react";
 import z from "zod";
 
@@ -31,8 +32,20 @@ function RouteComponent() {
   const [isDownloadedKickstarted, setIsDownloadKickstarted] = useState(false);
 
   const sessionId = params.sessionId;
+  const queryClient = useQueryClient();
 
   const { downloadSessionReplay } = useSessionDownloadReplay();
+
+  const generateSummaryMutation = useMutation({
+    mutationFn: async () => {
+      return await client.session.summarizeTranscription({ sessionId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: orpc.session.overview.queryOptions({ input: { sessionId } }).queryKey,
+      });
+    },
+  });
 
   const replyUrlQuery = useQuery(
     orpc.session.replayUrl.queryOptions({
@@ -90,7 +103,7 @@ function RouteComponent() {
 
           <div className="flex gap-4 items-center">
             {isReplayDownloadQuery.isSuccess &&
-            !isReplayDownloadQuery.data.isDownloaded ? (
+              !isReplayDownloadQuery.data.isDownloaded ? (
               <>
                 {isDownloadedKickstarted ? (
                   <div className="text-zinc-600">
@@ -126,7 +139,38 @@ function RouteComponent() {
               <ListDashesIcon />
               <div>Summary</div>
             </div>
-            <div className="p-4 pt-2">{sessionOverview?.summary}</div>
+            <div className="p-4 pt-2">
+              {sessionOverviewQuery.isPending ? (
+                <div className="text-zinc-500">Loading...</div>
+              ) : sessionOverview?.summary ? (
+                sessionOverview.summary
+              ) : (
+                <div className="flex flex-col items-center justify-center py-6 text-center">
+                  <p className="text-zinc-500 mb-4">
+                    No summary has been generated for this session yet.
+                  </p>
+                  <Button
+                    onClick={() => generateSummaryMutation.mutate()}
+                    disabled={generateSummaryMutation.isPending}
+                    className="rounded-md"
+                  >
+                    {generateSummaryMutation.isPending ? (
+                      <>Generating...</>
+                    ) : (
+                      <>
+                        <SparkleIcon className="size-4" />
+                        Generate Summary
+                      </>
+                    )}
+                  </Button>
+                  {generateSummaryMutation.isError && (
+                    <p className="text-red-500 text-sm mt-2">
+                      Failed to generate summary. Please try again.
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
