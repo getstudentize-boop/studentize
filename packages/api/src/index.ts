@@ -12,6 +12,9 @@ import {
 } from "./routes/session";
 
 import { student } from "./routes/student";
+import { college } from "./routes/college";
+import { shortlist } from "./routes/shortlist";
+import { essay } from "./routes/essay";
 
 import {
   advisorCreateHandler,
@@ -54,6 +57,9 @@ export const router = {
   },
   scheduledSession,
   student,
+  college,
+  shortlist,
+  essay,
   advisor: {
     ...advisor,
     create: advisorCreateHandler,

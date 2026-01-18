@@ -20,5 +20,8 @@
   },
   "exports": {
     "./sdk": "./src/sdk/index.ts"
+  },
+  "volta": {
+    "node": "20.20.0"
   }
 }

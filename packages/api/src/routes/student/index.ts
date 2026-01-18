@@ -7,6 +7,9 @@ import {
   updateSettings,
   StudentUpdateSettingsInputSchema,
 } from "./update-settings";
+import { getMyProfile, GetMyProfileInputSchema } from "./get-my-profile";
+import { getMyAdvisor, GetMyAdvisorInputSchema } from "./get-my-advisor";
+import { getMySessions, GetMySessionsInputSchema } from "./get-my-sessions";
 
 import { privateRoute } from "../../utils/middleware";
 
@@ -57,6 +60,27 @@ const studentUpdateSettingsHandler = privateRoute
     return result;
   });
 
+const getMyProfileHandler = privateRoute
+  .input(GetMyProfileInputSchema)
+  .handler(async ({ context, input }) => {
+    const result = await getMyProfile(context, input);
+    return result;
+  });
+
+const getMyAdvisorHandler = privateRoute
+  .input(GetMyAdvisorInputSchema)
+  .handler(async ({ context, input }) => {
+    const result = await getMyAdvisor(context, input);
+    return result;
+  });
+
+const getMySessionsHandler = privateRoute
+  .input(GetMySessionsInputSchema)
+  .handler(async ({ context, input }) => {
+    const result = await getMySessions(context, input);
+    return result;
+  });
+
 export const student = {
   create: studentCreateHandler,
   list: studentListHandler,
@@ -64,4 +88,7 @@ export const student = {
   getOne: studentGetOneHandler,
   update: studentUpdateHandler,
   updateSettings: studentUpdateSettingsHandler,
+  getMyProfile: getMyProfileHandler,
+  getMyAdvisor: getMyAdvisorHandler,
+  getMySessions: getMySessionsHandler,
 };

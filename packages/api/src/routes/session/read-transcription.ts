@@ -12,14 +12,18 @@ export const readSessionTranscription = async (
   ctx: AuthContext,
   input: z.infer<typeof ReadSessionTranscriptionInputSchema>
 ) => {
-  if (!["ADMIN", "ADVISOR"].includes(ctx.user.type)) {
-    throw new ORPCError("UNAUTHORIZED");
-  }
-
   const session = await getSessionById({ sessionId: input.sessionId });
 
   if (!session || !session?.studentUserId) {
     throw new ORPCError("NOT_FOUND", { message: "Session not found" });
+  }
+
+  // Allow admins, advisors, and the student who owns the session
+  const isStudent = ctx.user.type === "STUDENT" && ctx.user.id === session.studentUserId;
+  const isAdminOrAdvisor = ["ADMIN", "ADVISOR"].includes(ctx.user.type);
+
+  if (!isStudent && !isAdminOrAdvisor) {
+    throw new ORPCError("UNAUTHORIZED", { message: "You don't have permission to view this session" });
   }
 
   const content = await readFile({
