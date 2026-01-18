@@ -169,6 +169,27 @@
       "when": 1766802773196,
       "tag": "0023_wakeful_bug",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1768497115512,
+      "tag": "0024_cheerful_dexter_bennett",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1768498516643,
+      "tag": "0025_curved_captain_universe",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1768498976854,
+      "tag": "0026_aromatic_red_wolf",
+      "breakpoints": true
     }
   ]
 }
