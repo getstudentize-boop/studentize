@@ -9,6 +9,7 @@ import {
   StudentIcon,
   VideoCameraIcon,
   PencilIcon,
+  GraduationCapIcon,
 } from "@phosphor-icons/react";
 import { Link, useMatchRoute, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@workos-inc/authkit-react";
@@ -42,6 +43,12 @@ export const Header = ({
           icon: <HouseIcon className="size-4" />,
           label: "Dashboard",
           isActive: route({ to: "/student/dashboard" }),
+        },
+        {
+          to: "/student/universities/explorer",
+          icon: <GraduationCapIcon className="size-4" />,
+          label: "Universities",
+          isActive: route({ to: "/student/universities/explorer" }) || route({ to: "/student/universities/shortlist" }),
         },
         {
           to: "/essays",

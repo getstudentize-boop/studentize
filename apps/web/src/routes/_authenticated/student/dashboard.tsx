@@ -5,19 +5,15 @@ import { useAuthUser } from "@/routes/_authenticated";
 import {
   BrainIcon,
   ChalkboardTeacherIcon,
-  EnvelopeIcon,
-  MapPinIcon,
   GraduationCapIcon,
-  BookOpenIcon,
   ArrowRightIcon,
-  ListBulletsIcon,
   PencilIcon,
   ChartLineIcon,
   LockIcon,
   HeadsetIcon,
   ClockIcon,
+  UserIcon,
 } from "@phosphor-icons/react";
-import { Button } from "@/components/button";
 import { format } from "date-fns";
 
 export const Route = createFileRoute("/_authenticated/student/dashboard")({
@@ -26,11 +22,6 @@ export const Route = createFileRoute("/_authenticated/student/dashboard")({
 
 function RouteComponent() {
   const { user } = useAuthUser();
-
-  // Fetch student's own profile data
-  const studentQuery = useQuery(
-    orpc.student.getMyProfile.queryOptions({ input: {} })
-  );
 
   // Fetch assigned advisor info
   const advisorQuery = useQuery(
@@ -42,306 +33,230 @@ function RouteComponent() {
     orpc.student.getMySessions.queryOptions({ input: {} })
   );
 
-  const student = studentQuery.data;
   const advisor = advisorQuery.data;
   const sessions = sessionsQuery.data ?? [];
-  const recentSessions = sessions.slice(0, 3); // Show 3 most recent sessions
+  const recentSessions = sessions.slice(0, 3);
 
   return (
-    <div className="flex flex-1 h-screen text-left">
-      <div className="flex-1 flex flex-col p-4 pt-2.5 overflow-auto">
+    <div className="flex flex-1 h-screen text-left bg-zinc-50">
+      <div className="flex-1 flex flex-col overflow-auto">
         {/* Header */}
-        <div className="p-2.5 mb-4">
-          <h1 className="text-2xl font-semibold text-zinc-900">
-            Welcome back{user?.name ? `, ${user.name}` : ""}!
-          </h1>
-          <p className="text-zinc-600 text-sm mt-1">
-            Track your progress and stay connected with your advisor
-          </p>
+        <div className="px-8 pt-12 pb-8 bg-white border-b border-zinc-200">
+          <div className="max-w-7xl mx-auto">
+            <h1 className="text-3xl font-semibold text-zinc-900 tracking-tight">
+              Welcome back{user?.name ? `, ${user.name}` : ""}
+            </h1>
+            <p className="text-zinc-500 mt-2">
+              Your personalized college application workspace
+            </p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Profile Card */}
-          <div className="bg-white rounded-md border border-zinc-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-zinc-100">
-              <h2 className="font-semibold text-base text-zinc-900">
-                Your Profile
-              </h2>
-            </div>
-            <div className="p-6">
-              {studentQuery.isLoading ? (
-                <div className="text-sm text-zinc-500">Loading...</div>
-              ) : studentQuery.isError ? (
-                <div className="text-sm text-red-600">
-                  Error loading profile. Please contact support.
+        {/* Main Content */}
+        <div className="px-8 py-8 max-w-7xl w-full mx-auto">
+          {/* Primary Actions - Most Used Features */}
+          <div className="mb-10">
+            <h2 className="text-lg font-semibold text-zinc-900 mb-4">
+              Get Started
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Link
+                to="/guru"
+                className="block bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white hover:shadow-lg hover:scale-[1.01] transition-all group"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <BrainIcon className="size-10" weight="duotone" />
+                  <ArrowRightIcon className="size-6 group-hover:translate-x-1 transition-transform" />
                 </div>
-              ) : student ? (
-                <div className="space-y-4">
-                  {user?.email && (
-                    <div className="flex gap-3 items-start">
-                      <EnvelopeIcon className="size-4 text-zinc-400 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <div className="text-xs font-medium text-zinc-500 uppercase tracking-wide mb-1">
-                          Email
-                        </div>
-                        <div className="text-sm text-zinc-900">{user.email}</div>
-                      </div>
-                    </div>
-                  )}
-                  {student.location && (
-                    <div className="flex gap-3 items-start">
-                      <MapPinIcon className="size-4 text-zinc-400 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <div className="text-xs font-medium text-zinc-500 uppercase tracking-wide mb-1">
-                          Location
-                        </div>
-                        <div className="text-sm text-zinc-900">
-                          {student.location}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {student.expectedGraduationYear && (
-                    <div className="flex gap-3 items-start">
-                      <GraduationCapIcon className="size-4 text-zinc-400 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <div className="text-xs font-medium text-zinc-500 uppercase tracking-wide mb-1">
-                          Expected Graduation
-                        </div>
-                        <div className="text-sm text-zinc-900">
-                          {student.expectedGraduationYear}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {student.studyCurriculum && (
-                    <div className="flex gap-3 items-start">
-                      <BookOpenIcon className="size-4 text-zinc-400 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <div className="text-xs font-medium text-zinc-500 uppercase tracking-wide mb-1">
-                          Curriculum
-                        </div>
-                        <div className="text-sm text-zinc-900">
-                          {student.studyCurriculum}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {student.areasOfInterest && (
-                    <div className="flex gap-3 items-start">
-                      <BookOpenIcon className="size-4 text-zinc-400 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <div className="text-xs font-medium text-zinc-500 uppercase tracking-wide mb-1">
-                          Areas of Interest
-                        </div>
-                        <div className="text-sm text-zinc-900">
-                          {student.areasOfInterest}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {!student.location &&
-                    !student.expectedGraduationYear &&
-                    !student.studyCurriculum &&
-                    !student.areasOfInterest && (
-                      <div className="text-sm text-zinc-500">
-                        Your profile is incomplete. Contact your advisor to add more details.
-                      </div>
-                    )}
+                <div className="font-semibold text-xl mb-1">Chat with Guru</div>
+                <div className="text-blue-100">
+                  Get instant AI-powered guidance on your college applications
                 </div>
-              ) : (
-                <div className="text-sm text-zinc-500">
-                  No profile data available. Please contact your advisor.
-                </div>
-              )}
-            </div>
-          </div>
+              </Link>
 
-          {/* Advisor Card */}
-          <div className="bg-white rounded-md border border-zinc-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-zinc-100 flex items-center gap-2">
-              <ChalkboardTeacherIcon className="size-4 text-zinc-400" />
-              <h2 className="font-semibold text-base text-zinc-900">
-                Your Dedicated Advisor
-              </h2>
-            </div>
-            <div className="p-6">
-              {advisorQuery.isLoading ? (
-                <div className="text-sm text-zinc-500">Loading...</div>
-              ) : advisor ? (
-                <div>
-                  <div className="text-lg font-semibold text-zinc-900 mb-2">
-                    {advisor.name || "Not assigned"}
+              <Link
+                to="/student/universities/explorer"
+                className="block bg-white rounded-xl p-6 border-2 border-zinc-200 hover:border-blue-300 hover:shadow-md transition-all group"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2.5 bg-blue-50 rounded-lg">
+                    <GraduationCapIcon className="size-7 text-blue-600" weight="duotone" />
                   </div>
-                  <p className="text-sm text-zinc-600">
-                    Your advisor is here to help guide you through your academic
-                    journey and college application process.
-                  </p>
+                  <ArrowRightIcon className="size-6 text-zinc-400 group-hover:translate-x-1 group-hover:text-blue-600 transition-all" />
                 </div>
-              ) : (
-                <div className="text-sm text-zinc-500">
-                  No advisor assigned yet. An advisor will be assigned to you soon.
+                <div className="font-semibold text-xl text-zinc-900 mb-1">
+                  Explore Universities
                 </div>
-              )}
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="bg-white rounded-md border border-zinc-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-zinc-100">
-              <h2 className="font-semibold text-base text-zinc-900">
-                Quick Actions
-              </h2>
-            </div>
-            <div className="p-6 space-y-3">
-              <Link to="/guru">
-                <Button variant="primary" className="w-full justify-between">
-                  <div className="flex items-center gap-3">
-                    <BrainIcon className="size-5" />
-                    <div className="text-left">
-                      <div className="font-semibold">Chat with Guru</div>
-                      <div className="text-xs opacity-90">
-                        Get AI-powered guidance and support
-                      </div>
-                    </div>
-                  </div>
-                  <ArrowRightIcon className="size-5" />
-                </Button>
+                <div className="text-zinc-600">
+                  Discover and research universities in the US and UK
+                </div>
               </Link>
             </div>
+          </div>
+
+          {/* Info Cards Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+            {/* Advisor Card - Compact */}
+            <div className="bg-white rounded-xl border border-zinc-200 p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <ChalkboardTeacherIcon className="size-5 text-zinc-400" />
+                <h3 className="text-sm font-medium text-zinc-500 uppercase tracking-wide">
+                  Your Advisor
+                </h3>
+              </div>
+              {advisorQuery.isLoading ? (
+                <div className="text-sm text-zinc-400">Loading...</div>
+              ) : advisor ? (
+                <div className="text-lg font-semibold text-zinc-900">
+                  {advisor.advisorName}
+                </div>
+              ) : (
+                <div className="text-zinc-400">Not assigned yet</div>
+              )}
+            </div>
+
+            {/* Quick Link to Profile */}
+            <Link
+              to="/student/profile"
+              className="bg-white rounded-xl border border-zinc-200 p-6 hover:border-zinc-300 hover:shadow-sm transition-all group"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-zinc-100 rounded-lg">
+                    <UserIcon className="size-5 text-zinc-600" weight="duotone" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-zinc-500 uppercase tracking-wide mb-0.5">
+                      Your Profile
+                    </div>
+                    <div className="text-lg font-semibold text-zinc-900">
+                      {user?.name || user?.email || "Student"}
+                    </div>
+                  </div>
+                </div>
+                <ArrowRightIcon className="size-5 text-zinc-400 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Link>
           </div>
 
           {/* Recent Sessions */}
-          <div className="bg-white rounded-md border border-zinc-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-zinc-100 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <HeadsetIcon className="size-4 text-zinc-400" />
-                <h2 className="font-semibold text-base text-zinc-900">
-                  Recent Sessions
-                </h2>
-              </div>
+          <div className="mb-10">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-zinc-900">
+                Recent Sessions
+              </h2>
               {sessions.length > 3 && (
                 <Link
                   to="/student/sessions"
-                  className="text-xs text-zinc-500 hover:text-zinc-700 font-medium"
+                  className="text-sm text-zinc-500 hover:text-zinc-900 font-medium flex items-center gap-1 group"
                 >
-                  View All
+                  View all
+                  <ArrowRightIcon className="size-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               )}
             </div>
-            <div className="p-6">
-              {sessionsQuery.isLoading ? (
-                <div className="text-sm text-zinc-500">Loading sessions...</div>
-              ) : recentSessions.length > 0 ? (
-                <div className="space-y-3">
-                  {recentSessions.map((session) => (
-                    <Link
-                      key={session.sessionId}
-                      to="/student/sessions/$sessionId"
-                      params={{ sessionId: session.sessionId }}
-                      className="block p-3 rounded-lg border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 transition-all group"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-medium text-sm text-zinc-900 mb-1 line-clamp-1 group-hover:text-blue-600 transition-colors">
-                            {session.title}
-                          </h3>
-                          <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-                            <ClockIcon className="size-3" />
-                            {format(
-                              new Date(session.createdAt ?? new Date()),
-                              "MMM d, yyyy"
-                            )}
-                          </div>
-                        </div>
-                        <ArrowRightIcon className="size-4 text-zinc-400 group-hover:text-zinc-600 flex-shrink-0 mt-0.5" />
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-4">
-                  <HeadsetIcon className="size-8 text-zinc-300 mx-auto mb-2" />
-                  <p className="text-sm text-zinc-500 mb-1">
-                    No sessions yet
-                  </p>
-                  <p className="text-xs text-zinc-400">
-                    Your sessions with your advisor will appear here
-                  </p>
-                </div>
-              )}
-            </div>
+
+            {sessionsQuery.isLoading ? (
+              <div className="bg-white rounded-xl border border-zinc-200 p-8 text-center text-zinc-400">
+                Loading sessions...
+              </div>
+            ) : recentSessions.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {recentSessions.map((session) => (
+                  <Link
+                    key={session.id}
+                    to="/student/sessions/$sessionId"
+                    params={{ sessionId: session.id }}
+                    className="block bg-white rounded-xl border border-zinc-200 p-5 hover:border-zinc-300 hover:shadow-md transition-all group"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <HeadsetIcon className="size-6 text-zinc-400" weight="duotone" />
+                      <ArrowRightIcon className="size-4 text-zinc-400 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                    <h3 className="font-medium text-zinc-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                      {session.title}
+                    </h3>
+                    <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+                      <ClockIcon className="size-3.5" />
+                      {format(
+                        new Date(session.createdAt ?? new Date()),
+                        "MMM d, yyyy"
+                      )}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white rounded-xl border border-zinc-200 p-12 text-center">
+                <HeadsetIcon className="size-12 text-zinc-300 mx-auto mb-4" weight="duotone" />
+                <p className="text-zinc-900 font-medium mb-1">
+                  No sessions yet
+                </p>
+                <p className="text-sm text-zinc-500">
+                  Your sessions with your advisor will appear here
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* Available Tools Section */}
-          <div className="lg:col-span-2 mt-4">
-            <h2 className="font-semibold text-base text-zinc-900 mb-4 px-2.5">
-              Available Tools
+          {/* All Tools */}
+          <div>
+            <h2 className="text-lg font-semibold text-zinc-900 mb-4">
+              All Tools
             </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              {/* University Shortlist */}
-              <div className="bg-zinc-50 rounded-md border border-zinc-200 overflow-hidden h-full flex flex-col opacity-60">
-                <div className="p-6 flex flex-col flex-1">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <ListBulletsIcon className="size-5 text-zinc-400" />
-                      <h3 className="font-semibold text-base text-zinc-500">
-                        University Shortlist
-                      </h3>
-                    </div>
-                    <LockIcon className="size-4 text-zinc-400" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* University Explorer - Already featured above, so minimal here */}
+              <Link
+                to="/student/universities/explorer"
+                className="bg-white rounded-xl border border-zinc-200 p-5 hover:border-zinc-300 hover:shadow-sm transition-all group"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-blue-50 rounded-lg">
+                    <GraduationCapIcon className="size-5 text-blue-600" weight="duotone" />
                   </div>
-                  <p className="text-sm text-zinc-500 flex-1">
-                    Build and manage your personalized list of target universities
-                  </p>
-                  <div className="mt-4 text-xs text-zinc-400 font-medium">
-                    Coming Soon
-                  </div>
+                  <ArrowRightIcon className="size-4 text-zinc-400 group-hover:translate-x-1 transition-transform" />
                 </div>
-              </div>
-
-              {/* Essay Writing */}
-              <Link to="/essays" className="h-full">
-                <div className="bg-white rounded-md border border-zinc-200 overflow-hidden hover:border-zinc-300 hover:shadow-sm transition-all cursor-pointer h-full flex flex-col">
-                  <div className="p-6 flex flex-col flex-1">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <PencilIcon className="size-5 text-zinc-600" />
-                        <h3 className="font-semibold text-base text-zinc-900">
-                          Essay Writing
-                        </h3>
-                      </div>
-                      <ArrowRightIcon className="size-5 text-zinc-400" />
-                    </div>
-                    <p className="text-sm text-zinc-600 flex-1">
-                      Write, draft, and refine your college application essays
-                    </p>
-                    <div className="mt-4 text-xs text-zinc-500 font-medium opacity-0">
-                      Coming Soon
-                    </div>
-                  </div>
-                </div>
+                <h3 className="font-semibold text-zinc-900 mb-1">
+                  University Explorer
+                </h3>
+                <p className="text-zinc-600 text-sm">
+                  Browse US & UK universities
+                </p>
               </Link>
 
-              {/* Aptitude Test */}
-              <div className="bg-zinc-50 rounded-md border border-zinc-200 overflow-hidden h-full flex flex-col opacity-60">
-                <div className="p-6 flex flex-col flex-1">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <ChartLineIcon className="size-5 text-zinc-400" />
-                      <h3 className="font-semibold text-base text-zinc-500">
-                        Aptitude Test
-                      </h3>
-                    </div>
-                    <LockIcon className="size-4 text-zinc-400" />
+              {/* Essay Writing */}
+              <Link
+                to="/essays"
+                className="bg-white rounded-xl border border-zinc-200 p-5 hover:border-zinc-300 hover:shadow-sm transition-all group"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-purple-50 rounded-lg">
+                    <PencilIcon className="size-5 text-purple-600" weight="duotone" />
                   </div>
-                  <p className="text-sm text-zinc-500 flex-1">
-                    Assess your strengths and discover the best fit programs
-                  </p>
-                  <div className="mt-4 text-xs text-zinc-400 font-medium">
-                    Coming Soon
-                  </div>
+                  <ArrowRightIcon className="size-4 text-zinc-400 group-hover:translate-x-1 transition-transform" />
                 </div>
+                <h3 className="font-semibold text-zinc-900 mb-1">
+                  Essay Writing
+                </h3>
+                <p className="text-zinc-600 text-sm">
+                  Draft your college essays
+                </p>
+              </Link>
+
+              {/* Aptitude Test - Coming Soon */}
+              <div className="bg-zinc-50 rounded-xl border border-zinc-200 p-5 opacity-60 cursor-not-allowed">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2 bg-zinc-100 rounded-lg">
+                    <ChartLineIcon className="size-5 text-zinc-400" weight="duotone" />
+                  </div>
+                  <LockIcon className="size-4 text-zinc-400" />
+                </div>
+                <h3 className="font-semibold text-zinc-500 mb-1">
+                  Aptitude Test
+                </h3>
+                <p className="text-zinc-500 text-sm">
+                  Coming soon
+                </p>
               </div>
             </div>
           </div>

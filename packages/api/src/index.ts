@@ -12,8 +12,10 @@ import {
 } from "./routes/session";
 
 import { student } from "./routes/student";
-import { essay } from "./routes/essay";
 import { grades } from "./routes/grades";
+import { college } from "./routes/college";
+import { shortlist } from "./routes/shortlist";
+import { essay } from "./routes/essay";
 
 import {
   advisorCreateHandler,
@@ -58,6 +60,8 @@ export const router = {
   student,
   essay,
   grades,
+  college,
+  shortlist,
   advisor: {
     ...advisor,
     create: advisorCreateHandler,
