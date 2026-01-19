@@ -8,7 +8,9 @@
   "description": "",
   "scripts": {
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "fetch:scorecard": "tsx scripts/fetch-college-scorecard.ts",
+    "import:colleges": "tsx scripts/import-colleges.ts"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.8",
