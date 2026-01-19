@@ -18,7 +18,6 @@ import { Route as AuthenticatedStudentsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedSessionsRouteImport } from './routes/_authenticated/sessions'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedGuruRouteImport } from './routes/_authenticated/guru'
-import { Route as AuthenticatedExploreRouteImport } from './routes/_authenticated/explore'
 import { Route as AuthenticatedAdvisorsRouteImport } from './routes/_authenticated/advisors'
 import { Route as AuthenticatedScheduleIndexRouteImport } from './routes/_authenticated/schedule/index'
 import { Route as AuthenticatedEssaysIndexRouteImport } from './routes/_authenticated/essays/index'
@@ -77,11 +76,6 @@ const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
 const AuthenticatedGuruRoute = AuthenticatedGuruRouteImport.update({
   id: '/guru',
   path: '/guru',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedExploreRoute = AuthenticatedExploreRouteImport.update({
-  id: '/explore',
-  path: '/explore',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedAdvisorsRoute = AuthenticatedAdvisorsRouteImport.update({
@@ -222,7 +216,6 @@ const ApiAuthCallbackServerRoute = ApiAuthCallbackServerRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/advisors': typeof AuthenticatedAdvisorsRouteWithChildren
-  '/explore': typeof AuthenticatedExploreRoute
   '/guru': typeof AuthenticatedGuruRoute
   '/home': typeof AuthenticatedHomeRoute
   '/sessions': typeof AuthenticatedSessionsRouteWithChildren
@@ -250,7 +243,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/advisors': typeof AuthenticatedAdvisorsRouteWithChildren
-  '/explore': typeof AuthenticatedExploreRoute
   '/guru': typeof AuthenticatedGuruRoute
   '/home': typeof AuthenticatedHomeRoute
   '/sessions': typeof AuthenticatedSessionsRouteWithChildren
@@ -279,7 +271,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/_authenticated/advisors': typeof AuthenticatedAdvisorsRouteWithChildren
-  '/_authenticated/explore': typeof AuthenticatedExploreRoute
   '/_authenticated/guru': typeof AuthenticatedGuruRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/sessions': typeof AuthenticatedSessionsRouteWithChildren
@@ -309,7 +300,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/advisors'
-    | '/explore'
     | '/guru'
     | '/home'
     | '/sessions'
@@ -337,7 +327,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/advisors'
-    | '/explore'
     | '/guru'
     | '/home'
     | '/sessions'
@@ -365,7 +354,6 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/_authenticated/advisors'
-    | '/_authenticated/explore'
     | '/_authenticated/guru'
     | '/_authenticated/home'
     | '/_authenticated/sessions'
@@ -491,13 +479,6 @@ declare module '@tanstack/react-router' {
       path: '/guru'
       fullPath: '/guru'
       preLoaderRoute: typeof AuthenticatedGuruRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/explore': {
-      id: '/_authenticated/explore'
-      path: '/explore'
-      fullPath: '/explore'
-      preLoaderRoute: typeof AuthenticatedExploreRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/advisors': {
@@ -754,7 +735,6 @@ const AuthenticatedStudentUniversitiesRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAdvisorsRoute: typeof AuthenticatedAdvisorsRouteWithChildren
-  AuthenticatedExploreRoute: typeof AuthenticatedExploreRoute
   AuthenticatedGuruRoute: typeof AuthenticatedGuruRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedSessionsRoute: typeof AuthenticatedSessionsRouteWithChildren
@@ -772,7 +752,6 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdvisorsRoute: AuthenticatedAdvisorsRouteWithChildren,
-  AuthenticatedExploreRoute: AuthenticatedExploreRoute,
   AuthenticatedGuruRoute: AuthenticatedGuruRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedSessionsRoute: AuthenticatedSessionsRouteWithChildren,
