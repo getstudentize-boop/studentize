@@ -69,203 +69,186 @@ function CollegesPage() {
   const totalCount = collegesQuery.data?.total || 0;
 
   return (
-    <div className="flex flex-1 h-screen text-left bg-zinc-50 overflow-hidden">
-      <div className="flex-1 flex flex-col overflow-auto">
-        {/* Header */}
-        <div className="px-8 pt-12 pb-8 bg-white border-b border-zinc-200">
-          <div className="max-w-6xl mx-auto">
-            <h1 className="text-3xl font-semibold text-zinc-900 tracking-tight">
-              University Explorer
-            </h1>
-            <p className="text-zinc-500 mt-2">
-              Discover and research top US universities
-            </p>
-          </div>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="px-8 py-6 bg-white border-b border-zinc-200">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex gap-3">
-              <div className="flex-1 relative">
-                <MagnifyingGlass
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"
-                  size={18}
-                />
-                <input
-                  type="text"
-                  placeholder="Search universities..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                />
-              </div>
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center gap-2 px-4 py-2.5 border rounded-lg transition-all text-sm font-medium ${
-                  showFilters
-                    ? "border-blue-500 bg-blue-50 text-blue-700"
-                    : "border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50"
-                }`}
-              >
-                <FunnelSimple size={18} />
-                <span>Filters</span>
-              </button>
+    <div className="flex-1 flex flex-col bg-zinc-50">
+      {/* Search and Filters */}
+      <div className="px-6 py-4 bg-white border-b border-zinc-200">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex gap-3">
+            <div className="flex-1 relative">
+              <MagnifyingGlass
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"
+                size={18}
+              />
+              <input
+                type="text"
+                placeholder="Search universities..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              />
             </div>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`flex items-center gap-2 px-4 py-2.5 border rounded-lg transition-all text-sm font-medium ${
+                showFilters
+                  ? "border-blue-500 bg-blue-50 text-blue-700"
+                  : "border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50"
+              }`}
+            >
+              <FunnelSimple size={18} />
+              <span>Filters</span>
+            </button>
+          </div>
 
-            {showFilters && (
-              <div className="mt-4 p-4 bg-zinc-50 rounded-lg border border-zinc-200">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-600 mb-1.5">
-                      Campus Setting
-                    </label>
-                    <select
-                      value={filters.campusSetting || ""}
-                      onChange={(e) =>
-                        setFilters({
-                          ...filters,
-                          campusSetting: (e.target.value as any) || undefined,
-                        })
-                      }
-                      className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                    >
-                      <option value="">All</option>
-                      <option value="City">City</option>
-                      <option value="Suburban">Suburban</option>
-                      <option value="Town">Town</option>
-                      <option value="Rural">Rural</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-600 mb-1.5">
-                      Max Tuition
-                    </label>
+          {showFilters && (
+            <div className="mt-4 p-4 bg-zinc-50 rounded-lg border border-zinc-200">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-zinc-600 mb-1.5">
+                    Campus Setting
+                  </label>
+                  <select
+                    value={filters.campusSetting || ""}
+                    onChange={(e) =>
+                      setFilters({
+                        ...filters,
+                        campusSetting: (e.target.value as any) || undefined,
+                      })
+                    }
+                    className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  >
+                    <option value="">All</option>
+                    <option value="City">City</option>
+                    <option value="Suburban">Suburban</option>
+                    <option value="Town">Town</option>
+                    <option value="Rural">Rural</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-zinc-600 mb-1.5">
+                    Max Tuition
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="e.g. 50000"
+                    value={filters.maxTuition || ""}
+                    onChange={(e) =>
+                      setFilters({
+                        ...filters,
+                        maxTuition: e.target.value
+                          ? Number(e.target.value)
+                          : undefined,
+                      })
+                    }
+                    className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-zinc-600 mb-1.5">
+                    Acceptance Rate
+                  </label>
+                  <div className="flex gap-2">
                     <input
                       type="number"
-                      placeholder="e.g. 50000"
-                      value={filters.maxTuition || ""}
+                      placeholder="Min %"
+                      min="0"
+                      max="100"
+                      value={
+                        filters.minAdmissionRate
+                          ? filters.minAdmissionRate * 100
+                          : ""
+                      }
                       onChange={(e) =>
                         setFilters({
                           ...filters,
-                          maxTuition: e.target.value
-                            ? Number(e.target.value)
+                          minAdmissionRate: e.target.value
+                            ? Number(e.target.value) / 100
                             : undefined,
                         })
                       }
-                      className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      className="w-1/2 px-3 py-2 text-sm border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-600 mb-1.5">
-                      Acceptance Rate
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="number"
-                        placeholder="Min %"
-                        min="0"
-                        max="100"
-                        value={
-                          filters.minAdmissionRate
-                            ? filters.minAdmissionRate * 100
-                            : ""
-                        }
-                        onChange={(e) =>
-                          setFilters({
-                            ...filters,
-                            minAdmissionRate: e.target.value
-                              ? Number(e.target.value) / 100
-                              : undefined,
-                          })
-                        }
-                        className="w-1/2 px-3 py-2 text-sm border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                      />
-                      <input
-                        type="number"
-                        placeholder="Max %"
-                        min="0"
-                        max="100"
-                        value={
-                          filters.maxAdmissionRate
-                            ? filters.maxAdmissionRate * 100
-                            : ""
-                        }
-                        onChange={(e) =>
-                          setFilters({
-                            ...filters,
-                            maxAdmissionRate: e.target.value
-                              ? Number(e.target.value) / 100
-                              : undefined,
-                          })
-                        }
-                        className="w-1/2 px-3 py-2 text-sm border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex items-end">
-                    <button
-                      onClick={() =>
+                    <input
+                      type="number"
+                      placeholder="Max %"
+                      min="0"
+                      max="100"
+                      value={
+                        filters.maxAdmissionRate
+                          ? filters.maxAdmissionRate * 100
+                          : ""
+                      }
+                      onChange={(e) =>
                         setFilters({
-                          state: undefined,
-                          campusSetting: undefined,
-                          maxTuition: undefined,
-                          minAdmissionRate: undefined,
-                          maxAdmissionRate: undefined,
-                          minSAT: undefined,
-                          maxSAT: undefined,
+                          ...filters,
+                          maxAdmissionRate: e.target.value
+                            ? Number(e.target.value) / 100
+                            : undefined,
                         })
                       }
-                      className="px-3 py-2 text-sm text-zinc-600 hover:text-zinc-900 font-medium hover:bg-zinc-100 rounded-lg transition-colors"
-                    >
-                      Clear
-                    </button>
+                      className="w-1/2 px-3 py-2 text-sm border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
                   </div>
                 </div>
+                <div className="flex items-end">
+                  <button
+                    onClick={() =>
+                      setFilters({
+                        state: undefined,
+                        campusSetting: undefined,
+                        maxTuition: undefined,
+                        minAdmissionRate: undefined,
+                        maxAdmissionRate: undefined,
+                        minSAT: undefined,
+                        maxSAT: undefined,
+                      })
+                    }
+                    className="px-3 py-2 text-sm text-zinc-600 hover:text-zinc-900 font-medium hover:bg-zinc-100 rounded-lg transition-colors"
+                  >
+                    Clear
+                  </button>
+                </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
+      </div>
 
-        {/* Results */}
-        <div className="flex-1 px-8 py-8 overflow-auto">
-          <div className="max-w-6xl mx-auto">
-            {isLoading ? (
-              <div className="flex flex-col items-center justify-center h-80">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-400 mb-4"></div>
-                <div className="text-zinc-500 text-sm">Loading...</div>
+      {/* Results */}
+      <div className="flex-1 px-6 py-6 overflow-auto">
+        <div className="max-w-6xl mx-auto">
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center h-80">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-400 mb-4"></div>
+              <div className="text-zinc-500 text-sm">Loading...</div>
+            </div>
+          ) : colleges.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-80 text-center">
+              <GraduationCap size={40} className="mb-3 text-zinc-300" />
+              <p className="text-zinc-900 font-medium mb-1">
+                No universities found
+              </p>
+              <p className="text-sm text-zinc-500">
+                Try adjusting your search or filters
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="mb-4 text-sm text-zinc-500">
+                {colleges.length} of {totalCount} universities
               </div>
-            ) : colleges.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-80 text-center">
-                <GraduationCap
-                  size={40}
-                  className="mb-3 text-zinc-300"
-                />
-                <p className="text-zinc-900 font-medium mb-1">
-                  No universities found
-                </p>
-                <p className="text-sm text-zinc-500">
-                  Try adjusting your search or filters
-                </p>
-              </div>
-            ) : (
-              <>
-                <div className="mb-4 text-sm text-zinc-500">
-                  {colleges.length} of {totalCount} universities
-                </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {colleges.map((college: any) => (
-                    <CollegeCard
-                      key={college.id}
-                      college={college}
-                      onClick={() => setSelectedCollege(college)}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {colleges.map((college: any) => (
+                  <CollegeCard
+                    key={college.id}
+                    college={college}
+                    onClick={() => setSelectedCollege(college)}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -295,8 +278,8 @@ function CollegeCard({
   // Determine selectivity color based on admission rate
   const getSelectivityColor = (rate: number) => {
     if (rate < 0.15) return "bg-blue-500";
-    if (rate < 0.30) return "bg-blue-400";
-    if (rate < 0.50) return "bg-blue-300";
+    if (rate < 0.3) return "bg-blue-400";
+    if (rate < 0.5) return "bg-blue-300";
     return "bg-blue-200";
   };
 
@@ -307,7 +290,9 @@ function CollegeCard({
     >
       <div className="flex items-start gap-3">
         {college.admissionRate && (
-          <div className={`w-1 h-12 rounded-full ${getSelectivityColor(college.admissionRate)} flex-shrink-0`} />
+          <div
+            className={`w-1 h-12 rounded-full ${getSelectivityColor(college.admissionRate)} flex-shrink-0`}
+          />
         )}
         <div className="flex-1 min-w-0">
           <h3 className="font-medium text-zinc-900 text-sm mb-1 line-clamp-2 group-hover:text-blue-600 transition-colors">
@@ -365,13 +350,18 @@ function CollegeModal({
 
   // Get selectivity label and color
   const getSelectivity = (rate: number) => {
-    if (rate < 0.10) return { label: "Highly Selective", color: "bg-blue-600 text-white" };
-    if (rate < 0.20) return { label: "Very Selective", color: "bg-blue-500 text-white" };
-    if (rate < 0.40) return { label: "Selective", color: "bg-blue-100 text-blue-700" };
+    if (rate < 0.1)
+      return { label: "Highly Selective", color: "bg-blue-600 text-white" };
+    if (rate < 0.2)
+      return { label: "Very Selective", color: "bg-blue-500 text-white" };
+    if (rate < 0.4)
+      return { label: "Selective", color: "bg-blue-100 text-blue-700" };
     return { label: "Accessible", color: "bg-zinc-100 text-zinc-700" };
   };
 
-  const selectivity = college.admissionRate ? getSelectivity(college.admissionRate) : null;
+  const selectivity = college.admissionRate
+    ? getSelectivity(college.admissionRate)
+    : null;
 
   return (
     <div
@@ -394,14 +384,18 @@ function CollegeModal({
           <div className="p-6 border-b border-zinc-200">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-xl font-semibold text-zinc-900 pr-8">{name}</h2>
+                <h2 className="text-xl font-semibold text-zinc-900 pr-8">
+                  {name}
+                </h2>
                 <div className="flex items-center gap-1.5 text-zinc-500 text-sm mt-1">
                   <MapPin size={14} />
                   <span>{location}</span>
                 </div>
               </div>
               {selectivity && (
-                <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${selectivity.color} whitespace-nowrap`}>
+                <span
+                  className={`px-2.5 py-1 text-xs font-medium rounded-full ${selectivity.color} whitespace-nowrap`}
+                >
                   {selectivity.label}
                 </span>
               )}
