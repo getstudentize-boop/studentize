@@ -42,18 +42,11 @@ function App() {
         </p>
         <div className="flex flex-col gap-3 mt-2 w-56">
           <Button
-            variant="primary"
+            variant="neutral"
             className="w-full"
             onClick={() => signIn({ state: "student-signup" })}
           >
-            Sign Up as Student
-          </Button>
-          <Button
-            variant="neutral"
-            className="w-full"
-            onClick={() => signIn()}
-          >
-            Advisor / Admin Sign In
+            Sign In
           </Button>
         </div>
       </div>

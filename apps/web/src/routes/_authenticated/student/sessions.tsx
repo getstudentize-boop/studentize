@@ -51,7 +51,13 @@ function SessionsPage() {
         </div>
         <div className="w-[35rem] bg-white border-l border-bzinc flex flex-col text-left">
           <div className="flex-1 overflow-auto custom-scrollbar">
-            <MySessionsTab />
+            {params?.sessionId ? (
+              <MySessionsTab sessionId={params.sessionId} />
+            ) : (
+              <div className="p-6 text-center text-zinc-500">
+                Select a session to view details
+              </div>
+            )}
           </div>
         </div>
       </div>

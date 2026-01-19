@@ -18,19 +18,26 @@ import { Route as AuthenticatedStudentsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedSessionsRouteImport } from './routes/_authenticated/sessions'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedGuruRouteImport } from './routes/_authenticated/guru'
+import { Route as AuthenticatedExploreRouteImport } from './routes/_authenticated/explore'
 import { Route as AuthenticatedAdvisorsRouteImport } from './routes/_authenticated/advisors'
 import { Route as AuthenticatedScheduleIndexRouteImport } from './routes/_authenticated/schedule/index'
 import { Route as AuthenticatedEssaysIndexRouteImport } from './routes/_authenticated/essays/index'
 import { Route as AuthenticatedStudentsUserIdRouteImport } from './routes/_authenticated/students/$userId'
+import { Route as AuthenticatedStudentUniversitiesRouteImport } from './routes/_authenticated/student/universities'
 import { Route as AuthenticatedStudentSessionsRouteImport } from './routes/_authenticated/student/sessions'
+import { Route as AuthenticatedStudentProfileRouteImport } from './routes/_authenticated/student/profile'
 import { Route as AuthenticatedStudentDashboardRouteImport } from './routes/_authenticated/student/dashboard'
 import { Route as AuthenticatedStudentUserIdRouteImport } from './routes/_authenticated/student/$userId'
 import { Route as AuthenticatedSessionsSessionIdRouteImport } from './routes/_authenticated/sessions/$sessionId'
 import { Route as AuthenticatedSessionsAutoSessionIdRouteImport } from './routes/_authenticated/sessions/$autoSessionId'
 import { Route as AuthenticatedEssaysEssayIdRouteImport } from './routes/_authenticated/essays/$essayId'
 import { Route as AuthenticatedAdvisorsUserIdRouteImport } from './routes/_authenticated/advisors/$userId'
+import { Route as AuthenticatedStudentUniversitiesIndexRouteImport } from './routes/_authenticated/student/universities.index'
+import { Route as AuthenticatedStudentUniversitiesShortlistRouteImport } from './routes/_authenticated/student/universities.shortlist'
+import { Route as AuthenticatedStudentUniversitiesExplorerRouteImport } from './routes/_authenticated/student/universities.explorer'
 import { Route as AuthenticatedStudentSessionsSessionIdRouteImport } from './routes/_authenticated/student/sessions/$sessionId'
 import { Route as AuthenticatedSessionsUserSessionIdRouteImport } from './routes/_authenticated/sessions/user/$sessionId'
+import { Route as AuthenticatedStudentUniversitiesCountryIdRouteImport } from './routes/_authenticated/student/universities.$country.$id'
 import { ServerRoute as ApiGoogle_oauth_callbackServerRouteImport } from './routes/api/google_oauth_callback'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as ApiAuthLoginServerRouteImport } from './routes/api/auth/login'
@@ -72,6 +79,11 @@ const AuthenticatedGuruRoute = AuthenticatedGuruRouteImport.update({
   path: '/guru',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedExploreRoute = AuthenticatedExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedAdvisorsRoute = AuthenticatedAdvisorsRouteImport.update({
   id: '/advisors',
   path: '/advisors',
@@ -95,10 +107,22 @@ const AuthenticatedStudentsUserIdRoute =
     path: '/$userId',
     getParentRoute: () => AuthenticatedStudentsRoute,
   } as any)
+const AuthenticatedStudentUniversitiesRoute =
+  AuthenticatedStudentUniversitiesRouteImport.update({
+    id: '/student/universities',
+    path: '/student/universities',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedStudentSessionsRoute =
   AuthenticatedStudentSessionsRouteImport.update({
     id: '/student/sessions',
     path: '/student/sessions',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedStudentProfileRoute =
+  AuthenticatedStudentProfileRouteImport.update({
+    id: '/student/profile',
+    path: '/student/profile',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedStudentDashboardRoute =
@@ -137,6 +161,24 @@ const AuthenticatedAdvisorsUserIdRoute =
     path: '/$userId',
     getParentRoute: () => AuthenticatedAdvisorsRoute,
   } as any)
+const AuthenticatedStudentUniversitiesIndexRoute =
+  AuthenticatedStudentUniversitiesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedStudentUniversitiesRoute,
+  } as any)
+const AuthenticatedStudentUniversitiesShortlistRoute =
+  AuthenticatedStudentUniversitiesShortlistRouteImport.update({
+    id: '/shortlist',
+    path: '/shortlist',
+    getParentRoute: () => AuthenticatedStudentUniversitiesRoute,
+  } as any)
+const AuthenticatedStudentUniversitiesExplorerRoute =
+  AuthenticatedStudentUniversitiesExplorerRouteImport.update({
+    id: '/explorer',
+    path: '/explorer',
+    getParentRoute: () => AuthenticatedStudentUniversitiesRoute,
+  } as any)
 const AuthenticatedStudentSessionsSessionIdRoute =
   AuthenticatedStudentSessionsSessionIdRouteImport.update({
     id: '/$sessionId',
@@ -148,6 +190,12 @@ const AuthenticatedSessionsUserSessionIdRoute =
     id: '/user/$sessionId',
     path: '/user/$sessionId',
     getParentRoute: () => AuthenticatedSessionsRoute,
+  } as any)
+const AuthenticatedStudentUniversitiesCountryIdRoute =
+  AuthenticatedStudentUniversitiesCountryIdRouteImport.update({
+    id: '/$country/$id',
+    path: '/$country/$id',
+    getParentRoute: () => AuthenticatedStudentUniversitiesRoute,
   } as any)
 const ApiGoogle_oauth_callbackServerRoute =
   ApiGoogle_oauth_callbackServerRouteImport.update({
@@ -174,6 +222,7 @@ const ApiAuthCallbackServerRoute = ApiAuthCallbackServerRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/advisors': typeof AuthenticatedAdvisorsRouteWithChildren
+  '/explore': typeof AuthenticatedExploreRoute
   '/guru': typeof AuthenticatedGuruRoute
   '/home': typeof AuthenticatedHomeRoute
   '/sessions': typeof AuthenticatedSessionsRouteWithChildren
@@ -185,16 +234,23 @@ export interface FileRoutesByFullPath {
   '/sessions/$sessionId': typeof AuthenticatedSessionsSessionIdRoute
   '/student/$userId': typeof AuthenticatedStudentUserIdRoute
   '/student/dashboard': typeof AuthenticatedStudentDashboardRoute
+  '/student/profile': typeof AuthenticatedStudentProfileRoute
   '/student/sessions': typeof AuthenticatedStudentSessionsRouteWithChildren
+  '/student/universities': typeof AuthenticatedStudentUniversitiesRouteWithChildren
   '/students/$userId': typeof AuthenticatedStudentsUserIdRoute
   '/essays': typeof AuthenticatedEssaysIndexRoute
   '/schedule': typeof AuthenticatedScheduleIndexRoute
   '/sessions/user/$sessionId': typeof AuthenticatedSessionsUserSessionIdRoute
   '/student/sessions/$sessionId': typeof AuthenticatedStudentSessionsSessionIdRoute
+  '/student/universities/explorer': typeof AuthenticatedStudentUniversitiesExplorerRoute
+  '/student/universities/shortlist': typeof AuthenticatedStudentUniversitiesShortlistRoute
+  '/student/universities/': typeof AuthenticatedStudentUniversitiesIndexRoute
+  '/student/universities/$country/$id': typeof AuthenticatedStudentUniversitiesCountryIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/advisors': typeof AuthenticatedAdvisorsRouteWithChildren
+  '/explore': typeof AuthenticatedExploreRoute
   '/guru': typeof AuthenticatedGuruRoute
   '/home': typeof AuthenticatedHomeRoute
   '/sessions': typeof AuthenticatedSessionsRouteWithChildren
@@ -206,18 +262,24 @@ export interface FileRoutesByTo {
   '/sessions/$sessionId': typeof AuthenticatedSessionsSessionIdRoute
   '/student/$userId': typeof AuthenticatedStudentUserIdRoute
   '/student/dashboard': typeof AuthenticatedStudentDashboardRoute
+  '/student/profile': typeof AuthenticatedStudentProfileRoute
   '/student/sessions': typeof AuthenticatedStudentSessionsRouteWithChildren
   '/students/$userId': typeof AuthenticatedStudentsUserIdRoute
   '/essays': typeof AuthenticatedEssaysIndexRoute
   '/schedule': typeof AuthenticatedScheduleIndexRoute
   '/sessions/user/$sessionId': typeof AuthenticatedSessionsUserSessionIdRoute
   '/student/sessions/$sessionId': typeof AuthenticatedStudentSessionsSessionIdRoute
+  '/student/universities/explorer': typeof AuthenticatedStudentUniversitiesExplorerRoute
+  '/student/universities/shortlist': typeof AuthenticatedStudentUniversitiesShortlistRoute
+  '/student/universities': typeof AuthenticatedStudentUniversitiesIndexRoute
+  '/student/universities/$country/$id': typeof AuthenticatedStudentUniversitiesCountryIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/_authenticated/advisors': typeof AuthenticatedAdvisorsRouteWithChildren
+  '/_authenticated/explore': typeof AuthenticatedExploreRoute
   '/_authenticated/guru': typeof AuthenticatedGuruRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/sessions': typeof AuthenticatedSessionsRouteWithChildren
@@ -229,18 +291,25 @@ export interface FileRoutesById {
   '/_authenticated/sessions/$sessionId': typeof AuthenticatedSessionsSessionIdRoute
   '/_authenticated/student/$userId': typeof AuthenticatedStudentUserIdRoute
   '/_authenticated/student/dashboard': typeof AuthenticatedStudentDashboardRoute
+  '/_authenticated/student/profile': typeof AuthenticatedStudentProfileRoute
   '/_authenticated/student/sessions': typeof AuthenticatedStudentSessionsRouteWithChildren
+  '/_authenticated/student/universities': typeof AuthenticatedStudentUniversitiesRouteWithChildren
   '/_authenticated/students/$userId': typeof AuthenticatedStudentsUserIdRoute
   '/_authenticated/essays/': typeof AuthenticatedEssaysIndexRoute
   '/_authenticated/schedule/': typeof AuthenticatedScheduleIndexRoute
   '/_authenticated/sessions/user/$sessionId': typeof AuthenticatedSessionsUserSessionIdRoute
   '/_authenticated/student/sessions/$sessionId': typeof AuthenticatedStudentSessionsSessionIdRoute
+  '/_authenticated/student/universities/explorer': typeof AuthenticatedStudentUniversitiesExplorerRoute
+  '/_authenticated/student/universities/shortlist': typeof AuthenticatedStudentUniversitiesShortlistRoute
+  '/_authenticated/student/universities/': typeof AuthenticatedStudentUniversitiesIndexRoute
+  '/_authenticated/student/universities/$country/$id': typeof AuthenticatedStudentUniversitiesCountryIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/advisors'
+    | '/explore'
     | '/guru'
     | '/home'
     | '/sessions'
@@ -252,16 +321,23 @@ export interface FileRouteTypes {
     | '/sessions/$sessionId'
     | '/student/$userId'
     | '/student/dashboard'
+    | '/student/profile'
     | '/student/sessions'
+    | '/student/universities'
     | '/students/$userId'
     | '/essays'
     | '/schedule'
     | '/sessions/user/$sessionId'
     | '/student/sessions/$sessionId'
+    | '/student/universities/explorer'
+    | '/student/universities/shortlist'
+    | '/student/universities/'
+    | '/student/universities/$country/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/advisors'
+    | '/explore'
     | '/guru'
     | '/home'
     | '/sessions'
@@ -273,17 +349,23 @@ export interface FileRouteTypes {
     | '/sessions/$sessionId'
     | '/student/$userId'
     | '/student/dashboard'
+    | '/student/profile'
     | '/student/sessions'
     | '/students/$userId'
     | '/essays'
     | '/schedule'
     | '/sessions/user/$sessionId'
     | '/student/sessions/$sessionId'
+    | '/student/universities/explorer'
+    | '/student/universities/shortlist'
+    | '/student/universities'
+    | '/student/universities/$country/$id'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/_authenticated/advisors'
+    | '/_authenticated/explore'
     | '/_authenticated/guru'
     | '/_authenticated/home'
     | '/_authenticated/sessions'
@@ -295,12 +377,18 @@ export interface FileRouteTypes {
     | '/_authenticated/sessions/$sessionId'
     | '/_authenticated/student/$userId'
     | '/_authenticated/student/dashboard'
+    | '/_authenticated/student/profile'
     | '/_authenticated/student/sessions'
+    | '/_authenticated/student/universities'
     | '/_authenticated/students/$userId'
     | '/_authenticated/essays/'
     | '/_authenticated/schedule/'
     | '/_authenticated/sessions/user/$sessionId'
     | '/_authenticated/student/sessions/$sessionId'
+    | '/_authenticated/student/universities/explorer'
+    | '/_authenticated/student/universities/shortlist'
+    | '/_authenticated/student/universities/'
+    | '/_authenticated/student/universities/$country/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -405,6 +493,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGuruRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/explore': {
+      id: '/_authenticated/explore'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof AuthenticatedExploreRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/advisors': {
       id: '/_authenticated/advisors'
       path: '/advisors'
@@ -433,11 +528,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStudentsUserIdRouteImport
       parentRoute: typeof AuthenticatedStudentsRoute
     }
+    '/_authenticated/student/universities': {
+      id: '/_authenticated/student/universities'
+      path: '/student/universities'
+      fullPath: '/student/universities'
+      preLoaderRoute: typeof AuthenticatedStudentUniversitiesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/student/sessions': {
       id: '/_authenticated/student/sessions'
       path: '/student/sessions'
       fullPath: '/student/sessions'
       preLoaderRoute: typeof AuthenticatedStudentSessionsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/student/profile': {
+      id: '/_authenticated/student/profile'
+      path: '/student/profile'
+      fullPath: '/student/profile'
+      preLoaderRoute: typeof AuthenticatedStudentProfileRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/student/dashboard': {
@@ -482,6 +591,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdvisorsUserIdRouteImport
       parentRoute: typeof AuthenticatedAdvisorsRoute
     }
+    '/_authenticated/student/universities/': {
+      id: '/_authenticated/student/universities/'
+      path: '/'
+      fullPath: '/student/universities/'
+      preLoaderRoute: typeof AuthenticatedStudentUniversitiesIndexRouteImport
+      parentRoute: typeof AuthenticatedStudentUniversitiesRoute
+    }
+    '/_authenticated/student/universities/shortlist': {
+      id: '/_authenticated/student/universities/shortlist'
+      path: '/shortlist'
+      fullPath: '/student/universities/shortlist'
+      preLoaderRoute: typeof AuthenticatedStudentUniversitiesShortlistRouteImport
+      parentRoute: typeof AuthenticatedStudentUniversitiesRoute
+    }
+    '/_authenticated/student/universities/explorer': {
+      id: '/_authenticated/student/universities/explorer'
+      path: '/explorer'
+      fullPath: '/student/universities/explorer'
+      preLoaderRoute: typeof AuthenticatedStudentUniversitiesExplorerRouteImport
+      parentRoute: typeof AuthenticatedStudentUniversitiesRoute
+    }
     '/_authenticated/student/sessions/$sessionId': {
       id: '/_authenticated/student/sessions/$sessionId'
       path: '/$sessionId'
@@ -495,6 +625,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/sessions/user/$sessionId'
       preLoaderRoute: typeof AuthenticatedSessionsUserSessionIdRouteImport
       parentRoute: typeof AuthenticatedSessionsRoute
+    }
+    '/_authenticated/student/universities/$country/$id': {
+      id: '/_authenticated/student/universities/$country/$id'
+      path: '/$country/$id'
+      fullPath: '/student/universities/$country/$id'
+      preLoaderRoute: typeof AuthenticatedStudentUniversitiesCountryIdRouteImport
+      parentRoute: typeof AuthenticatedStudentUniversitiesRoute
     }
   }
 }
@@ -591,8 +728,33 @@ const AuthenticatedStudentSessionsRouteWithChildren =
     AuthenticatedStudentSessionsRouteChildren,
   )
 
+interface AuthenticatedStudentUniversitiesRouteChildren {
+  AuthenticatedStudentUniversitiesExplorerRoute: typeof AuthenticatedStudentUniversitiesExplorerRoute
+  AuthenticatedStudentUniversitiesShortlistRoute: typeof AuthenticatedStudentUniversitiesShortlistRoute
+  AuthenticatedStudentUniversitiesIndexRoute: typeof AuthenticatedStudentUniversitiesIndexRoute
+  AuthenticatedStudentUniversitiesCountryIdRoute: typeof AuthenticatedStudentUniversitiesCountryIdRoute
+}
+
+const AuthenticatedStudentUniversitiesRouteChildren: AuthenticatedStudentUniversitiesRouteChildren =
+  {
+    AuthenticatedStudentUniversitiesExplorerRoute:
+      AuthenticatedStudentUniversitiesExplorerRoute,
+    AuthenticatedStudentUniversitiesShortlistRoute:
+      AuthenticatedStudentUniversitiesShortlistRoute,
+    AuthenticatedStudentUniversitiesIndexRoute:
+      AuthenticatedStudentUniversitiesIndexRoute,
+    AuthenticatedStudentUniversitiesCountryIdRoute:
+      AuthenticatedStudentUniversitiesCountryIdRoute,
+  }
+
+const AuthenticatedStudentUniversitiesRouteWithChildren =
+  AuthenticatedStudentUniversitiesRoute._addFileChildren(
+    AuthenticatedStudentUniversitiesRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
   AuthenticatedAdvisorsRoute: typeof AuthenticatedAdvisorsRouteWithChildren
+  AuthenticatedExploreRoute: typeof AuthenticatedExploreRoute
   AuthenticatedGuruRoute: typeof AuthenticatedGuruRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedSessionsRoute: typeof AuthenticatedSessionsRouteWithChildren
@@ -601,13 +763,16 @@ interface AuthenticatedRouteChildren {
   AuthenticatedEssaysEssayIdRoute: typeof AuthenticatedEssaysEssayIdRoute
   AuthenticatedStudentUserIdRoute: typeof AuthenticatedStudentUserIdRoute
   AuthenticatedStudentDashboardRoute: typeof AuthenticatedStudentDashboardRoute
+  AuthenticatedStudentProfileRoute: typeof AuthenticatedStudentProfileRoute
   AuthenticatedStudentSessionsRoute: typeof AuthenticatedStudentSessionsRouteWithChildren
+  AuthenticatedStudentUniversitiesRoute: typeof AuthenticatedStudentUniversitiesRouteWithChildren
   AuthenticatedEssaysIndexRoute: typeof AuthenticatedEssaysIndexRoute
   AuthenticatedScheduleIndexRoute: typeof AuthenticatedScheduleIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdvisorsRoute: AuthenticatedAdvisorsRouteWithChildren,
+  AuthenticatedExploreRoute: AuthenticatedExploreRoute,
   AuthenticatedGuruRoute: AuthenticatedGuruRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedSessionsRoute: AuthenticatedSessionsRouteWithChildren,
@@ -616,8 +781,11 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedEssaysEssayIdRoute: AuthenticatedEssaysEssayIdRoute,
   AuthenticatedStudentUserIdRoute: AuthenticatedStudentUserIdRoute,
   AuthenticatedStudentDashboardRoute: AuthenticatedStudentDashboardRoute,
+  AuthenticatedStudentProfileRoute: AuthenticatedStudentProfileRoute,
   AuthenticatedStudentSessionsRoute:
     AuthenticatedStudentSessionsRouteWithChildren,
+  AuthenticatedStudentUniversitiesRoute:
+    AuthenticatedStudentUniversitiesRouteWithChildren,
   AuthenticatedEssaysIndexRoute: AuthenticatedEssaysIndexRoute,
   AuthenticatedScheduleIndexRoute: AuthenticatedScheduleIndexRoute,
 }

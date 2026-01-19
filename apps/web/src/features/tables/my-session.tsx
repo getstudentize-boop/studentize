@@ -9,7 +9,7 @@ import { useTableHeight } from "@/hooks/use-table-height";
 import { useNavigate } from "@tanstack/react-router";
 
 type Session = {
-  sessionId: string;
+  id: string;
   title: string;
   createdAt: Date | null;
 };
@@ -58,11 +58,11 @@ export const MySessionTable = ({
             table={table}
             isLoading={isLoading}
             isError={isError}
-            isRowSelected={(row) => row.original.sessionId === currentSessionId}
+            isRowSelected={(row) => row.original.id === currentSessionId}
             onRowClick={(row) => {
               navigate({
                 to: "/student/sessions/$sessionId",
-                params: { sessionId: row.original.sessionId },
+                params: { sessionId: row.original.id },
                 search: {},
               });
             }}
