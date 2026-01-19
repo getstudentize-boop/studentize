@@ -69,23 +69,10 @@ function CollegesPage() {
   const totalCount = collegesQuery.data?.total || 0;
 
   return (
-    <div className="flex flex-1 h-screen text-left bg-zinc-50 overflow-hidden">
-      <div className="flex-1 flex flex-col overflow-auto">
-        {/* Header */}
-        <div className="px-8 pt-12 pb-8 bg-white border-b border-zinc-200">
-          <div className="max-w-6xl mx-auto">
-            <h1 className="text-3xl font-semibold text-zinc-900 tracking-tight">
-              University Explorer
-            </h1>
-            <p className="text-zinc-500 mt-2">
-              Discover and research top US universities
-            </p>
-          </div>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="px-8 py-6 bg-white border-b border-zinc-200">
-          <div className="max-w-6xl mx-auto">
+    <div className="flex-1 flex flex-col bg-zinc-50">
+      {/* Search and Filters */}
+      <div className="px-6 py-4 bg-white border-b border-zinc-200">
+        <div className="max-w-6xl mx-auto">
             <div className="flex gap-3">
               <div className="flex-1 relative">
                 <MagnifyingGlass
@@ -227,9 +214,9 @@ function CollegesPage() {
           </div>
         </div>
 
-        {/* Results */}
-        <div className="flex-1 px-8 py-8 overflow-auto">
-          <div className="max-w-6xl mx-auto">
+      {/* Results */}
+      <div className="flex-1 px-6 py-6 overflow-auto">
+        <div className="max-w-6xl mx-auto">
             {isLoading ? (
               <div className="flex flex-col items-center justify-center h-80">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-400 mb-4"></div>
@@ -265,7 +252,6 @@ function CollegesPage() {
                 </div>
               </>
             )}
-          </div>
         </div>
       </div>
 
