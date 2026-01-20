@@ -214,7 +214,9 @@ function App() {
     }
 
     if (isNewChat) {
-      searchStudentMutation.mutate({ query: "" });
+      if (user.type !== "STUDENT") {
+        searchStudentMutation.mutate({ query: "" });
+      }
       chat.setMessages([]);
     }
   }, [chatId, isNewChat]);
@@ -225,7 +227,7 @@ function App() {
 
   return (
     <div className="flex flex-1 h-screen overflow-hidden">
-      <ChatHistory studentUserId={userId} />
+      <ChatHistory studentUserId={userId} userType={user.type} />
       <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
         <div className="justify-between items-center flex px-6 py-4 border-b border-zinc-200 bg-white flex-shrink-0">
           <div className="flex gap-2 items-center text-sm font-medium text-zinc-900">
