@@ -1,19 +1,25 @@
 import z from "zod";
 import { createRouteHelper } from "../../utils/middleware";
-import { getAdvisorChatHistory } from "@student/db";
+import { getAdvisorChatHistory, getStudentChatHistory } from "@student/db";
 
 export const AdvisorChatHistoryInputSchema = z.object({
-  studentUserId: z.string(),
+  studentUserId: z.string().optional(),
 });
 
 export const advisorChatHistoryRoute = createRouteHelper({
   inputSchema: AdvisorChatHistoryInputSchema,
   execute: async ({ input, ctx }) => {
-    const advisorUserId = ctx.user.id;
+    if (ctx.user.type === "STUDENT") {
+      const chats = await getStudentChatHistory({
+        studentUserId: ctx.user.id,
+      });
+
+      return chats;
+    }
 
     const chats = await getAdvisorChatHistory({
-      advisorUserId,
-      studentUserId: input.studentUserId,
+      advisorUserId: ctx.user.id,
+      studentUserId: input.studentUserId!,
     });
 
     return chats;

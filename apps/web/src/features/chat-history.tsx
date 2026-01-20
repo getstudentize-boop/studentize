@@ -25,7 +25,13 @@ const ChatLoader = () => {
   );
 };
 
-const ChatList = ({ studentUserId }: { studentUserId: string }) => {
+const ChatList = ({
+  studentUserId,
+  isStudent,
+}: {
+  studentUserId: string;
+  isStudent: boolean;
+}) => {
   const chatsQuery = useQuery(
     orpc.advisor.chatHistory.queryOptions({ input: { studentUserId } })
   );
@@ -36,17 +42,19 @@ const ChatList = ({ studentUserId }: { studentUserId: string }) => {
 
   return (
     <>
-      <div className="-translate-y-1">
-        <Link
-          to="/guru"
-          search={{ userId: undefined }}
-          className="flex gap-2 items-center"
-        >
-          <ArrowLeftIcon />
-          <span className="text-zinc-500">Select a student</span>
-        </Link>
-        <hr className="mb-0 mt-3 border-zinc-200" />
-      </div>
+      {!isStudent ? (
+        <div className="-translate-y-1">
+          <Link
+            to="/guru"
+            search={{ userId: undefined }}
+            className="flex gap-2 items-center"
+          >
+            <ArrowLeftIcon />
+            <span className="text-zinc-500">Select a student</span>
+          </Link>
+          <hr className="mb-0 mt-3 border-zinc-200" />
+        </div>
+      ) : null}
       {chatsQuery.isPending ? (
         <div className="mt-2">
           <ChatLoader />
@@ -80,9 +88,12 @@ const ChatList = ({ studentUserId }: { studentUserId: string }) => {
             <>
               {title ? (
                 <div
-                  className={cn("text-zinc-400 mb-2.5 text-xs font-medium uppercase tracking-wide", {
-                    "mt-3": title !== "Today",
-                  })}
+                  className={cn(
+                    "text-zinc-400 mb-2.5 text-xs font-medium uppercase tracking-wide",
+                    {
+                      "mt-3": title !== "Today",
+                    }
+                  )}
                 >
                   {title}
                 </div>
@@ -90,11 +101,15 @@ const ChatList = ({ studentUserId }: { studentUserId: string }) => {
               <Link
                 to="/guru"
                 search={{ chatId: c.id, userId: c.studentUserId }}
-                className={cn("mb-2.5 block px-2 py-1.5 rounded-lg text-sm transition-all duration-150", {
-                  "font-semibold text-zinc-900 bg-[#BCFAF9]/30":
-                    c.id === searchParams.chatId,
-                  "text-zinc-700 hover:bg-zinc-50": c.id !== searchParams.chatId,
-                })}
+                className={cn(
+                  "mb-2.5 block px-2 py-1.5 rounded-lg text-sm transition-all duration-150",
+                  {
+                    "font-semibold text-zinc-900 bg-[#BCFAF9]/30":
+                      c.id === searchParams.chatId,
+                    "text-zinc-700 hover:bg-zinc-50":
+                      c.id !== searchParams.chatId,
+                  }
+                )}
               >
                 <div className="truncate">{c.title}</div>
               </Link>
@@ -143,7 +158,15 @@ export const StudentList = () => {
   );
 };
 
-export const ChatHistory = ({ studentUserId }: { studentUserId?: string }) => {
+export const ChatHistory = ({
+  studentUserId,
+  userType,
+}: {
+  studentUserId?: string;
+  userType: "ADMIN" | "ADVISOR" | "STUDENT";
+}) => {
+  const isStudent = userType === "STUDENT";
+
   return (
     <div className="border-r border-zinc-200 w-72 flex flex-col px-4 py-5 text-left bg-white flex-shrink-0 h-full overflow-hidden">
       <div className="flex justify-between items-center mb-3">
@@ -160,8 +183,8 @@ export const ChatHistory = ({ studentUserId }: { studentUserId?: string }) => {
 
       <hr className="border-zinc-200 border-b border-t-0 my-4" />
 
-      {studentUserId ? (
-        <ChatList studentUserId={studentUserId} />
+      {studentUserId || userType === "STUDENT" ? (
+        <ChatList studentUserId={studentUserId ?? ""} isStudent={isStudent} />
       ) : (
         <StudentList />
       )}

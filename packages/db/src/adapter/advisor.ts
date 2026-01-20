@@ -176,6 +176,23 @@ export const getAdvisorChatHistory = async (input: {
   return chats;
 };
 
+export const getStudentChatHistory = async (input: {
+  studentUserId: string;
+}) => {
+  const chats = await db
+    .select({
+      id: schema.advisorChat.id,
+      title: schema.advisorChat.title,
+      createdAt: schema.advisorChat.createdAt,
+      studentUserId: schema.advisorChat.studentId,
+    })
+    .from(schema.advisorChat)
+    .where(eq(schema.advisorChat.userId, input.studentUserId))
+    .orderBy(desc(schema.advisorChat.createdAt));
+
+  return chats;
+};
+
 export const getAdvisorChatTitle = async (input: {
   chatId: string;
   userId?: string;
