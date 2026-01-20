@@ -94,18 +94,19 @@ function transformCollegeData(college: CollegeData) {
     studentSize: college["latest.student.size"],
     graduationRate: college["latest.completion.completion_rate_4yr_100nt"],
     postGradEarnings: college["latest.earnings.10_yrs_after_entry.median"],
-    retentionRate:
-      college["latest.student.retention_rate.four_year.full_time"],
+    retentionRate: college["latest.student.retention_rate.four_year.full_time"],
   };
 }
 
 export const searchScorecardHandler = async (input: SearchScorecardInput) => {
-  if (!API_KEY) {
+  const apiKey = process.env.COLLEGE_SCORECARD_API_KEY ?? "";
+
+  if (!apiKey) {
     throw new Error("COLLEGE_SCORECARD_API_KEY not configured");
   }
 
   const url = new URL(BASE_URL);
-  url.searchParams.set("api_key", API_KEY);
+  url.searchParams.set("api_key", apiKey);
   url.searchParams.set("fields", FIELDS);
   url.searchParams.set("per_page", "100");
 
@@ -113,7 +114,10 @@ export const searchScorecardHandler = async (input: SearchScorecardInput) => {
   url.searchParams.set("school.degrees_awarded.predominant", "3"); // Bachelor's degree
   url.searchParams.set("school.operating", "1"); // Currently operating
   url.searchParams.set("latest.student.size__range", "1000.."); // At least 1000 students
-  url.searchParams.set("latest.admissions.admission_rate.overall__range", "0..1"); // Must have admission rate
+  url.searchParams.set(
+    "latest.admissions.admission_rate.overall__range",
+    "0..1"
+  ); // Must have admission rate
 
   // Apply user filters
   if (input.state) {
@@ -227,7 +231,8 @@ export const searchScorecardHandler = async (input: SearchScorecardInput) => {
     filteredColleges = filteredColleges.filter((college) => {
       if (!college["school.locale"]) return false;
       return (
-        mapLocaleToCampusSetting(college["school.locale"]) === input.campusSetting
+        mapLocaleToCampusSetting(college["school.locale"]) ===
+        input.campusSetting
       );
     });
   }
