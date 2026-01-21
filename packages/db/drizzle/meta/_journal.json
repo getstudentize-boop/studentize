@@ -190,6 +190,20 @@
       "when": 1768498976854,
       "tag": "0026_aromatic_red_wolf",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1768936920835,
+      "tag": "0027_careless_fenris",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1768937567776,
+      "tag": "0028_medical_jetstream",
+      "breakpoints": true
     }
   ]
 }

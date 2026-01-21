@@ -150,7 +150,8 @@ export const getAdvisorsSessions = (input: {
         input.advisorUserId
           ? eq(schema.scheduledSession.advisorUserId, input.advisorUserId)
           : undefined,
-        ltOrGt(schema.scheduledSession.createdAt, input.today)
+        ltOrGt(schema.scheduledSession.scheduledAt, input.today),
+        isNull(schema.scheduledSession.deletedAt)
       )
     );
 };

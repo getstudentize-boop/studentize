@@ -6,3 +6,4 @@ export * from "./calendar";
 export * from "./college";
 export * from "./shortlist";
 export * from "./essay";
+export * from "./task";
