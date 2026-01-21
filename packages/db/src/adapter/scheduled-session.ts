@@ -34,7 +34,8 @@ export const getScheduledSessionList = async () => {
   return db.query.scheduledSession.findMany({
     where: and(
       isNull(schema.scheduledSession.doneAt),
-      isNull(schema.scheduledSession.deletedAt)
+      isNull(schema.scheduledSession.deletedAt),
+      isNull(schema.scheduledSession.supersededById)
     ),
     orderBy: desc(schema.scheduledSession.scheduledAt),
     columns: {
@@ -108,6 +109,16 @@ export const updateScheduledSessionBotId = async (input: {
   await db
     .update(schema.scheduledSession)
     .set({ botId: input.botId })
+    .where(eq(schema.scheduledSession.id, input.scheduledSessionId));
+};
+
+export const updateScheduledSessionSupersededById = async (input: {
+  scheduledSessionId: string;
+  supersededById: string;
+}) => {
+  await db
+    .update(schema.scheduledSession)
+    .set({ supersededById: input.supersededById })
     .where(eq(schema.scheduledSession.id, input.scheduledSessionId));
 };
 
