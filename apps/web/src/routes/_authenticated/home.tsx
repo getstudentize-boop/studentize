@@ -256,7 +256,7 @@ function RouteComponent() {
         />
       ) : (
         <div className="flex-1 space-y-4 flex flex-col">
-          <UpcomingOrPastSessions timePeriod="past" />
+          <UpcomingOrPastSessions timePeriod="upcoming" />
         </div>
       )}
     </div>
