@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { Input } from "@/components/input";
+import { Loader } from "@/components/loader";
 import { UserSearch } from "@/features/user-search";
 import { ArrowLeftIcon, SubtitlesIcon } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";

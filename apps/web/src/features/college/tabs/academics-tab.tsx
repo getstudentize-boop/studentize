@@ -12,7 +12,7 @@ function ImportanceBadge({ level }: { level: ImportanceLevel }) {
 
   return (
     <span
-      className={`px-3 py-1 text-xs font-medium rounded-md border ${styles[level]}`}
+      className={`px-3 py-1 text-xs font-medium rounded-md border whitespace-nowrap flex-shrink-0 ${styles[level]}`}
     >
       {level}
     </span>
@@ -27,8 +27,8 @@ function FactorCard({
   importance: ImportanceLevel;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 p-4 border border-zinc-200 rounded-lg bg-white">
-      <span className="text-sm text-zinc-700">{label}</span>
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-4 border border-zinc-200 rounded-lg bg-white min-w-0">
+      <span className="text-sm text-zinc-700 break-words">{label}</span>
       <ImportanceBadge level={importance} />
     </div>
   );
