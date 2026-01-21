@@ -6,3 +6,4 @@ export * from "./scheduled-session";
 export * from "./college";
 export * from "./shortlist";
 export * from "./essay";
+export * from "./task";
