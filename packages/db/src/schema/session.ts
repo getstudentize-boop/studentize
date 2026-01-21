@@ -25,4 +25,7 @@ export const scheduledSession = pgTable("scheduled_session", {
   title: text("title").notNull(),
   googleEventId: text("google_event_id"),
   createdSessionId: text("created_session_id"),
+  // When a bot is re-sent to a meeting that already has a botId,
+  // a new scheduled session is created and this field points to it
+  supersededById: text("superseded_by_id"),
 });

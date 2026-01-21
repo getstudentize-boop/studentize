@@ -6,7 +6,6 @@ import {
 } from "@student/db";
 import { createAdminRouteHelper } from "../../utils/middleware";
 import z from "zod";
-import { ORPCError } from "@orpc/server";
 import { MeetingBotService } from "../../services/meeting-bot";
 import {
   createTemporaryTranscriptionObjectKey,
@@ -31,10 +30,13 @@ export const saveScheduledSession = createAdminRouteHelper({
       botId: input.botId,
     });
 
+    // If no scheduled session is found for this botId, it may have been
+    // incorrectly attached by Recall. Just return without processing.
     if (!scheduledSession) {
-      throw new ORPCError("NOT_FOUND", {
-        message: "Scheduled session not found",
-      });
+      console.error(
+        `No scheduled session found for botId: ${input.botId}. Skipping.`
+      );
+      return { skipped: true };
     }
 
     const meetingBotService = new MeetingBotService();
