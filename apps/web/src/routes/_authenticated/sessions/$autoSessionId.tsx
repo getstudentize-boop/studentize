@@ -1,20 +1,16 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { Input } from "@/components/input";
 import { UserSearch } from "@/features/user-search";
-import { ArrowLeftIcon, SubtitlesIcon, XIcon } from "@phosphor-icons/react";
+import { ArrowLeftIcon, SubtitlesIcon } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import { useForm } from "@tanstack/react-form";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { convertStringToFile, uploadFileToStorage } from "@/utils/s3";
 import { Button } from "@/components/button";
 
 import { useAuthUser } from "@/routes/_authenticated";
-import { Switch } from "@/components/switch";
-import { useSessionSummary } from "@/hooks/use-session";
-import { Loader } from "@/components/loader";
 
 export const Route = createFileRoute("/_authenticated/sessions/$autoSessionId")(
   {
@@ -26,7 +22,7 @@ type StudentOrAdvisor = { userId: string; name: string };
 
 function RouteComponent() {
   const currentUser = useAuthUser();
-
+  const navigate = Route.useNavigate();
   const { autoSessionId } = Route.useParams();
 
   const autoSyncSessionQuery = useQuery(
@@ -43,8 +39,8 @@ function RouteComponent() {
 
   const uploadTranscriptionMutation = useMutation(
     orpc.session.createAutoSync.mutationOptions({
-      onSuccess: () => {
-        return Promise.all([
+      onSuccess: async () => {
+        await Promise.all([
           utils.invalidateQueries({
             queryKey: orpc.session.list.queryKey({
               input: { studentUserId: student?.userId },
@@ -56,6 +52,8 @@ function RouteComponent() {
             }),
           }),
         ]);
+
+        navigate({ to: "/sessions" });
       },
     })
   );
