@@ -310,9 +310,9 @@ function App() {
                         "What deadlines should I be aware of?",
                       ]
                     : [
-                        `Where is ${userDisplay.name?.split(" ")[0]} in the application process?`,
-                        "What should we prioritize in our next session?",
-                        "What deadlines should we be aware of?",
+                    `Where is ${userDisplay.name?.split(" ")[0]} in the application process?`,
+                    "What should we prioritize in our next session?",
+                    "What deadlines should we be aware of?",
                       ]
                   ).map((text) => (
                     <div key={text}>
