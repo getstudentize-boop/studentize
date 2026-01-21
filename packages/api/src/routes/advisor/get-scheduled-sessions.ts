@@ -2,11 +2,12 @@ import { getAdvisorsSessions } from "@student/db";
 import { createRouteHelper } from "../../utils/middleware";
 import z from "zod";
 import {
+  addDays,
   addWeeks,
-  endOfWeek,
-  isWithinInterval,
-  startOfWeek,
   isTomorrow,
+  isToday,
+  isBefore,
+  startOfDay,
 } from "date-fns";
 
 export const GetScheduledSessionsInputSchema = z.object({
@@ -21,26 +22,36 @@ export const getScheduledSessionsRoute = createRouteHelper({
     const scheduledSessions = await getAdvisorsSessions({
       advisorUserId: ctx.user.type === "ADMIN" ? undefined : userId,
       timePeriod: input.timePeriod,
-      today: new Date(),
+      today: startOfDay(new Date()),
+    });
+
+    const scheduledSessionsToday = scheduledSessions.filter((session) => {
+      return isToday(session.scheduledAt);
     });
 
     const scheduledSessionsTomorrow = scheduledSessions.filter((session) => {
       return isTomorrow(session.scheduledAt);
     });
 
+    // Sessions that are after tomorrow but within the next 2 weeks
+    const dayAfterTomorrow = startOfDay(addDays(new Date(), 2));
+    const twoWeeksFromNow = startOfDay(addWeeks(new Date(), 2));
+
     const scheduledSessionsInNext2Weeks = scheduledSessions.filter(
       (session) => {
+        const sessionDate = new Date(session.scheduledAt);
+        // Not today, not tomorrow, and within the next 2 weeks
         return (
-          !isTomorrow(session.scheduledAt) &&
-          isWithinInterval(session.scheduledAt, {
-            start: startOfWeek(new Date()),
-            end: endOfWeek(addWeeks(new Date(), 2)),
-          })
+          !isToday(sessionDate) &&
+          !isTomorrow(sessionDate) &&
+          !isBefore(sessionDate, dayAfterTomorrow) &&
+          isBefore(sessionDate, twoWeeksFromNow)
         );
       }
     );
 
     return {
+      today: scheduledSessionsToday,
       tomorrow: scheduledSessionsTomorrow,
       inNext2Weeks: scheduledSessionsInNext2Weeks,
     };
