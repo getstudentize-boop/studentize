@@ -10,7 +10,10 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "fetch:scorecard": "tsx scripts/fetch-college-scorecard.ts",
-    "import:colleges": "tsx scripts/import-colleges.ts"
+    "import:colleges": "tsx scripts/import-colleges.ts",
+    "import:uk-colleges": "tsx scripts/import-uk-colleges.ts",
+    "export:uk-colleges-json": "tsx scripts/export-uk-colleges-json.ts",
+    "export:us-colleges-json": "tsx scripts/export-us-colleges-json.ts"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.8",
@@ -20,6 +23,7 @@
   },
   "dependencies": {
     "@paralleldrive/cuid2": "^2.2.2",
+    "csv-parse": "^5.5.6",
     "dotenv": "^16.5.0",
     "drizzle-orm": "0.44.4",
     "pg": "^8.16.3",
