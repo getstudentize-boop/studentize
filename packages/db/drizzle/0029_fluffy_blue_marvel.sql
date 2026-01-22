@@ -1,0 +1,1 @@
+ALTER TABLE "scheduled_session" ADD COLUMN "superseded_by_id" text;

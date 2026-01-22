@@ -1,0 +1,1481 @@
+{
+  "id": "b9985029-cb9a-49d3-89b7-4fb339e22403",
+  "prevId": "3bd3d3fa-cd81-47ab-86b2-4cead9f566dc",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.advisor": {
+      "name": "advisor",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "university_name": {
+          "name": "university_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "course_major": {
+          "name": "course_major",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "course_minor": {
+          "name": "course_minor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.advisor_chat": {
+      "name": "advisor_chat",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "student_id": {
+          "name": "student_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.advisor_chat_message": {
+      "name": "advisor_chat_message",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chat_id": {
+          "name": "chat_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.advisor_chat_message_tool": {
+      "name": "advisor_chat_message_tool",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "message_id": {
+          "name": "message_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tool_call_id": {
+          "name": "tool_call_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tool_name": {
+          "name": "tool_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "input": {
+          "name": "input",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "output": {
+          "name": "output",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.advisor_student_access": {
+      "name": "advisor_student_access",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "advisor_user_id": {
+          "name": "advisor_user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "student_user_id": {
+          "name": "student_user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.student": {
+      "name": "student",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "location": {
+          "name": "location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "session_overview": {
+          "name": "session_overview",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "study_curriculum": {
+          "name": "study_curriculum",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expected_graduation_year": {
+          "name": "expected_graduation_year",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "target_countries": {
+          "name": "target_countries",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'::jsonb"
+        },
+        "areas_of_interest": {
+          "name": "areas_of_interest",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'::jsonb"
+        },
+        "status": {
+          "name": "status",
+          "type": "status_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'ACTIVE'"
+        },
+        "extracurricular": {
+          "name": "extracurricular",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'::jsonb"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.scheduled_session": {
+      "name": "scheduled_session",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "done_at": {
+          "name": "done_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scheduled_at": {
+          "name": "scheduled_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "advisor_user_id": {
+          "name": "advisor_user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "student_user_id": {
+          "name": "student_user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "meeting_code": {
+          "name": "meeting_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bot_id": {
+          "name": "bot_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "google_event_id": {
+          "name": "google_event_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_session_id": {
+          "name": "created_session_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "superseded_by_id": {
+          "name": "superseded_by_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.session": {
+      "name": "session",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "student_user_id": {
+          "name": "student_user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "advisor_user_id": {
+          "name": "advisor_user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user": {
+      "name": "user",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "user_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'STUDENT'"
+        },
+        "status": {
+          "name": "status",
+          "type": "user_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'PENDING'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "user_email_unique": {
+          "name": "user_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.calendar": {
+      "name": "calendar",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "calendar_id": {
+          "name": "calendar_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.uk_colleges_rows": {
+      "name": "uk_colleges_rows",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "University Name": {
+          "name": "University Name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "Location": {
+          "name": "Location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Tuition Fees": {
+          "name": "Tuition Fees",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Exams Accepted": {
+          "name": "Exams Accepted",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Scholarships": {
+          "name": "Scholarships",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "image_url": {
+          "name": "image_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "international_email": {
+          "name": "international_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "year_of_establishment": {
+          "name": "year_of_establishment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "total_foreign_students": {
+          "name": "total_foreign_students",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "number_of_campuses": {
+          "name": "number_of_campuses",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "on_campus_accommodation": {
+          "name": "on_campus_accommodation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "off_campus_accommodation": {
+          "name": "off_campus_accommodation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Size_of_City": {
+          "name": "Size_of_City",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Academic_Requirements": {
+          "name": "Academic_Requirements",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "student_composition": {
+          "name": "student_composition",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "historic_ranking": {
+          "name": "historic_ranking",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "About": {
+          "name": "About",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "website": {
+          "name": "website",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "student_life_info": {
+          "name": "student_life_info",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "Population_of_City": {
+          "name": "Population_of_City",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "uk_college_name_idx": {
+          "name": "uk_college_name_idx",
+          "columns": [
+            {
+              "expression": "University Name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "uk_college_location_idx": {
+          "name": "uk_college_location_idx",
+          "columns": [
+            {
+              "expression": "Location",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.us_colleges_rows": {
+      "name": "us_colleges_rows",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "school_name": {
+          "name": "school_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "school_city": {
+          "name": "school_city",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "school_state": {
+          "name": "school_state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "latest_admissions_admission_rate_overall": {
+          "name": "latest_admissions_admission_rate_overall",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "latest_cost_tuition_out_of_state": {
+          "name": "latest_cost_tuition_out_of_state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "latest_admissions_sat_scores_average_overall": {
+          "name": "latest_admissions_sat_scores_average_overall",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "latest_student_size": {
+          "name": "latest_student_size",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "image_url": {
+          "name": "image_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "international_email": {
+          "name": "international_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "year_of_establishment": {
+          "name": "year_of_establishment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "total_foreign_students": {
+          "name": "total_foreign_students",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "no_of_campus": {
+          "name": "no_of_campus",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "overall_graduation_rate": {
+          "name": "overall_graduation_rate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ug_race_json": {
+          "name": "ug_race_json",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ug_student_residence_json": {
+          "name": "ug_student_residence_json",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ug_age_distribution_json": {
+          "name": "ug_age_distribution_json",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "graduation_rate": {
+          "name": "graduation_rate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "post_grad_earnings": {
+          "name": "post_grad_earnings",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "median_family_income": {
+          "name": "median_family_income",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "retention_rate": {
+          "name": "retention_rate",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "share_first_generation": {
+          "name": "share_first_generation",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "plus_loan_debt_median": {
+          "name": "plus_loan_debt_median",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pell_grant_rate": {
+          "name": "pell_grant_rate",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "federal_loan_rate": {
+          "name": "federal_loan_rate",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "avg_family_income": {
+          "name": "avg_family_income",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "act_score_midpoint": {
+          "name": "act_score_midpoint",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "total_enrollment": {
+          "name": "total_enrollment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "undergraduate_enrollment": {
+          "name": "undergraduate_enrollment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "graduate_enrollment": {
+          "name": "graduate_enrollment",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "female_share": {
+          "name": "female_share",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "male_share": {
+          "name": "male_share",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "median_debt": {
+          "name": "median_debt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "website": {
+          "name": "website",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "virtual_tour": {
+          "name": "virtual_tour",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "campus_setting": {
+          "name": "campus_setting",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "services_data": {
+          "name": "services_data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "admissions_factors": {
+          "name": "admissions_factors",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "application_deadlines": {
+          "name": "application_deadlines",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "application_requirements": {
+          "name": "application_requirements",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "alias": {
+          "name": "alias",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "about_section": {
+          "name": "about_section",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "essay_prompts": {
+          "name": "essay_prompts",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "math_sat_range": {
+          "name": "math_sat_range",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reading_sat_range": {
+          "name": "reading_sat_range",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sat_acceptance_chances": {
+          "name": "sat_acceptance_chances",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "greek_life": {
+          "name": "greek_life",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "environment": {
+          "name": "environment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "political_and_social_climate": {
+          "name": "political_and_social_climate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cost_of_living": {
+          "name": "cost_of_living",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "safety_and_crime": {
+          "name": "safety_and_crime",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "health_and_wellbeing": {
+          "name": "health_and_wellbeing",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gym_and_health": {
+          "name": "gym_and_health",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "us_news_national_ranking": {
+          "name": "us_news_national_ranking",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "us_college_name_idx": {
+          "name": "us_college_name_idx",
+          "columns": [
+            {
+              "expression": "school_name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "us_college_state_idx": {
+          "name": "us_college_state_idx",
+          "columns": [
+            {
+              "expression": "school_state",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "us_college_city_idx": {
+          "name": "us_college_city_idx",
+          "columns": [
+            {
+              "expression": "school_city",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.university_shortlist": {
+      "name": "university_shortlist",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "student_user_id": {
+          "name": "student_user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "college_id": {
+          "name": "college_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "country": {
+          "name": "country",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "shortlist_category",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source": {
+          "name": "source",
+          "type": "shortlist_source",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'manual'"
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.essay": {
+      "name": "essay",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "student_user_id": {
+          "name": "student_user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "prompt": {
+          "name": "prompt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content": {
+          "name": "content",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.student_task": {
+      "name": "student_task",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "student_user_id": {
+          "name": "student_user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assigned_by_user_id": {
+          "name": "assigned_by_user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "due_date": {
+          "name": "due_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "task_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "priority": {
+          "name": "priority",
+          "type": "task_priority",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'medium'"
+        },
+        "category": {
+          "name": "category",
+          "type": "task_category",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "custom_category": {
+          "name": "custom_category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "student_task_student_user_id_idx": {
+          "name": "student_task_student_user_id_idx",
+          "columns": [
+            {
+              "expression": "student_user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.status_type": {
+      "name": "status_type",
+      "schema": "public",
+      "values": [
+        "ACTIVE",
+        "INACTIVE"
+      ]
+    },
+    "public.user_status": {
+      "name": "user_status",
+      "schema": "public",
+      "values": [
+        "ACTIVE",
+        "INACTIVE",
+        "PENDING"
+      ]
+    },
+    "public.user_type": {
+      "name": "user_type",
+      "schema": "public",
+      "values": [
+        "ADMIN",
+        "ADVISOR",
+        "STUDENT"
+      ]
+    },
+    "public.shortlist_category": {
+      "name": "shortlist_category",
+      "schema": "public",
+      "values": [
+        "reach",
+        "target",
+        "safety"
+      ]
+    },
+    "public.shortlist_source": {
+      "name": "shortlist_source",
+      "schema": "public",
+      "values": [
+        "ai",
+        "manual"
+      ]
+    },
+    "public.task_category": {
+      "name": "task_category",
+      "schema": "public",
+      "values": [
+        "profile_building",
+        "essay_writing",
+        "university_research",
+        "exams",
+        "sat_act",
+        "other"
+      ]
+    },
+    "public.task_priority": {
+      "name": "task_priority",
+      "schema": "public",
+      "values": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "public.task_status": {
+      "name": "task_status",
+      "schema": "public",
+      "values": [
+        "pending",
+        "in_progress",
+        "completed"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
