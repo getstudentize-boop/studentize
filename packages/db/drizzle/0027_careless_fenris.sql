@@ -1,6 +1,7 @@
-CREATE TYPE "public"."task_category" AS ENUM('profile_building', 'essay_writing', 'university_research', 'exams', 'sat_act', 'other');--> statement-breakpoint
-CREATE TYPE "public"."task_priority" AS ENUM('low', 'medium', 'high');--> statement-breakpoint
-CREATE TYPE "public"."task_status" AS ENUM('pending', 'in_progress', 'completed');--> statement-breakpoint
+DO $$ BEGIN CREATE TYPE "public"."task_category" AS ENUM('profile_building', 'essay_writing', 'university_research', 'exams', 'sat_act', 'other'); EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
+DO $$ BEGIN CREATE TYPE "public"."task_priority" AS ENUM('low', 'medium', 'high'); EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
+DO $$ BEGIN CREATE TYPE "public"."task_status" AS ENUM('pending', 'in_progress', 'completed'); EXCEPTION WHEN duplicate_object THEN null; END $$;--> statement-breakpoint
+DO $$ BEGIN
 CREATE TABLE "student_task" (
 	"id" text PRIMARY KEY NOT NULL,
 	"created_at" timestamp DEFAULT now(),
@@ -16,3 +17,5 @@ CREATE TABLE "student_task" (
 	"custom_category" text,
 	"completed_at" timestamp
 );
+EXCEPTION WHEN duplicate_table THEN null;
+END $$;
