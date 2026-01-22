@@ -48,6 +48,11 @@ function RouteComponent() {
             }),
           }),
           utils.invalidateQueries({
+            queryKey: orpc.session.list.queryKey({
+              input: {},
+            }),
+          }),
+          utils.invalidateQueries({
             queryKey: orpc.session.listAutoSync.queryKey({
               input: {},
             }),
