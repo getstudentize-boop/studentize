@@ -9,7 +9,6 @@ import {
   ArrowRightIcon,
   PencilIcon,
   ChartLineIcon,
-  LockIcon,
   HeadsetIcon,
   ClockIcon,
   UserIcon,
@@ -527,21 +526,24 @@ function RouteComponent() {
                 </p>
               </Link>
 
-              {/* Aptitude Test - Coming Soon */}
-              <div className="bg-zinc-50 rounded-xl border border-zinc-200 p-5 opacity-60 cursor-not-allowed">
+              {/* Aptitude Test */}
+              <Link
+                to="/student/aptitude"
+                className="bg-white rounded-xl border border-zinc-200 p-5 hover:border-zinc-300 hover:shadow-sm transition-all group"
+              >
                 <div className="flex items-center justify-between mb-3">
-                  <div className="p-2 bg-zinc-100 rounded-lg">
-                    <ChartLineIcon className="size-5 text-zinc-400" weight="duotone" />
+                  <div className="p-2 bg-amber-50 rounded-lg">
+                    <ChartLineIcon className="size-5 text-amber-600" weight="duotone" />
                   </div>
-                  <LockIcon className="size-4 text-zinc-400" />
+                  <ArrowRightIcon className="size-4 text-zinc-400 group-hover:translate-x-1 transition-transform" />
                 </div>
-                <h3 className="font-semibold text-zinc-500 mb-1">
+                <h3 className="font-semibold text-zinc-900 mb-1">
                   Aptitude Test
                 </h3>
-                <p className="text-zinc-500 text-sm">
-                  Coming soon
+                <p className="text-zinc-600 text-sm">
+                  Discover your career path
                 </p>
-              </div>
+              </Link>
             </div>
           </div>
         </div>

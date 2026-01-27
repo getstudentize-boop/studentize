@@ -2,6 +2,7 @@ import { cn } from "@/utils/cn";
 import {
   BrainIcon,
   ChalkboardTeacherIcon,
+  ChartLineIcon,
   CircleNotchIcon,
   HeadsetIcon,
   HouseIcon,
@@ -61,6 +62,12 @@ export const Header = ({
           icon: <HeadsetIcon className="size-4" />,
           label: "Sessions",
           isActive: route({ to: "/student/sessions" }) || route({ to: "/student/sessions/$sessionId" }),
+        },
+        {
+          to: "/student/aptitude",
+          icon: <ChartLineIcon className="size-4" />,
+          label: "Aptitude",
+          isActive: route({ to: "/student/aptitude" }) || route({ to: "/student/aptitude/$sessionId" }),
         },
         {
           to: "/guru",

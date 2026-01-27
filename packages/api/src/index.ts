@@ -17,6 +17,7 @@ import { college } from "./routes/college";
 import { shortlist } from "./routes/shortlist";
 import { essay } from "./routes/essay";
 import { task } from "./routes/task";
+import { aptitude } from "./routes/aptitude";
 
 import {
   advisorCreateHandler,
@@ -64,6 +65,7 @@ export const router = {
   college,
   shortlist,
   task,
+  aptitude,
   advisor: {
     ...advisor,
     create: advisorCreateHandler,
