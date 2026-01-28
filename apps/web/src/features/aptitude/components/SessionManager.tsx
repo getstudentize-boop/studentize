@@ -102,7 +102,7 @@ export function SessionManager({
                 {getStatusIcon(session.status)}
                 <div>
                   <p className="font-medium text-zinc-900">
-                    Aptitude Test #{sessions.indexOf(session) + 1}
+                    Aptitude Test #{sessions.length - sessions.indexOf(session)}
                   </p>
                   <p className="text-sm text-zinc-500">
                     Started {formatDate(session.createdAt)}
