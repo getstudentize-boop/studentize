@@ -80,6 +80,7 @@ export const getSessions = async (data: { studentUserId?: string } = {}) => {
       sessionId: schema.session.id,
       title: schema.session.title,
       createdAt: schema.session.createdAt,
+      advisorUserId: schema.session.advisorUserId,
       student: {
         name: studentUser.name,
       },
@@ -88,8 +89,8 @@ export const getSessions = async (data: { studentUserId?: string } = {}) => {
       },
     })
     .from(schema.session)
-    .innerJoin(studentUser, eq(schema.session.studentUserId, studentUser.id))
-    .innerJoin(advisorUser, eq(schema.session.advisorUserId, advisorUser.id))
+    .leftJoin(studentUser, eq(schema.session.studentUserId, studentUser.id))
+    .leftJoin(advisorUser, eq(schema.session.advisorUserId, advisorUser.id))
     .orderBy(desc(schema.session.createdAt))
     .where(
       and(
@@ -102,10 +103,11 @@ export const getSessions = async (data: { studentUserId?: string } = {}) => {
 
   return sessions.map((s) => ({
     sessionId: s.id,
-    student: s.student?.name ?? "",
+    student: s.student?.name ?? "Unknown Student",
     createdAt: s.createdAt,
     title: s.title,
-    advisor: s.advisor?.name ?? "",
+    advisor: s.advisor?.name ?? "Unknown Advisor",
+    advisorUserId: s.advisorUserId,
   }));
 };
 
