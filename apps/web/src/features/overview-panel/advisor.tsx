@@ -66,7 +66,7 @@ export const AdvisorOverviewPanel = () => {
         </div>
         <div className="flex gap-2.5 items-center mt-1 mb-3 text-sm text-zinc-600">
           <EnvelopeIcon className="size-4 text-zinc-400" />
-          <div>{overview?.user.email}</div>
+          <div>{overview?.user?.email}</div>
           <div className="text-zinc-300">●</div>
           <div>
             Joined {_format(overview?.createdAt ?? new Date(), "dd MMM yyyy")}
@@ -87,7 +87,10 @@ export const AdvisorOverviewPanel = () => {
       <div className="p-10 px-12 py-7 flex gap-12">
         <div>
           <div className="font-semibold text-2xl flex items-center gap-2.5 mb-1">
-            <BrainIcon className="size-5" style={{ color: '#BCFAF9', filter: 'brightness(0.7)' }} />
+            <BrainIcon
+              className="size-5"
+              style={{ color: "#BCFAF9", filter: "brightness(0.7)" }}
+            />
             <span className="text-zinc-900">
               {overview?.totalStudents ?? 0}
             </span>
@@ -96,7 +99,10 @@ export const AdvisorOverviewPanel = () => {
         </div>
         <div>
           <div className="font-semibold text-2xl flex items-center gap-2.5 mb-1">
-            <VideoCameraIcon className="size-5" style={{ color: '#BCFAF9', filter: 'brightness(0.7)' }} />
+            <VideoCameraIcon
+              className="size-5"
+              style={{ color: "#BCFAF9", filter: "brightness(0.7)" }}
+            />
             <span className="text-zinc-900">
               {overview?.totalSessions ?? 0}
             </span>

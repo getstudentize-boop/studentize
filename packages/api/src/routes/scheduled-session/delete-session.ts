@@ -12,7 +12,7 @@ export const DeleteScheduledSessionInputSchema = z.object({
 export const deleteScheduledSessionRoute = createRouteHelper({
   inputSchema: DeleteScheduledSessionInputSchema,
   execute: async ({ ctx, input }) => {
-    if (ctx.user.type !== "ADMIN") {
+    if (!["OWNER", "ADMIN"].includes(ctx.user.organization.role)) {
       throw new ORPCError("FORBIDDEN", { message: "Unauthorized" });
     }
 

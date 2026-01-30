@@ -11,9 +11,11 @@ export const GetOneAutoSyncSessionInputSchema = z.object({
 export const getOneAutoSyncSessionRoute = createRouteHelper({
   inputSchema: GetOneAutoSyncSessionInputSchema,
   execute: async ({ input, ctx }) => {
-    const isAdminOrAdvisor = ["ADMIN", "ADVISOR"].includes(ctx.user.type);
+    const isAdminOrOwner = ["ADMIN", "OWNER"].includes(
+      ctx.user.organization.role
+    );
 
-    if (!isAdminOrAdvisor) {
+    if (!isAdminOrOwner) {
       throw new ORPCError("FORBIDDEN", { message: "Access denied" });
     }
 

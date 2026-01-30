@@ -23,8 +23,8 @@ export const regenerateTranscription = async (
     throw new ORPCError("NOT_FOUND", { message: "Session not found" });
   }
 
-  // Only allow admins and advisors to regenerate transcriptions
-  const isAdminOrAdvisor = ["ADMIN", "ADVISOR"].includes(ctx.user.type);
+  // Only allow owners, admins, and advisors to regenerate transcriptions
+  const isAdminOrAdvisor = ["OWNER", "ADMIN", "ADVISOR"].includes(ctx.user.organization.role);
 
   if (!isAdminOrAdvisor) {
     throw new ORPCError("UNAUTHORIZED", {

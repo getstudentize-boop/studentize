@@ -13,7 +13,7 @@ export const ReadTemporaryTranscriptionSchema = z.object({
 export const readTemporaryTranscription = createRouteHelper({
   inputSchema: ReadTemporaryTranscriptionSchema,
   execute: async ({ ctx, input }) => {
-    if (ctx.user.type !== "ADMIN") {
+    if (!["OWNER", "ADMIN"].includes(ctx.user.organization.role)) {
       throw new ORPCError("UNAUTHORIZED");
     }
 

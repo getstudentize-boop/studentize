@@ -32,7 +32,7 @@
     "zod": "^4.0.10"
   },
   "imports": {
-    "@/*": "./src/*"
+    "#/*": "./src/*"
   },
   "exports": {
     ".": "./src/index.ts"

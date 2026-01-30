@@ -12,13 +12,13 @@ export const Route = createFileRoute("/")({
     const user = await getUserAuth();
 
     if (user) {
-      // Fetch full user data to check their type
+      // Fetch full user data to check their role
       const fullUser = await context.queryClient.ensureQueryData(
         orpc.user.current.queryOptions()
       );
 
       // Redirect students to their dashboard, others to /home
-      if (fullUser.type === "STUDENT") {
+      if (fullUser.organization?.role === "STUDENT") {
         throw redirect({ to: "/student/dashboard" });
       } else {
         throw redirect({ to: "/home" });

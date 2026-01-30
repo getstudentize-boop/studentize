@@ -5,8 +5,10 @@ import { ORPCError } from "@orpc/server";
 import {
   createBaseStudent,
   createBaseUser,
+  createMembership,
   findUserByEmail,
 } from "@student/db";
+import { AuthContext } from "../../utils/middleware";
 
 export const CreateStudentInputSchema = z.object({
   email: z.email(),
@@ -14,6 +16,7 @@ export const CreateStudentInputSchema = z.object({
 });
 
 export const createStudent = async (
+  ctx: AuthContext,
   data: z.infer<typeof CreateStudentInputSchema>
 ) => {
   const user = await findUserByEmail(data.email);
@@ -27,7 +30,12 @@ export const createStudent = async (
   const newUser = await createBaseUser({
     email: data.email,
     name: data.name,
-    type: "STUDENT",
+  });
+
+  await createMembership({
+    userId: newUser.id,
+    organizationId: ctx.organizationId,
+    role: "STUDENT",
   });
 
   await createBaseStudent({ userId: newUser.id });

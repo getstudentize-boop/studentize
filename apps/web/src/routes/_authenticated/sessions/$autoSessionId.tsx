@@ -102,7 +102,7 @@ function RouteComponent() {
   const searchAdvisorsMutation = useMutation(
     orpc.advisor.search.mutationOptions({
       onSuccess: (data) => {
-        if (currentUser.user.type === "ADVISOR") {
+        if (currentUser.user.organization?.role === "ADVISOR") {
           const advisor = data[0];
           setAdvisor({
             userId: advisor.userId,

@@ -481,7 +481,7 @@ export const chatStudent = async (
   });
 
   const studentId =
-    ctx.user.type === "STUDENT" ? ctx.user.id : input.studentUserId;
+    ctx.user.organization.role === "STUDENT" ? ctx.user.id : input.studentUserId;
 
   const result = streamText({
     model: openai("gpt-5.2"),
@@ -512,9 +512,9 @@ export const chatStudent = async (
       }),
     },
     system:
-      ctx.user.type === "ADMIN" || ctx.user.type === "ADVISOR"
+      ["OWNER", "ADMIN", "ADVISOR"].includes(ctx.user.organization.role)
         ? advisorChatPrompt({ user })
-        : ctx.user.type === "STUDENT"
+        : ctx.user.organization.role === "STUDENT"
           ? studentChatPrompt({ user })
           : advisorChatPrompt({ user }),
     messages: convertToModelMessages(input.messages),

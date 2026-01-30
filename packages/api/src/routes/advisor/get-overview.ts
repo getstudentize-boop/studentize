@@ -9,10 +9,11 @@ import { createRouteHelper } from "../../utils/middleware";
 export const getOverviewRoute = createRouteHelper({
   execute: async ({ ctx }) => {
     const userId = ctx.user.id;
+    const isAdmin = ["OWNER", "ADMIN"].includes(ctx.user.organization.role);
 
     let data = await getOverviewByUserId({ advisorUserId: userId });
 
-    if (ctx.user.type === "ADMIN") {
+    if (isAdmin) {
       const user = await getUserName({ userId: ctx.user.id });
 
       data = {
@@ -28,7 +29,8 @@ export const getOverviewRoute = createRouteHelper({
     }
 
     const stats = await getOverviewStats({
-      advisorUserId: ctx.user.type === "ADMIN" ? undefined : userId,
+      advisorUserId: isAdmin ? undefined : userId,
+      organizationId: isAdmin ? ctx.organizationId : undefined,
     });
 
     return {

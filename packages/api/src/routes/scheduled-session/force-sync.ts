@@ -4,7 +4,7 @@ import { syncScheduledSessionsRoute } from "../admin/sync";
 
 export const forcSyncScheduledSessionRoute = createRouteHelper({
   execute: async ({ ctx }) => {
-    if (ctx.user.type !== "ADMIN") {
+    if (!["OWNER", "ADMIN"].includes(ctx.user.organization.role)) {
       throw new ORPCError("UNAUTHORIZED");
     }
 

@@ -22,7 +22,7 @@ export const CreateAutoSyncInputSchema = z.object({
 export const createAutoSyncRoute = createRouteHelper({
   inputSchema: CreateAutoSyncInputSchema,
   execute: async ({ ctx, input }) => {
-    if (ctx.user.type !== "ADMIN") {
+    if (!["OWNER", "ADMIN"].includes(ctx.user.organization.role)) {
       throw new ORPCError("UNAUTHORIZED");
     }
 

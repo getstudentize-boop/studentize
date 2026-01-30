@@ -12,7 +12,7 @@ export const updateSettings = async (
   ctx: AuthContext,
   input: z.infer<typeof StudentUpdateSettingsInputSchema>
 ) => {
-  if (ctx.user.type !== "ADMIN") {
+  if (!["OWNER", "ADMIN"].includes(ctx.user.organization.role)) {
     return { success: false };
   }
 

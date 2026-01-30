@@ -30,7 +30,39 @@ export const createScheduleSession = async ({
   return { scheduledSessionId: session.id };
 };
 
-export const getScheduledSessionList = async () => {
+export const getScheduledSessionList = async (organizationId?: string) => {
+  if (organizationId) {
+    // Filter by organization - sessions where advisor is in the organization
+    return db
+      .select({
+        advisorUserId: schema.scheduledSession.advisorUserId,
+        studentUserId: schema.scheduledSession.studentUserId,
+        scheduledAt: schema.scheduledSession.scheduledAt,
+        meetingCode: schema.scheduledSession.meetingCode,
+        title: schema.scheduledSession.title,
+        id: schema.scheduledSession.id,
+        botId: schema.scheduledSession.botId,
+        googleEventId: schema.scheduledSession.googleEventId,
+      })
+      .from(schema.scheduledSession)
+      .innerJoin(
+        schema.membership,
+        and(
+          eq(schema.membership.userId, schema.scheduledSession.advisorUserId),
+          eq(schema.membership.organizationId, organizationId)
+        )
+      )
+      .where(
+        and(
+          isNull(schema.scheduledSession.doneAt),
+          isNull(schema.scheduledSession.deletedAt),
+          isNull(schema.scheduledSession.supersededById)
+        )
+      )
+      .orderBy(desc(schema.scheduledSession.scheduledAt));
+  }
+
+  // No organization filter - return all (for backwards compatibility)
   return db.query.scheduledSession.findMany({
     where: and(
       isNull(schema.scheduledSession.doneAt),
@@ -143,11 +175,38 @@ export const deleteScheduledSessionById = async (input: {
 
 export const getAdvisorsSessions = (input: {
   advisorUserId?: string;
+  organizationId?: string;
   today: Date;
   timePeriod: "past" | "upcoming";
 }) => {
   const ltOrGt = input.timePeriod === "past" ? lt : gte;
 
+  // Admin case: filter by organization
+  if (!input.advisorUserId && input.organizationId) {
+    return db
+      .select({
+        scheduledSessionId: schema.scheduledSession.id,
+        title: schema.scheduledSession.title,
+        scheduledAt: schema.scheduledSession.scheduledAt,
+        meetingCode: schema.scheduledSession.meetingCode,
+      })
+      .from(schema.scheduledSession)
+      .innerJoin(
+        schema.membership,
+        and(
+          eq(schema.membership.userId, schema.scheduledSession.advisorUserId),
+          eq(schema.membership.organizationId, input.organizationId)
+        )
+      )
+      .where(
+        and(
+          ltOrGt(schema.scheduledSession.scheduledAt, input.today),
+          isNull(schema.scheduledSession.deletedAt)
+        )
+      );
+  }
+
+  // Advisor case or no filter
   return db
     .select({
       scheduledSessionId: schema.scheduledSession.id,

@@ -4,11 +4,11 @@ import { getScheduledSessionList } from "@student/db";
 
 export const listScheduledSessionsRoute = createRouteHelper({
   execute: async ({ ctx }) => {
-    if (ctx.user.type !== "ADMIN") {
+    if (!["OWNER", "ADMIN"].includes(ctx.user.organization.role)) {
       throw new ORPCError("UNAUTHORIZED");
     }
 
-    const scheduledSession = await getScheduledSessionList();
+    const scheduledSession = await getScheduledSessionList(ctx.organizationId);
     return scheduledSession;
   },
 });
