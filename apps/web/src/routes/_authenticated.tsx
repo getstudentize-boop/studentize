@@ -1,13 +1,9 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
-import { ArrowsCounterClockwiseIcon, SignOutIcon } from "@phosphor-icons/react";
-
 import { Header } from "@/features/header";
 import { orpc } from "orpc/client";
-import { Button } from "@/components/button";
 import { getUserAuth } from "@/utils/workos";
-import { useAuth } from "@workos-inc/authkit-react";
-import { useTransition } from "react";
+import { OnboardingPending } from "@/features/onboarding/pending";
 
 export const Route = createFileRoute("/_authenticated")({
   component: App,
@@ -43,46 +39,23 @@ export const useAuthUser = () => {
 
 function App() {
   const { user } = Route.useLoaderData();
-  const navigate = Route.useNavigate();
 
-  const [isPending, startTransition] = useTransition();
+  console.log("user", user);
 
-  const { signOut } = useAuth();
+  // Block users with PENDING or INACTIVE status (except admins/owners)
+  const isAdmin = ["OWNER", "ADMIN"].includes(user.organization?.role ?? "");
 
-  // Block users with PENDING or INACTIVE status (except admins)
-  if (user.type !== "ADMIN" && ["PENDING", "INACTIVE"].includes(user.status)) {
+  if (!isAdmin && ["PENDING", "INACTIVE"].includes(user.status)) {
+    console.log("user", user);
     return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="max-w-sm text-center flex flex-col gap-4 items-center">
-          Your account is pending approval by an admin. Please reach out to
-          support if you believe this is an error.
-          <div className="flex flex-col justify-center gap-10">
-            <Button onClick={() => location.reload()}>
-              Refresh Page
-              <ArrowsCounterClockwiseIcon />
-            </Button>
-
-            <Button
-              variant="neutral"
-              isLoading={isPending}
-              onClick={() => {
-                startTransition(async () => {
-                  await signOut({ navigate: false });
-                  navigate({ to: "/" });
-                });
-              }}
-            >
-              Sign Out
-              <SignOutIcon />
-            </Button>
-          </div>
-        </div>
-      </div>
+      <OnboardingPending
+        organizationRole={user.organization?.role ?? "STUDENT"}
+      />
     );
   }
 
   return (
-    <Header userType={user.type}>
+    <Header userRole={user.organization?.role ?? "STUDENT"}>
       <Outlet />
     </Header>
   );

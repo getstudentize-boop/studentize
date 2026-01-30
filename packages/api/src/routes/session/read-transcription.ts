@@ -18,9 +18,9 @@ export const readSessionTranscription = async (
     throw new ORPCError("NOT_FOUND", { message: "Session not found" });
   }
 
-  // Allow admins, advisors, and the student who owns the session
-  const isStudent = ctx.user.type === "STUDENT" && ctx.user.id === session.studentUserId;
-  const isAdminOrAdvisor = ["ADMIN", "ADVISOR"].includes(ctx.user.type);
+  // Allow owners, admins, advisors, and the student who owns the session
+  const isStudent = ctx.user.organization.role === "STUDENT" && ctx.user.id === session.studentUserId;
+  const isAdminOrAdvisor = ["OWNER", "ADMIN", "ADVISOR"].includes(ctx.user.organization.role);
 
   if (!isStudent && !isAdminOrAdvisor) {
     throw new ORPCError("UNAUTHORIZED", { message: "You don't have permission to view this session" });

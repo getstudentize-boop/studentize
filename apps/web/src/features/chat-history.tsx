@@ -160,12 +160,12 @@ export const StudentList = () => {
 
 export const ChatHistory = ({
   studentUserId,
-  userType,
+  userRole,
 }: {
   studentUserId?: string;
-  userType: "ADMIN" | "ADVISOR" | "STUDENT";
+  userRole: "OWNER" | "ADMIN" | "ADVISOR" | "STUDENT";
 }) => {
-  const isStudent = userType === "STUDENT";
+  const isStudent = userRole === "STUDENT";
 
   return (
     <div className="border-r border-zinc-200 w-72 flex flex-col px-4 py-5 text-left bg-white flex-shrink-0 h-full overflow-hidden">
@@ -183,7 +183,7 @@ export const ChatHistory = ({
 
       <hr className="border-zinc-200 border-b border-t-0 my-4" />
 
-      {studentUserId || userType === "STUDENT" ? (
+      {studentUserId || userRole === "STUDENT" ? (
         <ChatList studentUserId={studentUserId ?? ""} isStudent={isStudent} />
       ) : (
         <StudentList />

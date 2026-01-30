@@ -16,11 +16,11 @@ export const sessionSummaryList = async (
   input: z.infer<typeof SessionSummaryListInputSchema>
 ) => {
   try {
-    if (ctx.user.type === "STUDENT") {
+    if (ctx.user.organization.role === "STUDENT") {
       throw new ORPCError("FORBIDDEN");
     }
 
-    if (ctx.user.type === "ADVISOR") {
+    if (ctx.user.organization.role === "ADVISOR") {
       const advisorUserId = ctx.user.id;
       const access = await getOneStudentAccess({
         advisorUserId,

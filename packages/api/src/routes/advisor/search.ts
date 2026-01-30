@@ -12,14 +12,17 @@ export const searchAdvisors = async (
   ctx: AuthContext,
   input: z.infer<typeof SearchAdvisorsInputSchema>
 ) => {
-  if (ctx.user.type === "ADMIN") {
+  const isAdmin = ["OWNER", "ADMIN"].includes(ctx.user.organization.role);
+
+  if (isAdmin) {
     const advisors = await searchUserByName({
       query: input.query,
-      type: "ADVISOR",
+      role: "ADVISOR",
+      organizationId: ctx.organizationId,
     });
 
     return advisors;
-  } else if (ctx.user.type === "ADVISOR") {
+  } else if (ctx.user.organization.role === "ADVISOR") {
     const advisor = await getAdvisorByUserId(ctx.user.id);
 
     if (!advisor) {

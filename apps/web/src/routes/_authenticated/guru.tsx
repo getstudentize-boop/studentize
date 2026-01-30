@@ -119,7 +119,7 @@ function App() {
   const { user } = useAuthUser();
 
   // For students, automatically set userId to their own ID
-  const userId = user.type === "STUDENT" ? user.id : searchParams.userId;
+  const userId = user.organization?.role === "STUDENT" ? user.id : searchParams.userId;
 
   const queryClient = useQueryClient();
 
@@ -214,7 +214,7 @@ function App() {
     }
 
     if (isNewChat) {
-      if (user.type !== "STUDENT") {
+      if (user.organization?.role !== "STUDENT") {
         searchStudentMutation.mutate({ query: "" });
       }
       chat.setMessages([]);
@@ -227,7 +227,7 @@ function App() {
 
   return (
     <div className="flex flex-1 h-screen overflow-hidden">
-      <ChatHistory studentUserId={userId} userType={user.type} />
+      <ChatHistory studentUserId={userId} userRole={user.organization?.role ?? "STUDENT"} />
       <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
         <div className="justify-between items-center flex px-6 py-4 border-b border-zinc-200 bg-white flex-shrink-0">
           <div className="flex gap-2 items-center text-sm font-medium text-zinc-900">
@@ -280,7 +280,7 @@ function App() {
                 </div>
               ) : null}
               {isEmptyState ? (
-                <EmptyMessage isStudent={user.type === "STUDENT"} />
+                <EmptyMessage isStudent={user.organization?.role === "STUDENT"} />
               ) : null}
               {chat.messages.map((msg) => (
                 <Message key={msg.id} role={msg.role} message={msg} />
@@ -303,7 +303,7 @@ function App() {
             >
               {isEmptyState && !!userId && userDisplay?.name ? (
                 <div className="flex flex-col p-4 gap-4">
-                  {(user.type === "STUDENT"
+                  {(user.organization?.role === "STUDENT"
                     ? [
                         "Where am I in the application process?",
                         "What should I work on before my next session?",
@@ -342,7 +342,7 @@ function App() {
                 />
 
                 <div className="flex justify-between items-center mt-3 gap-3">
-                  {user.type !== "STUDENT" && (
+                  {user.organization?.role !== "STUDENT" && (
                     <form.Field
                       name="studentQuery"
                       asyncDebounceMs={300}
@@ -405,7 +405,7 @@ function App() {
                     disabled={!input.trim() || !userId}
                     className={cn(
                       "flex-shrink-0",
-                      user.type === "STUDENT" && "ml-auto"
+                      user.organization?.role === "STUDENT" && "ml-auto"
                     )}
                   >
                     <ArrowUpIcon weight="bold" />

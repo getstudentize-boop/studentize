@@ -11,13 +11,13 @@ export const GetStudentSessionsInputSchema = z.object({
 export const getStudentSessionsRoute = createRouteHelper({
   inputSchema: GetStudentSessionsInputSchema,
   execute: async ({ ctx, input }) => {
-    if (ctx.user.type === "STUDENT") {
+    if (ctx.user.organization.role === "STUDENT") {
       throw new ORPCError("UNAUTHORIZED", {
         message: "You not authorized to fetch",
       });
     }
 
-    if (ctx.user.type === "ADVISOR") {
+    if (ctx.user.organization.role === "ADVISOR") {
       const access = await getOneStudentAccess({
         advisorUserId: ctx.user.id,
         studentUserId: input.studentUserId,

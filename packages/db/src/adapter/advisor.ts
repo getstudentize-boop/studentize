@@ -41,7 +41,7 @@ export const createBaseAdvisor = async (data: {
   return advisor;
 };
 
-export const getAdvisors = async () => {
+export const getAdvisors = async (organizationId: string) => {
   const advisors = await db
     .select({
       advisorId: schema.advisor.id,
@@ -54,8 +54,15 @@ export const getAdvisors = async () => {
       courseMinor: schema.advisor.courseMinor,
     })
     .from(schema.user)
+    .innerJoin(
+      schema.membership,
+      and(
+        eq(schema.membership.userId, schema.user.id),
+        eq(schema.membership.organizationId, organizationId)
+      )
+    )
     .leftJoin(schema.advisor, eq(schema.user.id, schema.advisor.userId))
-    .where(eq(schema.user.type, "ADVISOR"));
+    .where(eq(schema.membership.role, "ADVISOR"));
 
   return advisors;
 };
@@ -326,30 +333,65 @@ export const getOverviewByUserId = async (input: { advisorUserId: string }) => {
   return advisor;
 };
 
-export const getOverviewStats = async (input: { advisorUserId?: string }) => {
-  const [students] = await db
-    .select({ count: count() })
-    .from(schema.advisorStudentAccess)
-    .where(
-      input.advisorUserId
-        ? eq(schema.advisorStudentAccess.advisorUserId, input.advisorUserId)
-        : undefined
-    );
+export const getOverviewStats = async (input: {
+  advisorUserId?: string;
+  organizationId?: string;
+}) => {
+  let studentCount: number;
+  let sessionCount: number;
 
-  const [sessions] = await db
-    .select({ count: count() })
-    .from(schema.session)
-    .where(
-      input.advisorUserId
-        ? eq(schema.session.advisorUserId, input.advisorUserId)
-        : undefined
-    );
+  if (input.advisorUserId) {
+    // Advisor case: count their assigned students
+    const [students] = await db
+      .select({ count: count() })
+      .from(schema.advisorStudentAccess)
+      .where(eq(schema.advisorStudentAccess.advisorUserId, input.advisorUserId));
+    studentCount = students.count;
 
-  return { totalStudents: students.count, totalSessions: sessions.count };
+    const [sessions] = await db
+      .select({ count: count() })
+      .from(schema.session)
+      .where(eq(schema.session.advisorUserId, input.advisorUserId));
+    sessionCount = sessions.count;
+  } else if (input.organizationId) {
+    // Admin case: count students in organization
+    const [students] = await db
+      .select({ count: count() })
+      .from(schema.membership)
+      .where(
+        and(
+          eq(schema.membership.organizationId, input.organizationId),
+          eq(schema.membership.role, "STUDENT")
+        )
+      );
+    studentCount = students.count;
+
+    // Count sessions where the advisor is in the organization
+    const [sessions] = await db
+      .select({ count: count() })
+      .from(schema.session)
+      .innerJoin(
+        schema.membership,
+        and(
+          eq(schema.membership.userId, schema.session.advisorUserId),
+          eq(schema.membership.organizationId, input.organizationId)
+        )
+      );
+    sessionCount = sessions.count;
+  } else {
+    studentCount = 0;
+    sessionCount = 0;
+  }
+
+  return { totalStudents: studentCount, totalSessions: sessionCount };
 };
 
-export const getStudentList = async (input: { advisorUserId?: string }) => {
-  if (!input.advisorUserId) {
+export const getStudentList = async (input: {
+  advisorUserId?: string;
+  organizationId?: string;
+}) => {
+  // Admin case: filter by organization membership
+  if (!input.advisorUserId && input.organizationId) {
     return db
       .select({
         studentUserId: schema.user.id,
@@ -359,24 +401,38 @@ export const getStudentList = async (input: { advisorUserId?: string }) => {
       })
       .from(schema.student)
       .innerJoin(schema.user, eq(schema.user.id, schema.student.userId))
+      .innerJoin(
+        schema.membership,
+        and(
+          eq(schema.membership.userId, schema.user.id),
+          eq(schema.membership.organizationId, input.organizationId)
+        )
+      )
+      .where(eq(schema.membership.role, "STUDENT"))
       .orderBy(asc(schema.student.status));
   }
 
-  return db
-    .select({
-      studentUserId: schema.advisorStudentAccess.studentUserId,
-      name: schema.user.name,
-      curriculum: schema.student.studyCurriculum,
-      status: schema.student.status,
-    })
-    .from(schema.advisorStudentAccess)
-    .innerJoin(
-      schema.user,
-      eq(schema.user.id, schema.advisorStudentAccess.studentUserId)
-    )
-    .innerJoin(
-      schema.student,
-      eq(schema.student.userId, schema.advisorStudentAccess.studentUserId)
-    )
-    .where(eq(schema.advisorStudentAccess.advisorUserId, input.advisorUserId));
+  // Advisor case: filter by advisor student access
+  if (input.advisorUserId) {
+    return db
+      .select({
+        studentUserId: schema.advisorStudentAccess.studentUserId,
+        name: schema.user.name,
+        curriculum: schema.student.studyCurriculum,
+        status: schema.student.status,
+      })
+      .from(schema.advisorStudentAccess)
+      .innerJoin(
+        schema.user,
+        eq(schema.user.id, schema.advisorStudentAccess.studentUserId)
+      )
+      .innerJoin(
+        schema.student,
+        eq(schema.student.userId, schema.advisorStudentAccess.studentUserId)
+      )
+      .where(eq(schema.advisorStudentAccess.advisorUserId, input.advisorUserId));
+  }
+
+  // Fallback: return empty array if neither condition is met
+  return [];
 };

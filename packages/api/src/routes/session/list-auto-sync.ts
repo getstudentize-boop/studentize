@@ -4,7 +4,7 @@ import { ORPCError } from "@orpc/server";
 
 export const listAutoSyncSessionsRoute = createRouteHelper({
   execute: async ({ ctx }) => {
-    if (ctx.user.type !== "ADMIN") {
+    if (!["OWNER", "ADMIN"].includes(ctx.user.organization.role)) {
       throw new ORPCError("UNAUTHORIZED");
     }
 

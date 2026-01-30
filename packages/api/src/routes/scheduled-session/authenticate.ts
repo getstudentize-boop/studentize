@@ -63,7 +63,7 @@ const Oauth = async (input: { userId: string }) => {
 
 export const authenticateGoogleRoute = createRouteHelper({
   execute: async ({ ctx }) => {
-    if (ctx.user.type !== "ADMIN") {
+    if (!["OWNER", "ADMIN"].includes(ctx.user.organization.role)) {
       throw new ORPCError("FORBIDDEN", { message: "Access denied" });
     }
 

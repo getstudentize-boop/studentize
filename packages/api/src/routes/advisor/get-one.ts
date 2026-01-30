@@ -11,7 +11,8 @@ export const getOneAdvisor = async (
   ctx: AuthContext,
   data: z.infer<typeof GetOneAdvisorInputSchema>
 ) => {
-  if (ctx.user.type !== "ADMIN" && ctx.user.id !== data.userId) {
+  const isAdmin = ["OWNER", "ADMIN"].includes(ctx.user.organization.role);
+  if (!isAdmin && ctx.user.id !== data.userId) {
     throw new ORPCError("FORBIDDEN");
   }
 

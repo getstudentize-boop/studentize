@@ -4,15 +4,16 @@ import { findOrCreateUser } from "@student/db";
 export type Context = {
   user?: Awaited<ReturnType<typeof findOrCreateUser>> | null;
   accessToken?: string;
+  organizationId: string;
   userVerificationPayload?: any;
 };
 
 export type AuthContext = {
   user: NonNullable<Context["user"]>;
+  organizationId: string;
 };
 
 import { z } from "zod";
-import { getCalendarList } from "./google";
 
 type Input = z.ZodType | Record<string, any>;
 
@@ -70,7 +71,7 @@ export const adminRoute = serverRoute.use(
 
 export const privateRoute = serverRoute.use(
   os.middleware(async ({ context, next }) => {
-    const { user, accessToken } = context as any;
+    const { user, organizationId } = context as any;
 
     // const data = await getCalendarList({ accessToken });
 
@@ -81,10 +82,12 @@ export const privateRoute = serverRoute.use(
     }
 
     const userEmail = user?.email;
-    const u = userEmail ? await findOrCreateUser({ email: userEmail }) : null;
+    const u = userEmail
+      ? await findOrCreateUser({ email: userEmail, organizationId })
+      : null;
 
     return next({
-      context: { user: u } as AuthContext,
+      context: { user: u, organizationId } as AuthContext,
     });
   })
 );

@@ -9,7 +9,7 @@ export const AdvisorChatHistoryInputSchema = z.object({
 export const advisorChatHistoryRoute = createRouteHelper({
   inputSchema: AdvisorChatHistoryInputSchema,
   execute: async ({ input, ctx }) => {
-    if (ctx.user.type === "STUDENT") {
+    if (ctx.user.organization.role === "STUDENT") {
       const chats = await getStudentChatHistory({
         studentUserId: ctx.user.id,
       });

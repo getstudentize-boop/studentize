@@ -11,7 +11,9 @@ export const authenticateSession = async (
   ctx: AuthContext,
   input: { sessionId: string }
 ) => {
-  const isAdminOrAdvisor = ["ADMIN", "ADVISOR"].includes(ctx.user.type);
+  const isAdminOrAdvisor = ["OWNER", "ADMIN", "ADVISOR"].includes(
+    ctx.user.organization.role
+  );
 
   if (!isAdminOrAdvisor) {
     throw new ORPCError("FORBIDDEN", { message: "Access denied" });
@@ -19,7 +21,7 @@ export const authenticateSession = async (
 
   const session = await getSessionById({ sessionId: input.sessionId });
 
-  if (ctx.user.type === "ADVISOR") {
+  if (ctx.user.organization.role === "ADVISOR") {
     const advisorUserId = ctx.user.id;
 
     if (advisorUserId !== session?.advisorUserId) {

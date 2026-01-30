@@ -15,8 +15,8 @@ import { privateRoute } from "../../utils/middleware";
 
 const studentCreateHandler = privateRoute
   .input(CreateStudentInputSchema)
-  .handler(async ({ input }) => {
-    const result = await createStudent(input);
+  .handler(async ({ input, context }) => {
+    const result = await createStudent(context, input);
     return result;
   });
 

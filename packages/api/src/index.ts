@@ -42,6 +42,7 @@ import {
 import { scheduledSession } from "./routes/scheduled-session";
 import { admin } from "./routes/admin";
 import { session } from "./routes/session";
+import { organization } from "./routes/organization";
 
 export const router = {
   admin,
@@ -85,6 +86,7 @@ export const router = {
     getOne: userGetOneHandler,
     getName: userGetNameHandler,
   },
+  organization,
   chat: {
     student: chatStudentHandler,
     newId: chatNewIdHandler,

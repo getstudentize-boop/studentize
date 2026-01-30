@@ -13,9 +13,10 @@ export const chatMessages = async (
 ) => {
   const userId = ctx.user.id;
 
+  const isAdmin = ["OWNER", "ADMIN"].includes(ctx.user.organization.role);
   const chat = await getAdvisorChatTitle({
     chatId: input.chatId,
-    userId: ctx.user.type === "ADMIN" ? undefined : userId,
+    userId: isAdmin ? undefined : userId,
   });
 
   if (!chat) {

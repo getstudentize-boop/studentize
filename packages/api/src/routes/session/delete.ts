@@ -11,7 +11,7 @@ export const deleteSession = async (
   ctx: AuthContext,
   data: z.infer<typeof DeleteSessionInputSchema>
 ) => {
-  if (ctx.user.type !== "ADMIN") {
+  if (!["OWNER", "ADMIN"].includes(ctx.user.organization.role)) {
     throw new ORPCError("FORBIDDEN", {
       message: "You do not have permission to delete sessions.",
     });

@@ -26,13 +26,13 @@ import {
 
 export const advisorCreateHandler = privateRoute
   .input(CreateAdvisorInputSchema)
-  .handler(async ({ input }) => {
-    const result = await createAdvisor(input);
+  .handler(async ({ input, context }) => {
+    const result = await createAdvisor(context, input);
     return result;
   });
 
-export const advisorListHandler = privateRoute.handler(async () => {
-  const advisors = await listAdvisors();
+export const advisorListHandler = privateRoute.handler(async ({ context }) => {
+  const advisors = await listAdvisors(context);
   return advisors;
 });
 

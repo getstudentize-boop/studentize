@@ -38,6 +38,7 @@ const getORPCClient = createIsomorphicFn()
 
         return {
           Authorization: `Bearer ${data}`,
+          Hostname: window.location.hostname,
         };
       },
       interceptors: [

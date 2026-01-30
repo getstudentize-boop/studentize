@@ -44,7 +44,7 @@ export const getGoogleCalendar = async (input: { calendarId: string }) => {
 
 export const listGoogleCalendarRoute = createRouteHelper({
   execute: async ({ ctx }) => {
-    if (ctx.user.type !== "ADMIN") {
+    if (!["OWNER", "ADMIN"].includes(ctx.user.organization.role)) {
       throw new ORPCError("FORBIDDEN");
     }
 

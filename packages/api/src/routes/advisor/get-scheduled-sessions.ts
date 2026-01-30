@@ -19,8 +19,10 @@ export const getScheduledSessionsRoute = createRouteHelper({
   execute: async ({ ctx, input }) => {
     const userId = ctx.user.id;
 
+    const isAdmin = ["OWNER", "ADMIN"].includes(ctx.user.organization.role);
     const scheduledSessions = await getAdvisorsSessions({
-      advisorUserId: ctx.user.type === "ADMIN" ? undefined : userId,
+      advisorUserId: isAdmin ? undefined : userId,
+      organizationId: isAdmin ? ctx.organizationId : undefined,
       timePeriod: input.timePeriod,
       today: startOfDay(new Date()),
     });

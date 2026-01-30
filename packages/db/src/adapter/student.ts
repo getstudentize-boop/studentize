@@ -3,6 +3,7 @@ import {
   InferSelectModel,
   InferInsertModel,
   eq,
+  and,
   getTableColumns,
   desc,
 } from "..";
@@ -63,7 +64,7 @@ export const getStudents = async () => {
   return students;
 };
 
-export const getFullStudentList = async () => {
+export const getFullStudentList = async (organizationId: string) => {
   const students = await db
     .select({
       userId: schema.user.id,
@@ -74,7 +75,14 @@ export const getFullStudentList = async () => {
     })
     .from(schema.user)
     .innerJoin(schema.student, eq(schema.student.userId, schema.user.id))
-    .where(eq(schema.user.type, "STUDENT"));
+    .innerJoin(
+      schema.membership,
+      and(
+        eq(schema.membership.userId, schema.user.id),
+        eq(schema.membership.organizationId, organizationId)
+      )
+    )
+    .where(eq(schema.membership.role, "STUDENT"));
 
   return students;
 };

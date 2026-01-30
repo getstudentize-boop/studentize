@@ -18,11 +18,11 @@ export const getSessionOverviewRoute = createRouteHelper({
       throw new ORPCError("INTERNAL_SERVER_ERROR");
     }
 
-    if (ctx.user.type === "STUDENT") {
+    if (ctx.user.organization.role === "STUDENT") {
       throw new ORPCError("UNAUTHORIZED");
     }
 
-    if (ctx.user.type === "ADVISOR") {
+    if (ctx.user.organization.role === "ADVISOR") {
       const access = await getOneStudentAccess({
         advisorUserId: ctx.user.id,
         studentUserId: session?.studentUserId ?? "",

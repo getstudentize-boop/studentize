@@ -11,10 +11,10 @@ export const listStudents = async (
   ctx: AuthContext,
   input: z.infer<typeof ListStudentsInputSchema>
 ) => {
-  const isAdmin = ctx.user.type === "ADMIN";
+  const isAdmin = ["OWNER", "ADMIN"].includes(ctx.user.organization.role);
 
   if (isAdmin) {
-    const students = await getFullStudentList();
+    const students = await getFullStudentList(ctx.organizationId);
     return students;
   } else if (input.advisorUserId) {
     const students = await getAdvisorStudentList({

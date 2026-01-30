@@ -19,7 +19,7 @@ export const CreateScheduleSessionInputSchema = z.object({
 export const createScheduleSessionRoute = createRouteHelper({
   inputSchema: CreateScheduleSessionInputSchema,
   execute: async ({ input, ctx }) => {
-    if (ctx.user.type !== "ADMIN") {
+    if (!["OWNER", "ADMIN"].includes(ctx.user.organization.role)) {
       throw new ORPCError("UNAUTHORIZED");
     }
 

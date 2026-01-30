@@ -17,7 +17,7 @@ export const deleteTaskHandler = async (
     throw new ORPCError("UNAUTHORIZED", { message: "User not authenticated" });
   }
 
-  if (ctx.user.type !== "STUDENT") {
+  if (ctx.user.organization.role !== "STUDENT") {
     throw new ORPCError("FORBIDDEN", {
       message: "Only students can delete tasks",
     });
