@@ -11,6 +11,7 @@ export const listScheduledSessionsRoute = createRouteHelper({
     const scheduledSession = await getScheduledSessionList({
       organizationId: ctx.organizationId,
     });
+
     return scheduledSession;
   },
 });

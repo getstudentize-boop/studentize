@@ -1,4 +1,4 @@
-import { and, db, desc, eq, gte, isNull, lt, or, schema } from "..";
+import { and, db, desc, eq, gte, isNotNull, isNull, lt, or, schema } from "..";
 
 export const createScheduleSession = async ({
   scheduledAt,
@@ -64,7 +64,7 @@ export const getScheduledSessionList = async (input: {
           isNull(schema.scheduledSession.supersededById),
           // Advisor must be in the organization (or session has no advisor)
           or(
-            advisorMembership.id, // advisor has membership
+            isNotNull(advisorMembership.id), // advisor has membership
             isNull(schema.scheduledSession.advisorUserId) // no advisor assigned
           )
         )
@@ -216,7 +216,7 @@ export const getAdvisorsSessions = (input: {
           isNull(schema.scheduledSession.deletedAt),
           // Advisor must be in the organization (or session has no advisor)
           or(
-            advisorMembership.id,
+            isNotNull(advisorMembership.id),
             isNull(schema.scheduledSession.advisorUserId)
           )
         )
