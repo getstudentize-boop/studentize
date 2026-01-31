@@ -8,7 +8,9 @@ export const listScheduledSessionsRoute = createRouteHelper({
       throw new ORPCError("UNAUTHORIZED");
     }
 
-    const scheduledSession = await getScheduledSessionList(ctx.organizationId);
+    const scheduledSession = await getScheduledSessionList({
+      organizationId: ctx.organizationId,
+    });
     return scheduledSession;
   },
 });

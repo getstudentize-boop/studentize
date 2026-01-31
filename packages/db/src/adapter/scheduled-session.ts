@@ -1,4 +1,4 @@
-import { and, db, desc, eq, gte, isNull, lt, schema } from "..";
+import { and, db, desc, eq, gte, isNull, lt, or, schema } from "..";
 
 export const createScheduleSession = async ({
   scheduledAt,
@@ -30,11 +30,16 @@ export const createScheduleSession = async ({
   return { scheduledSessionId: session.id };
 };
 
-export const getScheduledSessionList = async (organizationId?: string) => {
-  if (organizationId) {
+export const getScheduledSessionList = async (input: {
+  organizationId?: string;
+}) => {
+  if (input.organizationId) {
     // Filter by organization - sessions where advisor is in the organization
+    // Using LEFT JOIN to handle cases where advisorUserId might be null
+    const advisorMembership = schema.membership;
+
     return db
-      .select({
+      .selectDistinct({
         advisorUserId: schema.scheduledSession.advisorUserId,
         studentUserId: schema.scheduledSession.studentUserId,
         scheduledAt: schema.scheduledSession.scheduledAt,
@@ -45,18 +50,23 @@ export const getScheduledSessionList = async (organizationId?: string) => {
         googleEventId: schema.scheduledSession.googleEventId,
       })
       .from(schema.scheduledSession)
-      .innerJoin(
-        schema.membership,
+      .leftJoin(
+        advisorMembership,
         and(
-          eq(schema.membership.userId, schema.scheduledSession.advisorUserId),
-          eq(schema.membership.organizationId, organizationId)
+          eq(advisorMembership.userId, schema.scheduledSession.advisorUserId),
+          eq(advisorMembership.organizationId, input.organizationId)
         )
       )
       .where(
         and(
           isNull(schema.scheduledSession.doneAt),
           isNull(schema.scheduledSession.deletedAt),
-          isNull(schema.scheduledSession.supersededById)
+          isNull(schema.scheduledSession.supersededById),
+          // Advisor must be in the organization (or session has no advisor)
+          or(
+            advisorMembership.id, // advisor has membership
+            isNull(schema.scheduledSession.advisorUserId) // no advisor assigned
+          )
         )
       )
       .orderBy(desc(schema.scheduledSession.scheduledAt));
@@ -181,27 +191,34 @@ export const getAdvisorsSessions = (input: {
 }) => {
   const ltOrGt = input.timePeriod === "past" ? lt : gte;
 
-  // Admin case: filter by organization
+  // Admin case: filter by organization using LEFT JOIN
   if (!input.advisorUserId && input.organizationId) {
+    const advisorMembership = schema.membership;
+
     return db
-      .select({
+      .selectDistinct({
         scheduledSessionId: schema.scheduledSession.id,
         title: schema.scheduledSession.title,
         scheduledAt: schema.scheduledSession.scheduledAt,
         meetingCode: schema.scheduledSession.meetingCode,
       })
       .from(schema.scheduledSession)
-      .innerJoin(
-        schema.membership,
+      .leftJoin(
+        advisorMembership,
         and(
-          eq(schema.membership.userId, schema.scheduledSession.advisorUserId),
-          eq(schema.membership.organizationId, input.organizationId)
+          eq(advisorMembership.userId, schema.scheduledSession.advisorUserId),
+          eq(advisorMembership.organizationId, input.organizationId)
         )
       )
       .where(
         and(
           ltOrGt(schema.scheduledSession.scheduledAt, input.today),
-          isNull(schema.scheduledSession.deletedAt)
+          isNull(schema.scheduledSession.deletedAt),
+          // Advisor must be in the organization (or session has no advisor)
+          or(
+            advisorMembership.id,
+            isNull(schema.scheduledSession.advisorUserId)
+          )
         )
       );
   }
