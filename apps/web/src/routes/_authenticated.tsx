@@ -40,13 +40,7 @@ export const useAuthUser = () => {
 function App() {
   const { user } = Route.useLoaderData();
 
-  console.log("user", user);
-
-  // Block users with PENDING or INACTIVE status (except admins/owners)
-  const isAdmin = ["OWNER", "ADMIN"].includes(user.organization?.role ?? "");
-
-  if (!isAdmin && ["PENDING", "INACTIVE"].includes(user.status)) {
-    console.log("user", user);
+  if (["PENDING", "INACTIVE"].includes(user.status)) {
     return (
       <OnboardingPending
         organizationRole={user.organization?.role ?? "STUDENT"}
