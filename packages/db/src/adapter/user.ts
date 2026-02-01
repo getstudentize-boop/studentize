@@ -246,3 +246,56 @@ export const createMembership = async (data: {
 
   return membership;
 };
+
+export const getPendingUsers = async (organizationId: string) => {
+  const users = await db
+    .select({
+      userId: schema.user.id,
+      email: schema.user.email,
+      name: schema.user.name,
+      createdAt: schema.user.createdAt,
+    })
+    .from(schema.user)
+    .innerJoin(
+      schema.membership,
+      and(
+        eq(schema.membership.userId, schema.user.id),
+        eq(schema.membership.organizationId, organizationId)
+      )
+    )
+    .where(eq(schema.user.status, "PENDING"));
+
+  return users;
+};
+
+export const updateUserStatus = async (
+  userId: string,
+  status: "ACTIVE" | "INACTIVE" | "PENDING"
+) => {
+  const [user] = await db
+    .update(schema.user)
+    .set({ status })
+    .where(eq(schema.user.id, userId))
+    .returning({ id: schema.user.id, status: schema.user.status });
+
+  return user;
+};
+
+export const updateMembershipRole = async (
+  userId: string,
+  organizationId: string,
+  role: MembershipSelect["role"]
+) => {
+  const [membership] = await db
+    .update(schema.membership)
+    .set({ role })
+    .where(
+      and(
+        eq(schema.membership.userId, userId),
+        eq(schema.membership.organizationId, organizationId)
+      )
+    )
+    .returning({ id: schema.membership.id, role: schema.membership.role });
+
+  return membership;
+};

@@ -38,6 +38,8 @@ import {
   userCurrentHandler,
   userGetOneHandler,
   userGetNameHandler,
+  userListPendingHandler,
+  userApproveHandler,
 } from "./routes/user";
 import { scheduledSession } from "./routes/scheduled-session";
 import { admin } from "./routes/admin";
@@ -85,6 +87,8 @@ export const router = {
     current: userCurrentHandler,
     getOne: userGetOneHandler,
     getName: userGetNameHandler,
+    listPending: userListPendingHandler,
+    approve: userApproveHandler,
   },
   organization,
   chat: {

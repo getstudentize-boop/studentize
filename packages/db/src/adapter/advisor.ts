@@ -345,7 +345,9 @@ export const getOverviewStats = async (input: {
     const [students] = await db
       .select({ count: count() })
       .from(schema.advisorStudentAccess)
-      .where(eq(schema.advisorStudentAccess.advisorUserId, input.advisorUserId));
+      .where(
+        eq(schema.advisorStudentAccess.advisorUserId, input.advisorUserId)
+      );
     studentCount = students.count;
 
     const [sessions] = await db
@@ -430,7 +432,9 @@ export const getStudentList = async (input: {
         schema.student,
         eq(schema.student.userId, schema.advisorStudentAccess.studentUserId)
       )
-      .where(eq(schema.advisorStudentAccess.advisorUserId, input.advisorUserId));
+      .where(
+        eq(schema.advisorStudentAccess.advisorUserId, input.advisorUserId)
+      );
   }
 
   // Fallback: return empty array if neither condition is met

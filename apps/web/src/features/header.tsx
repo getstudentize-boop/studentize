@@ -4,6 +4,7 @@ import {
   ChalkboardTeacherIcon,
   ChartLineIcon,
   CircleNotchIcon,
+  ClockIcon,
   HeadsetIcon,
   HouseIcon,
   SignOutIcon,
@@ -129,6 +130,14 @@ export const Header = ({
                 icon: <ChalkboardTeacherIcon className="size-4" />,
                 label: "Advisors",
                 isActive: route({ to: "/advisors" }),
+              }
+            : null,
+          isAdmin
+            ? {
+                to: "/users",
+                icon: <ClockIcon className="size-4" />,
+                label: "Pending Users",
+                isActive: route({ to: "/users" }),
               }
             : null,
         ].filter(Boolean);
