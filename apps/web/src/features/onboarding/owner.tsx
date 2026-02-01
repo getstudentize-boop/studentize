@@ -6,13 +6,16 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import { z } from "zod";
 import { OrganizationLogo } from "../organization/logo";
+import { useNavigate } from "@tanstack/react-router";
 
 export const OwnerOnboarding = ({
   organizationId,
 }: {
   organizationId: string;
 }) => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient();\
+
+  const navigate = useNavigate()
 
   const completeOnboardingMutation = useMutation(
     orpc.organization.completeOnboarding.mutationOptions({
@@ -24,6 +27,8 @@ export const OwnerOnboarding = ({
         queryClient.invalidateQueries({
           queryKey: orpc.organization.current.key({ type: "query" }),
         });
+        
+        navigate({ to: "/home" });
       },
     })
   );
