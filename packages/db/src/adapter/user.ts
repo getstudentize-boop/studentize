@@ -1,42 +1,70 @@
 import * as schema from "../schema";
 import { and, db, eq, ilike, InferInsertModel, InferSelectModel, or } from "..";
 
-type UserSelect = InferSelectModel<typeof schema.user>;
-type UserInsert = InferInsertModel<typeof schema.user>;
 type MembershipSelect = InferSelectModel<typeof schema.membership>;
 
 export const findOrCreateUser = async (data: {
   email: string;
   organizationId: string;
 }) => {
-  const columns = {
-    id: schema.user.id,
-    email: schema.user.email,
-    name: schema.user.name,
-    status: schema.user.status,
-  };
+  // First, check if user exists (without requiring membership)
+  const existingUser = await db.query.user.findFirst({
+    where: (user, { eq }) => eq(user.email, data.email),
+    columns: {
+      id: true,
+      email: true,
+      name: true,
+      status: true,
+    },
+  });
 
-  const [user] = await db
-    .select({
-      ...columns,
-      organization: {
-        role: schema.membership.role,
-        id: schema.membership.id,
+  if (existingUser) {
+    // User exists, check if they have membership in this organization
+    const membership = await db.query.membership.findFirst({
+      where: (membership, { and, eq }) =>
+        and(
+          eq(membership.userId, existingUser.id),
+          eq(membership.organizationId, data.organizationId)
+        ),
+      columns: {
+        role: true,
+        id: true,
       },
-    })
-    .from(schema.user)
-    .innerJoin(
-      schema.membership,
-      and(
-        eq(schema.membership.userId, schema.user.id),
-        eq(schema.membership.organizationId, data.organizationId)
-      )
-    )
-    .where(eq(schema.user.email, data.email));
+    });
 
-  if (user) {
-    return user;
+    if (membership) {
+      // User exists and has membership, return both
+      return {
+        ...existingUser,
+        organization: {
+          role: membership.role,
+          id: membership.id,
+        },
+      };
+    } else {
+      // User exists but no membership in this org, create membership
+      const [newMembership] = await db
+        .insert(schema.membership)
+        .values({
+          userId: existingUser.id,
+          organizationId: data.organizationId,
+          role: "STUDENT",
+        })
+        .returning({
+          id: schema.membership.id,
+          role: schema.membership.role,
+        });
+
+      return {
+        ...existingUser,
+        organization: {
+          role: newMembership.role,
+          id: newMembership.id,
+        },
+      };
+    }
   } else {
+    // User doesn't exist, create both user and membership
     const [newUser] = await db
       .insert(schema.user)
       .values({ email: data.email })
@@ -47,9 +75,24 @@ export const findOrCreateUser = async (data: {
         status: schema.user.status,
       });
 
+    const [newMembership] = await db
+      .insert(schema.membership)
+      .values({
+        userId: newUser.id,
+        organizationId: data.organizationId,
+        role: "STUDENT",
+      })
+      .returning({
+        id: schema.membership.id,
+        role: schema.membership.role,
+      });
+
     return {
       ...newUser,
-      organization: { role: "STUDENT" as const, id: data.organizationId },
+      organization: {
+        role: newMembership.role,
+        id: newMembership.id,
+      },
     };
   }
 };

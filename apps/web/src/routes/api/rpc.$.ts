@@ -5,6 +5,9 @@ import { router, getUserAuth } from "@student/api";
 
 const handler = new RPCHandler(router);
 
+/**
+ * These are organization ids stored in the production database.
+ */
 const organizationToHostMap = {
   localhost:
     process.env.LOCALHOST_ORGANIZATION_ID ?? "ujx3v67lc1tis9i32t3mea7b",

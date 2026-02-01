@@ -1,6 +1,6 @@
 import * as schema from "../schema";
 
-import { InferInsertModel, and, db, desc, eq, isNull } from "..";
+import { InferInsertModel, and, db, desc, eq, isNotNull, isNull } from "..";
 import { alias } from "drizzle-orm/pg-core";
 
 type SessionInsert = InferInsertModel<typeof schema.session>;
@@ -95,6 +95,8 @@ export const getSessions = async (data: { studentUserId?: string } = {}) => {
     .where(
       and(
         isNull(schema.session.deletedAt),
+        isNotNull(schema.session.studentUserId),
+        isNotNull(schema.session.advisorUserId),
         ...(data.studentUserId
           ? [eq(schema.session.studentUserId, data.studentUserId)]
           : [])
