@@ -1,6 +1,12 @@
 import { createAdminRouteHelper } from "../../utils/middleware";
 import { getGoogleCalendar } from "../scheduled-session/list-google-calendar";
-import { db, schema, eq, createScheduleSession } from "@student/db";
+import {
+  db,
+  schema,
+  eq,
+  createScheduleSession,
+  updateScheduledSessionTime,
+} from "@student/db";
 import { WorkerService } from "../../services/worker";
 
 export const syncScheduledSessionsRoute = createAdminRouteHelper({
@@ -34,20 +40,38 @@ export const syncScheduledSessionsRoute = createAdminRouteHelper({
           continue;
         }
 
-        const [existingScheduledSession] = await db
-          .select({
-            id: schema.scheduledSession.id,
-          })
-          .from(schema.scheduledSession)
-          .where(eq(schema.scheduledSession.googleEventId, event.id))
-          .limit(1);
+        const existingScheduledSession =
+          await db.query.scheduledSession.findFirst({
+            where: eq(schema.scheduledSession.googleEventId, event.id),
+            columns: {
+              id: true,
+              scheduledAt: true,
+            },
+          });
+
+        const newScheduledAt = new Date(event.start_time);
 
         if (existingScheduledSession) {
+          // Check if the meeting time has changed (rescheduled)
+          const existingTime = new Date(existingScheduledSession.scheduledAt);
+          if (existingTime.getTime() !== newScheduledAt.getTime()) {
+            // Meeting was rescheduled - update the time and recreate the workflow
+            await updateScheduledSessionTime({
+              scheduledSessionId: existingScheduledSession.id,
+              scheduledAt: newScheduledAt,
+            });
+
+            // Recreate the workflow with the new time
+            await workerService.triggerAutoJoinMeeting({
+              scheduledSessionId: existingScheduledSession.id,
+            });
+          }
+
           continue;
         }
 
         const scheduledSession = await createScheduleSession({
-          scheduledAt: new Date(event.start_time),
+          scheduledAt: newScheduledAt,
           meetingCode: code,
           title: event.raw.summary,
           googleEventId: event.id,

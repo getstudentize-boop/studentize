@@ -175,6 +175,16 @@ export const updateScheduledSessionDoneAt = async (input: {
     .where(eq(schema.scheduledSession.id, input.scheduledSessionId));
 };
 
+export const updateScheduledSessionTime = async (input: {
+  scheduledSessionId: string;
+  scheduledAt: Date;
+}) => {
+  await db
+    .update(schema.scheduledSession)
+    .set({ scheduledAt: input.scheduledAt })
+    .where(eq(schema.scheduledSession.id, input.scheduledSessionId));
+};
+
 export const deleteScheduledSessionById = async (input: {
   scheduledSessionId: string;
 }) => {
