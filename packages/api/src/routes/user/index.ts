@@ -4,6 +4,8 @@ import { privateRoute } from "../../utils/middleware";
 import { getCurrentUser } from "./current";
 import { getOneUser, GetOneUserInputSchema } from "./get-one";
 import { getUserNameData, GetUserNameInputSchema } from "./get-name";
+import { listPendingUsers } from "./list-pending";
+import { approvePendingUser, ApprovePendingUserInputSchema } from "./approve";
 
 export const userDisplayHandler = privateRoute
   .input(UserDisplayInputSchema)
@@ -27,5 +29,19 @@ export const userGetNameHandler = privateRoute
   .input(GetUserNameInputSchema)
   .handler(async ({ input }) => {
     const result = await getUserNameData(input);
+    return result;
+  });
+
+export const userListPendingHandler = privateRoute.handler(
+  async ({ context }) => {
+    const result = await listPendingUsers(context);
+    return result;
+  }
+);
+
+export const userApproveHandler = privateRoute
+  .input(ApprovePendingUserInputSchema)
+  .handler(async ({ input, context }) => {
+    const result = await approvePendingUser(context, input);
     return result;
   });
