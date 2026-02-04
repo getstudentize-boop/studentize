@@ -6,6 +6,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import { Loader } from "@/components/loader";
+import { StudentOnboarding } from "./student";
 import { OwnerOnboarding } from "./owner";
 
 export const OnboardingPending = ({
@@ -35,6 +36,10 @@ export const OnboardingPending = ({
   }
 
   const organization = organizationQuery.data;
+
+  if (organizationRole === "STUDENT") {
+    return <StudentOnboarding organizationId={organization.id} />;
+  }
 
   if (organization.status === "PENDING" && organizationRole === "OWNER") {
     return <OwnerOnboarding organizationId={organization.id} />;

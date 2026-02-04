@@ -6,14 +6,16 @@ const organizationLogoMap = {
 };
 
 type ImageProps = ComponentProps<"img"> & {
-  organizationId: string;
+  organizationId?: string;
 };
 
 export const OrganizationLogo = ({ organizationId, ...props }: ImageProps) => {
   return (
     <img
       src={
-        organizationLogoMap[organizationId as keyof typeof organizationLogoMap]
+        organizationLogoMap[
+          organizationId as keyof typeof organizationLogoMap
+        ] ?? "/logo.png"
       }
       alt={props.alt}
       {...props}
