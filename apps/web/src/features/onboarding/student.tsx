@@ -1,133 +1,165 @@
-import { Button } from "@/components/button";
-import { Input } from "@/components/input";
-import { ArrowRightIcon } from "@phosphor-icons/react";
+import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
+import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
-import { z } from "zod";
+import { useNavigate } from "@tanstack/react-router";
+import { Button } from "@/components/button";
+import { ArrowRightIcon, ArrowLeftIcon } from "@phosphor-icons/react";
+import { Step1Contact } from "./steps/step1-contact";
+import { Step2Country } from "./steps/step2-country";
+import { Step3Graduation } from "./steps/step3-graduation";
+import { Step4Destinations } from "./steps/step4-destinations";
+import { Step5Interests } from "./steps/step5-interests";
+import { Step6Support } from "./steps/step6-support";
+import { Step7Referral } from "./steps/step7-referral";
+import { useAuthUser } from "@/routes/_authenticated";
 import { OrganizationLogo } from "../organization/logo";
 
-export const OwnerOnboarding = ({
-  organizationId,
-}: {
-  organizationId: string;
-}) => {
+const TOTAL_STEPS = 7;
+
+export const StudentOnboarding = () => {
+  const [currentStep, setCurrentStep] = useState(1);
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user } = useAuthUser();
 
   const completeOnboardingMutation = useMutation(
-    orpc.organization.completeOnboarding.mutationOptions({
+    orpc.student.completeOnboarding.mutationOptions({
       onSuccess: () => {
-        // Invalidate user and organization queries to refresh the data
         queryClient.invalidateQueries({
           queryKey: orpc.user.current.key({ type: "query" }),
         });
-        queryClient.invalidateQueries({
-          queryKey: orpc.organization.current.key({ type: "query" }),
-        });
+        navigate({ to: "/student/dashboard" });
       },
     })
   );
 
   const form = useForm({
     defaultValues: {
-      name: "",
-      organizationName: "",
+      email: user.email,
+      phone: "",
+      location: "",
+      expectedGraduationYear: "",
+      targetCountries: [] as string[],
+      areasOfInterest: [] as string[],
+      supportAreas: [] as string[],
+      referralSource: "",
     },
     validators: {
-      onSubmit: z.object({
-        name: z.string().min(1, "Name is required"),
-        organizationName: z.string().min(1, "Organization name is required"),
+      onChange: z.object({
+        email: z.email(),
+        phone: z.string().optional(),
+        location: z.string().optional(),
+        expectedGraduationYear: z.string().optional(),
+        targetCountries: z.array(z.string()).optional(),
+        areasOfInterest: z.array(z.string()).optional(),
+        supportAreas: z.array(z.string()).optional(),
+        referralSource: z.string().optional(),
       }),
     },
-    onSubmit: (vals) => completeOnboardingMutation.mutateAsync(vals.value),
+    onSubmit: async (vals) => {
+      await completeOnboardingMutation.mutateAsync({
+        phone: vals.value.phone || undefined,
+        location: vals.value.location || undefined,
+        expectedGraduationYear: vals.value.expectedGraduationYear || undefined,
+        targetCountries:
+          vals.value.targetCountries.length > 0
+            ? vals.value.targetCountries
+            : undefined,
+        areasOfInterest:
+          vals.value.areasOfInterest.length > 0
+            ? vals.value.areasOfInterest
+            : undefined,
+        supportAreas:
+          vals.value.supportAreas.length > 0
+            ? vals.value.supportAreas
+            : undefined,
+        referralSource: vals.value.referralSource || undefined,
+      });
+    },
   });
 
+  const progress = (currentStep / TOTAL_STEPS) * 100;
+
+  const handleNext = () => {
+    if (currentStep < TOTAL_STEPS) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleSubmit = () => {
+    form.handleSubmit();
+  };
+
   return (
-    <div className="flex h-screen items-center justify-center">
-      <div className="max-w-md w-full border border-zinc-200 rounded-xl overflow-hidden">
-        <form
-          onSubmit={(ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            form.handleSubmit();
-          }}
-        >
-          <div className="p-6">
-            <div>
-              <OrganizationLogo
-                organizationId={organizationId}
-                alt="Organization Logo"
-                className="w-40 h-24 object-cover mx-auto"
+    <div className="flex h-screen items-center justify-center bg-zinc-50">
+      <div className="max-w-2xl w-full bg-white rounded-xl shadow-lg overflow-hidden">
+        {/* Progress Bar */}
+        <div className="px-6 pt-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="h-2 flex-1 bg-zinc-200 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-300"
+                style={{ width: `${progress}%` }}
               />
             </div>
-            <div className="mt-6">
-              <div className="font-bold text-center">Welcome to Studentize</div>
-              <div className="text-center text-zinc-600 mt-2">
-                If you have any questions, please contact us at{" "}
-                <a href="mailto:team@studentize.com" className="font-semibold">
-                  team@studentize.com
-                </a>
-              </div>
-            </div>
-            <form.Field
-              name="name"
-              children={(field) => (
-                <div className="flex flex-col gap-2 my-4">
-                  <label htmlFor="name" className="px-1">
-                    Name & Surname
-                  </label>
-                  <Input
-                    placeholder="Enter here"
-                    id="name"
-                    name={field.name}
-                    value={field.state.value}
-                    onChange={(ev) => field.handleChange(ev.target.value)}
-                  />
-                  {field.state.meta.errors[0]?.message && (
-                    <span className="text-red-500 text-sm px-1">
-                      {field.state.meta.errors[0].message}
-                    </span>
-                  )}
-                </div>
-              )}
-            />
-            <form.Field
-              name="organizationName"
-              children={(field) => (
-                <div className="flex flex-col gap-2 mt-4">
-                  <label htmlFor="organizationName" className="px-1">
-                    Organization Name
-                  </label>
-                  <Input
-                    placeholder="Enter here"
-                    id="organizationName"
-                    name={field.name}
-                    value={field.state.value}
-                    onChange={(ev) => field.handleChange(ev.target.value)}
-                  />
-                  {field.state.meta.errors[0]?.message && (
-                    <span className="text-red-500 text-sm px-1">
-                      {field.state.meta.errors[0].message}
-                    </span>
-                  )}
-                </div>
-              )}
-            />
+            <span className="ml-4 text-sm text-zinc-600">
+              Step {currentStep} of {TOTAL_STEPS}
+            </span>
           </div>
-          <div className="border-zinc-200 border-t p-4 bg-zinc-50">
-            <form.Subscribe
-              selector={(state) => [state.isSubmitting]}
-              children={([isSubmitting]) => (
-                <Button
-                  type="submit"
-                  variant="primary"
-                  className="w-full"
-                  isLoading={isSubmitting}
-                >
-                  Continue <ArrowRightIcon />
-                </Button>
-              )}
-            />
+        </div>
+
+        {/* Logo */}
+        <div className="flex justify-center mb-6">
+          <OrganizationLogo className="w-24" />
+        </div>
+
+        {/* Form Content */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (currentStep === TOTAL_STEPS) {
+              handleSubmit();
+            } else {
+              handleNext();
+            }
+          }}
+          className="px-6 pb-6"
+        >
+          {currentStep === 1 && <Step1Contact form={form} />}
+          {currentStep === 2 && <Step2Country form={form} />}
+          {currentStep === 3 && <Step3Graduation form={form} />}
+          {currentStep === 4 && <Step4Destinations form={form} />}
+          {currentStep === 5 && <Step5Interests form={form} />}
+          {currentStep === 6 && <Step6Support form={form} />}
+          {currentStep === 7 && <Step7Referral form={form} />}
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between mt-8">
+            <Button
+              type="button"
+              variant="neutral"
+              onClick={handleBack}
+              disabled={currentStep === 1}
+            >
+              <ArrowLeftIcon size={18} />
+              Back
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              isLoading={completeOnboardingMutation.isPending}
+            >
+              {currentStep === TOTAL_STEPS ? "Complete" : "Next"}
+              {currentStep !== TOTAL_STEPS && <ArrowRightIcon size={18} />}
+            </Button>
           </div>
         </form>
       </div>

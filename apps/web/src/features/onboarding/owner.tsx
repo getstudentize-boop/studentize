@@ -13,9 +13,9 @@ export const OwnerOnboarding = ({
 }: {
   organizationId: string;
 }) => {
-  const queryClient = useQueryClient();\
+  const queryClient = useQueryClient();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const completeOnboardingMutation = useMutation(
     orpc.organization.completeOnboarding.mutationOptions({
@@ -27,7 +27,7 @@ export const OwnerOnboarding = ({
         queryClient.invalidateQueries({
           queryKey: orpc.organization.current.key({ type: "query" }),
         });
-        
+
         navigate({ to: "/home" });
       },
     })

@@ -10,6 +10,10 @@ import {
 import { getMyProfile, GetMyProfileInputSchema } from "./get-my-profile";
 import { getMyAdvisor, GetMyAdvisorInputSchema } from "./get-my-advisor";
 import { getMySessions, GetMySessionsInputSchema } from "./get-my-sessions";
+import {
+  completeStudentOnboarding,
+  CompleteStudentOnboardingInputSchema,
+} from "./complete-onboarding";
 
 import { privateRoute } from "../../utils/middleware";
 
@@ -81,6 +85,13 @@ const getMySessionsHandler = privateRoute
     return result;
   });
 
+const studentCompleteOnboardingHandler = privateRoute
+  .input(CompleteStudentOnboardingInputSchema)
+  .handler(async ({ context, input }) => {
+    const result = await completeStudentOnboarding(context, input);
+    return result;
+  });
+
 export const student = {
   create: studentCreateHandler,
   list: studentListHandler,
@@ -91,4 +102,5 @@ export const student = {
   getMyProfile: getMyProfileHandler,
   getMyAdvisor: getMyAdvisorHandler,
   getMySessions: getMySessionsHandler,
+  completeOnboarding: studentCompleteOnboardingHandler,
 };

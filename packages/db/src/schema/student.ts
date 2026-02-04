@@ -1,4 +1,4 @@
-import { jsonb, pgEnum, pgTable, text } from "drizzle-orm/pg-core";
+import { boolean, jsonb, pgEnum, pgTable, text } from "drizzle-orm/pg-core";
 
 import { createdAt, id } from "./utils";
 
@@ -26,4 +26,8 @@ export const student = pgTable("student", {
       }>
     >()
     .default([]),
+  phone: text("phone"),
+  referralSource: text("referral_source"),
+  supportAreas: jsonb("support_areas").$type<string[]>().default([]),
+  onboardingCompleted: boolean("onboarding_completed").default(false).notNull(),
 });

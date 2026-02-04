@@ -147,3 +147,38 @@ export const getStudentSessionHistory = async (input: {
 
   return student;
 };
+
+export const updateStudentOnboarding = async (
+  userId: string,
+  data: {
+    phone?: string;
+    location?: string;
+    expectedGraduationYear?: string;
+    targetCountries?: string[];
+    areasOfInterest?: string[];
+    supportAreas?: string[];
+    referralSource?: string;
+  }
+) => {
+  const [student] = await db
+    .update(schema.student)
+    .set({
+      ...data,
+      onboardingCompleted: true,
+    })
+    .where(eq(schema.student.userId, userId))
+    .returning({ id: schema.student.id, onboardingCompleted: schema.student.onboardingCompleted });
+
+  return student;
+};
+
+export const getStudentOnboardingStatus = async (userId: string) => {
+  const student = await db.query.student.findFirst({
+    where: eq(schema.student.userId, userId),
+    columns: {
+      onboardingCompleted: true,
+    },
+  });
+
+  return student?.onboardingCompleted ?? false;
+};
