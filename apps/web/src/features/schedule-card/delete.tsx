@@ -8,7 +8,7 @@ import {
   XIcon,
 } from "@phosphor-icons/react";
 import { TrashSimpleIcon } from "@phosphor-icons/react/dist/icons/TrashSimple";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import { useState } from "react";
 
@@ -18,20 +18,33 @@ export const DeleteSession = ({
   scheduledSessionId: string;
 }) => {
   const [isSecondOptionSelected, setIsSecondOptionSelected] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const deleteMutation = useMutation(
-    orpc.scheduledSession.delete.mutationOptions({})
+    orpc.scheduledSession.delete.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({
+          queryKey: orpc.scheduledSession.list.queryKey(),
+        });
+        setIsOpen(false);
+      },
+    })
   );
 
   return (
     <Dialog
+      isOpen={isOpen}
       trigger={
         <Button variant="destructive" className="rounded-md">
           <TrashSimpleIcon />
           Delete session
         </Button>
       }
-      onOpenChange={(isOpen) => [!isOpen && setIsSecondOptionSelected(false)]}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) setIsSecondOptionSelected(false);
+      }}
       className="flex flex-col h-96 gap-4 text-center rounded-2xl"
     >
       <div className="border border-zinc-200 bg-zinc-50 shadow-xs rounded-lg flex-1 px-10 flex flex-col items-center justify-center">
