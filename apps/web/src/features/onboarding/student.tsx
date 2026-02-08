@@ -29,8 +29,6 @@ export const StudentOnboarding = () => {
       onSuccess: () => {
         // Invalidate all queries to ensure the entire app refreshes with updated state
         queryClient.invalidateQueries();
-        navigate({ to: "/student/dashboard" });
-
         window.location.reload();
       },
     })

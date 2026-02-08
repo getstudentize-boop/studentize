@@ -25,6 +25,10 @@ import { forcSyncScheduledSessionRoute } from "./force-sync";
 
 import { endMeetingRoute, EndMeetingInputSchema } from "./end-meeting";
 
+import { disconnectCalendarRoute } from "./disconnect-calendar";
+
+import { reconnectCalendarRoute } from "./reconnect-calendar";
+
 export const scheduledSession = {
   create: privateRoute
     .input(CreateScheduleSessionInputSchema)
@@ -42,4 +46,6 @@ export const scheduledSession = {
   endMeeting: privateRoute
     .input(EndMeetingInputSchema)
     .handler(endMeetingRoute),
+  disconnectCalendar: privateRoute.handler(disconnectCalendarRoute),
+  reconnectCalendar: privateRoute.handler(reconnectCalendarRoute),
 };

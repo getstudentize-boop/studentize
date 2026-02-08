@@ -2,7 +2,7 @@ import { ORPCError } from "@orpc/server";
 import { createRouteHelper } from "../../utils/middleware";
 
 // https://docs.recall.ai/reference/calendar_authenticate_create
-const getAuthToken = async () => {
+export const getAuthToken = async () => {
   const response = await fetch(
     "https://us-west-2.recall.ai/api/v1/calendar/authenticate/",
     {
@@ -28,7 +28,7 @@ const getAuthToken = async () => {
   return token;
 };
 
-const Oauth = async (input: { userId: string }) => {
+export const Oauth = async (input: { userId: string }) => {
   const { userId } = input;
 
   const url = new URL(`https://accounts.google.com/o/oauth2/v2/auth`);
