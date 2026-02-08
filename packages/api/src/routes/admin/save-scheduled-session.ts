@@ -62,6 +62,7 @@ export const saveScheduledSession = createAdminRouteHelper({
       studentUserId: scheduledSession.studentUserId,
       advisorUserId: scheduledSession.advisorUserId,
       title: `${scheduledSession.title} (${_format(new Date(), "MMM do, yyyy")})`,
+      createdAt: scheduledSession.scheduledAt,
     });
 
     const transcriptText = transcriptionData
