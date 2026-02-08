@@ -55,11 +55,11 @@ export const AdvisorUserSelection = ({
       <div className="border-b border-bzinc px-4 py-2">
         <input
           type="text"
-          className="outline-none"
+          className="outline-none w-full"
           placeholder="Student name or email"
         />
       </div>
-      <div className="h-[19rem] custom-scrollbar overflow-y-auto">
+      <div className="h-[calc(50vh-0.5rem)] custom-scrollbar overflow-y-auto">
         {studentsList.map((student) => (
           <User
             key={student.email}
