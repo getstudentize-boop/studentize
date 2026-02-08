@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { searchUKColleges, type UKCollegeFilters } from "@student/db";
+import { transformUKCollege } from "./transform";
 
 export const SearchUKCollegesInputSchema = z.object({
   search: z.string().optional(),
@@ -24,5 +25,8 @@ export const searchUKCollegesHandler = async (
   };
 
   const result = await searchUKColleges(filters);
-  return result;
+  return {
+    ...result,
+    colleges: result.colleges.map(transformUKCollege),
+  };
 };

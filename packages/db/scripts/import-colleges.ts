@@ -3,6 +3,8 @@ import { resolve } from "path";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { sql } from "drizzle-orm";
+import * as fs from "fs";
+import * as path from "path";
 import * as schema from "../src/schema";
 
 // Load environment variables
@@ -29,6 +31,32 @@ const client = postgres(process.env.DATABASE_URL, {
   connect_timeout: 10,
 });
 const db = drizzle(client, { schema });
+
+// Load existing US colleges JSON for imageUrl lookup
+const usCollegesJsonPath = path.resolve(
+  __dirname,
+  "../../../apps/web/src/features/college/us-colleges-data.json"
+);
+
+interface USCollegeJSON {
+  id: string;
+  imageUrl?: string | null;
+}
+
+let imageUrlLookup: Map<string, string> = new Map();
+
+if (fs.existsSync(usCollegesJsonPath)) {
+  console.log("Loading existing US colleges JSON for imageUrl lookup...");
+  const jsonData: USCollegeJSON[] = JSON.parse(
+    fs.readFileSync(usCollegesJsonPath, "utf-8")
+  );
+  imageUrlLookup = new Map(
+    jsonData
+      .filter((college) => college.imageUrl)
+      .map((college) => [college.id, college.imageUrl!])
+  );
+  console.log(`Loaded ${imageUrlLookup.size} image URLs from JSON\n`);
+}
 
 interface CollegeData {
   id: number;
@@ -100,9 +128,32 @@ function mapLocaleToCampusSetting(locale: number): string {
   return "Unknown";
 }
 
+function extractDomain(url: string | null): string | null {
+  if (!url) return null;
+  try {
+    const urlObj = new URL(url.startsWith("http") ? url : `https://${url}`);
+    return urlObj.hostname.replace(/^www\./, "");
+  } catch {
+    return null;
+  }
+}
+
+function generateLogoUrl(websiteUrl: string | null): string | null {
+  const domain = extractDomain(websiteUrl);
+  if (!domain) return null;
+  // Use Clearbit Logo API - free service that fetches company/organization logos
+  return `https://logo.clearbit.com/${domain}`;
+}
+
 function transformToDbSchema(college: CollegeData): typeof schema.usCollege.$inferInsert {
+  const websiteUrl = college["school.school_url"] || null;
+  const collegeId = college.id.toString();
+
+  // Prefer imageUrl from JSON lookup, fallback to Clearbit-generated URL
+  const imageUrl = imageUrlLookup.get(collegeId) || generateLogoUrl(websiteUrl);
+
   return {
-    id: college.id.toString(),
+    id: collegeId,
     schoolName: college["school.name"],
     schoolCity: college["school.city"] || null,
     schoolState: college["school.state"] || null,
@@ -128,7 +179,7 @@ function transformToDbSchema(college: CollegeData): typeof schema.usCollege.$inf
     plusLoanDebtMedian: college["latest.aid.median_debt.completers.monthly_payments"]
       ? Math.round(college["latest.aid.median_debt.completers.monthly_payments"])
       : null,
-    website: college["school.school_url"] || null,
+    website: websiteUrl,
     campusSetting: college["school.locale"] ? mapLocaleToCampusSetting(college["school.locale"]) : null,
     ugRaceJson: {
       Asian: college["latest.student.demographics.race_ethnicity.asian"]?.toString(),
@@ -136,8 +187,9 @@ function transformToDbSchema(college: CollegeData): typeof schema.usCollege.$inf
       Hispanic: college["latest.student.demographics.race_ethnicity.hispanic"]?.toString(),
       White: college["latest.student.demographics.race_ethnicity.white"]?.toString(),
     },
+    // Use imageUrl from JSON lookup, fallback to Clearbit-generated URL
+    imageUrl,
     // Placeholder fields
-    imageUrl: null,
     address: null,
     phone: null,
     internationalEmail: null,
@@ -204,16 +256,15 @@ async function main() {
     process.exit(1);
   }
 
-  const TARGET_COLLEGES = 1000; // Increase target
   let totalImported = 0;
   let totalErrors = 0;
   let page = 0;
   let consecutiveAPIErrors = 0;
   const MAX_CONSECUTIVE_ERRORS = 3;
 
-  console.log(`Target: ${TARGET_COLLEGES} colleges\n`);
+  console.log("Fetching ALL bachelor's-degree-granting institutions...\n");
 
-  while (totalImported < TARGET_COLLEGES) {
+  while (true) {
     try {
       console.log(`Fetching page ${page}...`);
       const colleges = await fetchColleges(page);
@@ -245,10 +296,6 @@ async function main() {
           if (totalImported % 100 === 0) {
             console.log(`  ✓ Imported ${totalImported} colleges...`);
           }
-
-          if (totalImported >= TARGET_COLLEGES) {
-            break;
-          }
         } catch (error) {
           totalErrors++;
           console.error(`  ✗ Error importing ${college["school.name"]}:`, error instanceof Error ? error.message : error);
@@ -256,7 +303,7 @@ async function main() {
       }
 
       page++;
-      // Longer delay to avoid rate limiting
+      // Delay to avoid rate limiting
       await new Promise((resolve) => setTimeout(resolve, 2000));
     } catch (error) {
       consecutiveAPIErrors++;

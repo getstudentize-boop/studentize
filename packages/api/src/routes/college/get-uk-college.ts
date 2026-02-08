@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { getUKCollegeById } from "@student/db";
+import { transformUKCollege } from "./transform";
 
 export const GetUKCollegeInputSchema = z.object({
   id: z.string(),
@@ -14,5 +15,5 @@ export const getUKCollegeHandler = async (input: GetUKCollegeInput) => {
     throw new Error("College not found");
   }
 
-  return college;
+  return transformUKCollege(college);
 };

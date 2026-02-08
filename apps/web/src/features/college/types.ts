@@ -15,7 +15,7 @@ export type College = {
   yearOfEstablishment: string | null;
   totalForeignStudents: number | null;
   noOfCampus: string | null;
-  overallGraduationRate: string | null;
+  overallGraduationRate: number | null;
   ugRaceJson: Record<string, string> | null;
   ugStudentResidenceJson: Record<string, string> | null;
   ugAgeDistributionJson: Record<string, string> | null;
@@ -75,19 +75,29 @@ export type College = {
   gymAndHealth: string | null;
 };
 
-// Simplified college type for card display (backwards compatible)
-export type CollegeCardData = {
+// UK College type matching the transformed API response
+export type UKCollegeData = {
   id: string;
-  name: string;
-  city: string | null;
-  state: string | null;
-  admissionRate: number | null;
-  tuition: number | null;
-  satAverage: number | null;
-  studentSize: number | null;
-  graduationRate: number | null;
-  retentionRate: number | null;
-  postGradEarnings: number | null;
+  universityName: string;
+  location: string | null;
+  tuitionFees: number | null;
+  examsAccepted: string | null;
+  scholarships: string | null;
+  imageUrl: string | null;
+  address: string | null;
+  phone: string | null;
+  internationalEmail: string | null;
+  yearOfEstablishment: string | null;
+  totalForeignStudents: number | null;
+  numberOfCampuses: string | null;
+  onCampusAccommodation: string | null;
+  offCampusAccommodation: string | null;
+  sizeOfCity: string | null;
+  academicRequirements: string | null;
+  studentComposition: string | null;
+  historicRanking: Record<string, Array<{ rank: number; year: number }>> | null;
+  about: string | null;
   website: string | null;
-  campusSetting: string | null;
+  studentLifeInfo: string | null;
+  populationOfCity: string | null;
 };

@@ -18,7 +18,10 @@ export const Route = createFileRoute("/")({
       );
 
       // Redirect students to their dashboard, others to /home
+      // Students who have completed onboarding should not see the sign-in form
       if (fullUser.organization?.role === "STUDENT") {
+        // If student has completed onboarding, redirect to dashboard
+        // (onboardingCompleted is checked in the authenticated route)
         throw redirect({ to: "/student/dashboard" });
       } else {
         throw redirect({ to: "/home" });

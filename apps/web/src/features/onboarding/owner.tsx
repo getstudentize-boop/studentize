@@ -20,14 +20,8 @@ export const OwnerOnboarding = ({
   const completeOnboardingMutation = useMutation(
     orpc.organization.completeOnboarding.mutationOptions({
       onSuccess: () => {
-        // Invalidate user and organization queries to refresh the data
-        queryClient.invalidateQueries({
-          queryKey: orpc.user.current.key({ type: "query" }),
-        });
-        queryClient.invalidateQueries({
-          queryKey: orpc.organization.current.key({ type: "query" }),
-        });
-
+        // Invalidate all queries to ensure the entire app refreshes with updated state
+        queryClient.invalidateQueries();
         navigate({ to: "/home" });
       },
     })

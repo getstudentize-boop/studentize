@@ -160,16 +160,45 @@ export const updateStudentOnboarding = async (
     referralSource?: string;
   }
 ) => {
-  const [student] = await db
-    .update(schema.student)
-    .set({
-      ...data,
-      onboardingCompleted: true,
-    })
-    .where(eq(schema.student.userId, userId))
-    .returning({ id: schema.student.id, onboardingCompleted: schema.student.onboardingCompleted });
+  // Check if student exists
+  const existingStudent = await db.query.student.findFirst({
+    where: eq(schema.student.userId, userId),
+    columns: {
+      id: true,
+    },
+  });
 
-  return student;
+  if (existingStudent) {
+    // Update existing student
+    const [student] = await db
+      .update(schema.student)
+      .set({
+        ...data,
+        onboardingCompleted: true,
+      })
+      .where(eq(schema.student.userId, userId))
+      .returning({
+        id: schema.student.id,
+        onboardingCompleted: schema.student.onboardingCompleted,
+      });
+
+    return student;
+  } else {
+    // Create new student
+    const [student] = await db
+      .insert(schema.student)
+      .values({
+        userId,
+        ...data,
+        onboardingCompleted: true,
+      })
+      .returning({
+        id: schema.student.id,
+        onboardingCompleted: schema.student.onboardingCompleted,
+      });
+
+    return student;
+  }
 };
 
 export const getStudentOnboardingStatus = async (userId: string) => {
