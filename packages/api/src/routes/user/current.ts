@@ -13,5 +13,5 @@ export const getCurrentUser = async (ctx: AuthContext) => {
     };
   }
 
-  return { user, onboardingCompleted: false };
+  return { ...user, onboardingCompleted: false };
 };
