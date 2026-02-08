@@ -25,6 +25,32 @@ const client = postgres(process.env.DATABASE_URL, {
 });
 const db = drizzle(client, { schema });
 
+// Load existing UK colleges JSON for imageUrl lookup
+const ukCollegesJsonPath = path.resolve(
+  __dirname,
+  "../../../apps/web/src/features/college/uk-colleges-data.json"
+);
+
+interface UKCollegeJSON {
+  id: string;
+  imageUrl?: string | null;
+}
+
+let imageUrlLookup: Map<string, string> = new Map();
+
+if (fs.existsSync(ukCollegesJsonPath)) {
+  console.log("Loading existing UK colleges JSON for imageUrl lookup...");
+  const jsonData: UKCollegeJSON[] = JSON.parse(
+    fs.readFileSync(ukCollegesJsonPath, "utf-8")
+  );
+  imageUrlLookup = new Map(
+    jsonData
+      .filter((college) => college.imageUrl)
+      .map((college) => [college.id, college.imageUrl!])
+  );
+  console.log(`Loaded ${imageUrlLookup.size} image URLs from JSON\n`);
+}
+
 // CSV row interface matching the CSV headers
 interface UKCollegeCSVRow {
   id: string;
@@ -53,10 +79,16 @@ interface UKCollegeCSVRow {
 }
 
 function parseJsonSafe<T>(value: string | undefined | null): T | null {
-  if (!value || value.trim() === "") return null;
+  // Handle null, undefined, or empty strings
+  if (!value || value.trim() === "" || value.trim() === '""' || value.trim() === "''") {
+    return null;
+  }
+  
+  const trimmed = value.trim();
+  
   try {
     // Handle double-encoded JSON (CSV sometimes escapes JSON with extra quotes)
-    let parsed = value;
+    let parsed = trimmed;
     // If the value starts with a quote, try parsing it first
     if (parsed.startsWith('"') && parsed.endsWith('"')) {
       parsed = JSON.parse(parsed);
@@ -65,13 +97,20 @@ function parseJsonSafe<T>(value: string | undefined | null): T | null {
   } catch {
     // Try unescaping double quotes
     try {
-      const unescaped = value.replace(/""/g, '"');
+      const unescaped = trimmed.replace(/""/g, '"');
+      // Skip if unescaped is still empty or just quotes
+      if (unescaped.trim() === "" || unescaped.trim() === '""' || unescaped.trim() === "''") {
+        return null;
+      }
       if (unescaped.startsWith('"') && unescaped.endsWith('"')) {
         return JSON.parse(JSON.parse(unescaped)) as T;
       }
       return JSON.parse(unescaped) as T;
     } catch {
-      console.warn(`Failed to parse JSON: ${value.substring(0, 100)}...`);
+      // Only warn if the value looks like it might be JSON (contains { or [)
+      if (trimmed.includes("{") || trimmed.includes("[")) {
+        console.warn(`Failed to parse JSON: ${trimmed.substring(0, 100)}...`);
+      }
       return null;
     }
   }
@@ -96,6 +135,9 @@ function transformToDbSchema(
   // Parse student_life_info - it's a nested JSON
   const studentLifeInfo = parseJsonSafe<object>(row.student_life_info);
 
+  // Prefer imageUrl from JSON lookup, fallback to CSV value
+  const imageUrl = imageUrlLookup.get(row.id) || row.image_url || null;
+
   return {
     id: row.id,
     universityName: row["University Name"],
@@ -103,7 +145,7 @@ function transformToDbSchema(
     tuitionFees: row["Tuition Fees"] || null,
     examsAccepted: row["Exams Accepted"] || null,
     scholarships: row.Scholarships || null,
-    imageUrl: row.image_url || null,
+    imageUrl,
     address: row.address || null,
     phone: row.phone || null,
     internationalEmail: row.international_email || null,

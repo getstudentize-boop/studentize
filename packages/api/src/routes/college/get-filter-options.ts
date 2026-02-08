@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { getUSCollegeStates, getUKCollegeLocations } from "@student/db";
+import {
+  getUSCollegeStates,
+  getUKCollegeLocations,
+  getUSCollegeCampusSettings,
+  getUKCollegeCitySizes,
+} from "@student/db";
 
 export const GetFilterOptionsInputSchema = z.object({});
 
@@ -8,15 +13,17 @@ export type GetFilterOptionsInput = z.infer<
 >;
 
 export const getFilterOptionsHandler = async () => {
-  const [usStates, ukLocations] = await Promise.all([
+  const [usStates, ukLocations, campusSettings, citySizes] = await Promise.all([
     getUSCollegeStates(),
     getUKCollegeLocations(),
+    getUSCollegeCampusSettings(),
+    getUKCollegeCitySizes(),
   ]);
 
   return {
     usStates,
     ukLocations,
-    campusSettings: ["Urban", "Suburban", "Rural"],
-    citySizes: ["Small", "Medium", "Large"],
+    campusSettings,
+    citySizes,
   };
 };

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import {
   MapPin,
   GraduationCap,
@@ -11,16 +11,6 @@ import {
   Eye,
 } from "@phosphor-icons/react";
 import { College } from "./types";
-import { getUSCollegeById } from "./us-colleges";
-import {
-  GeneralTab,
-  OverviewTab,
-  AdmissionsTab,
-  AcademicsTab,
-  FinancesTab,
-  CampusLifeTab,
-  ContactTab,
-} from "./tabs";
 
 const MODAL_TABS = [
   { id: "general", label: "General", icon: House },
@@ -46,20 +36,13 @@ const getSelectivity = (rate: number) => {
 };
 
 export function CollegeModal({
-  college: initialCollege,
+  college,
   onClose,
 }: {
   college: College;
   onClose: () => void;
 }) {
   const [activeTab, setActiveTab] = useState<ModalTab>("general");
-
-  // Try to get the full college data from local JSON (which has all fields like aboutSection)
-  // Fall back to the initial college data if not found
-  const college = useMemo(() => {
-    const fullCollege = getUSCollegeById(initialCollege.id);
-    return fullCollege || initialCollege;
-  }, [initialCollege.id]);
 
   const name = college.schoolName;
   const location =
@@ -136,13 +119,10 @@ export function CollegeModal({
 
           {/* Tab Content */}
           <div className="p-6">
-            {activeTab === "general" && <GeneralTab college={college} />}
-            {activeTab === "overview" && <OverviewTab college={college} />}
-            {activeTab === "admissions" && <AdmissionsTab college={college} />}
-            {activeTab === "academics" && <AcademicsTab college={college} />}
-            {activeTab === "finances" && <FinancesTab college={college} />}
-            {activeTab === "campus-life" && <CampusLifeTab college={college} />}
-            {activeTab === "contact" && <ContactTab college={college} />}
+            <p className="text-zinc-500">
+              Tab content goes here. Active tab: {activeTab}
+            </p>
+            {/* TODO: Implement tab components */}
           </div>
         </div>
       </div>

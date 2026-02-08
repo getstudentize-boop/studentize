@@ -282,3 +282,23 @@ export const getUKCollegeLocations = async () => {
 
   return locations.map((l) => l.location).filter(Boolean);
 };
+
+export const getUSCollegeCampusSettings = async () => {
+  const settings = await db
+    .selectDistinct({ campusSetting: schema.usCollege.campusSetting })
+    .from(schema.usCollege)
+    .where(sql`${schema.usCollege.campusSetting} IS NOT NULL`)
+    .orderBy(asc(schema.usCollege.campusSetting));
+
+  return settings.map((s) => s.campusSetting).filter(Boolean);
+};
+
+export const getUKCollegeCitySizes = async () => {
+  const sizes = await db
+    .selectDistinct({ sizeOfCity: schema.ukCollege.sizeOfCity })
+    .from(schema.ukCollege)
+    .where(sql`${schema.ukCollege.sizeOfCity} IS NOT NULL`)
+    .orderBy(asc(schema.ukCollege.sizeOfCity));
+
+  return sizes.map((s) => s.sizeOfCity).filter(Boolean);
+};

@@ -27,17 +27,18 @@ export const StudentOnboarding = () => {
   const completeOnboardingMutation = useMutation(
     orpc.student.completeOnboarding.mutationOptions({
       onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: orpc.user.current.key({ type: "query" }),
-        });
+        // Invalidate all queries to ensure the entire app refreshes with updated state
+        queryClient.invalidateQueries();
         navigate({ to: "/student/dashboard" });
+
+        window.location.reload();
       },
     })
   );
 
   const form = useForm({
     defaultValues: {
-      email: user.email,
+      email: user?.email ?? "",
       phone: "",
       location: "",
       expectedGraduationYear: "",

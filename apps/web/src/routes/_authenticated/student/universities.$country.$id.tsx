@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
   MapPin,
@@ -12,13 +12,11 @@ import {
   CurrencyDollar,
   ChartLine,
   Buildings,
+  Spinner,
 } from "@phosphor-icons/react";
-import {
-  getUKCollegeById,
-  getUSCollegeById,
-  type USCollege,
-  type UKCollege,
-} from "@/features/college";
+
+import { orpc } from "orpc/client";
+import type { College, UKCollegeData } from "@/features/college/types";
 
 export const Route = createFileRoute(
   "/_authenticated/student/universities/$country/$id"
@@ -30,20 +28,33 @@ function CollegeDetailPage() {
   const { country, id } = Route.useParams();
   const isUS = country === "us";
 
-  // Get college from local JSON data (no API call needed)
-  const usCollege = useMemo(() => {
-    if (!isUS) return undefined;
-    return getUSCollegeById(id);
-  }, [isUS, id]);
+  // Fetch US college
+  const usCollegeQuery = useQuery({
+    ...orpc.college.getUS.queryOptions({ input: { id } }),
+    enabled: isUS,
+  });
 
-  const ukCollege = useMemo(() => {
-    if (isUS) return undefined;
-    return getUKCollegeById(id);
-  }, [isUS, id]);
+  // Fetch UK college
+  const ukCollegeQuery = useQuery({
+    ...orpc.college.getUK.queryOptions({ input: { id } }),
+    enabled: !isUS,
+  });
 
-  const college = isUS ? usCollege : ukCollege;
+  const activeQuery = isUS ? usCollegeQuery : ukCollegeQuery;
+  const college = activeQuery.data;
+  const isLoading = activeQuery.isLoading;
+  const isError = activeQuery.isError;
 
-  if (!college) {
+  if (isLoading) {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center bg-zinc-50">
+        <Spinner size={40} className="mb-3 text-blue-500 animate-spin" />
+        <p className="text-zinc-500">Loading university...</p>
+      </div>
+    );
+  }
+
+  if (isError || !college) {
     return (
       <div className="h-full flex flex-col items-center justify-center">
         <div className="text-gray-500 mb-4">University not found</div>
@@ -58,8 +69,8 @@ function CollegeDetailPage() {
   }
 
   const collegeName = isUS
-    ? (college as USCollege).schoolName
-    : (college as UKCollege).universityName;
+    ? (college as College).schoolName
+    : (college as UKCollegeData).universityName;
   const placeholderImage = `https://ui-avatars.com/api/?name=${encodeURIComponent(collegeName)}&size=800&background=3b82f6&color=fff&bold=true&format=svg`;
 
   return (
@@ -166,13 +177,13 @@ function CollegeDetailPage() {
           </div>
 
           {/* About Section */}
-          {(isUS ? usCollege?.aboutSection : ukCollege?.about) && (
+          {(isUS ? (college as College).aboutSection : (college as UKCollegeData).about) && (
             <div className="pt-6 border-t border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900 mb-3">
                 About
               </h2>
               <p className="text-gray-700 leading-relaxed">
-                {isUS ? usCollege?.aboutSection : ukCollege?.about}
+                {isUS ? (college as College).aboutSection : (college as UKCollegeData).about}
               </p>
             </div>
           )}
@@ -180,67 +191,67 @@ function CollegeDetailPage() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          {isUS && usCollege ? (
+          {isUS && college ? (
             <>
-              {usCollege.admissionRate && (
+              {(college as College).admissionRate && (
                 <StatCard
                   icon={<ChartLine size={24} />}
                   label="Acceptance Rate"
-                  value={`${(usCollege.admissionRate * 100).toFixed(1)}%`}
+                  value={`${((college as College).admissionRate! * 100).toFixed(1)}%`}
                 />
               )}
-              {usCollege.tuitionOutOfState && (
+              {(college as College).tuitionOutOfState && (
                 <StatCard
                   icon={<CurrencyDollar size={24} />}
                   label="Out-of-State Tuition"
-                  value={`$${Number(usCollege.tuitionOutOfState).toLocaleString()}`}
+                  value={`$${Number((college as College).tuitionOutOfState).toLocaleString()}`}
                 />
               )}
-              {usCollege.totalEnrollment && (
+              {(college as College).totalEnrollment && (
                 <StatCard
                   icon={<Users size={24} />}
                   label="Total Enrollment"
-                  value={Number(usCollege.totalEnrollment).toLocaleString()}
+                  value={Number((college as College).totalEnrollment).toLocaleString()}
                 />
               )}
-              {usCollege.graduationRate && (
+              {(college as College).graduationRate && (
                 <StatCard
                   icon={<GraduationCap size={24} />}
                   label="Graduation Rate"
-                  value={`${usCollege.graduationRate}%`}
+                  value={`${(college as College).graduationRate}%`}
                 />
               )}
             </>
-          ) : ukCollege ? (
+          ) : college ? (
             <>
-              {ukCollege.tuitionFees && (
+              {(college as UKCollegeData).tuitionFees && (
                 <StatCard
                   icon={<CurrencyDollar size={24} />}
                   label="Tuition Fees"
-                  value={`£${Number(ukCollege.tuitionFees).toLocaleString()}`}
+                  value={`£${Number((college as UKCollegeData).tuitionFees).toLocaleString()}`}
                 />
               )}
-              {ukCollege.totalForeignStudents && (
+              {(college as UKCollegeData).totalForeignStudents && (
                 <StatCard
                   icon={<Users size={24} />}
                   label="International Students"
                   value={Number(
-                    ukCollege.totalForeignStudents
+                    (college as UKCollegeData).totalForeignStudents
                   ).toLocaleString()}
                 />
               )}
-              {ukCollege.numberOfCampuses && (
+              {(college as UKCollegeData).numberOfCampuses && (
                 <StatCard
                   icon={<Buildings size={24} />}
                   label="Number of Campuses"
-                  value={ukCollege.numberOfCampuses}
+                  value={(college as UKCollegeData).numberOfCampuses!}
                 />
               )}
-              {ukCollege.examsAccepted && (
+              {(college as UKCollegeData).examsAccepted && (
                 <StatCard
                   icon={<GraduationCap size={24} />}
                   label="Exams Accepted"
-                  value={ukCollege.examsAccepted}
+                  value={(college as UKCollegeData).examsAccepted!}
                 />
               )}
             </>
@@ -249,10 +260,10 @@ function CollegeDetailPage() {
 
         {/* Detailed Information Sections */}
         <div className="space-y-6">
-          {isUS && usCollege ? (
-            <USCollegeDetails college={usCollege} />
-          ) : ukCollege ? (
-            <UKCollegeDetails college={ukCollege} />
+          {isUS && college ? (
+            <USCollegeDetails college={college as College} />
+          ) : college ? (
+            <UKCollegeDetails college={college as UKCollegeData} />
           ) : null}
         </div>
       </div>
@@ -278,7 +289,7 @@ function StatCard({ icon, label, value }: StatCardProps) {
   );
 }
 
-function USCollegeDetails({ college }: { college: USCollege }) {
+function USCollegeDetails({ college }: { college: College }) {
   return (
     <>
       {/* Admissions */}
@@ -366,7 +377,7 @@ function USCollegeDetails({ college }: { college: USCollege }) {
   );
 }
 
-function UKCollegeDetails({ college }: { college: UKCollege }) {
+function UKCollegeDetails({ college }: { college: UKCollegeData }) {
   return (
     <>
       {/* Accommodation */}

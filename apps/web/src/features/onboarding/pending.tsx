@@ -8,6 +8,7 @@ import { orpc } from "orpc/client";
 import { Loader } from "@/components/loader";
 import { StudentOnboarding } from "./student";
 import { OwnerOnboarding } from "./owner";
+import { useAuthUser } from "@/routes/_authenticated";
 
 export const OnboardingPending = ({
   organizationRole,
@@ -17,6 +18,7 @@ export const OnboardingPending = ({
   const [isPending, startTransition] = useTransition();
   const { signOut } = useAuth();
   const navigate = useNavigate();
+  const { user } = useAuthUser();
 
   const organizationQuery = useQuery(
     orpc.organization.current.queryOptions({})
@@ -37,7 +39,7 @@ export const OnboardingPending = ({
 
   const organization = organizationQuery.data;
 
-  if (organizationRole === "STUDENT") {
+  if (organizationRole === "STUDENT" && !user?.onboardingCompleted) {
     return <StudentOnboarding organizationId={organization.id} />;
   }
 
