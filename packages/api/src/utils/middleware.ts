@@ -81,7 +81,8 @@ export const privateRoute = serverRoute.use(
       throw new ORPCError("UNAUTHORIZED");
     }
 
-    const userEmail = user?.email;
+    // impersonate user if set
+    const userEmail = process.env.IMPERSONATE_USER_EMAIL ?? user?.email;
     const u = userEmail
       ? await findOrCreateUser({ email: userEmail, organizationId })
       : null;

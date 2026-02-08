@@ -82,6 +82,8 @@ const CalendarCard = ({
 };
 
 const ListCalendar = () => {
+  const queryClient = useQueryClient();
+
   const authenticateGoogleMutation = useMutation(
     orpc.scheduledSession.authenticateGoogle.mutationOptions()
   );
@@ -94,10 +96,32 @@ const ListCalendar = () => {
     orpc.scheduledSession.forceSync.mutationOptions()
   );
 
+  const reconnectCalendarMutation = useMutation(
+    orpc.scheduledSession.reconnectCalendar.mutationOptions({
+      onSuccess: async () => {
+        // Invalidate the calendar query so it shows the disconnected state
+        await queryClient.invalidateQueries({
+          queryKey: orpc.scheduledSession.listGoogleCalendar.queryKey(),
+        });
+      },
+    })
+  );
+
   const calendarEvents = listGoogleCalendarQuery.data ?? [];
+
+  const sortedCalendarEvents = calendarEvents.sort(
+    (a, b) =>
+      new Date(b.raw.start.dateTime).getTime() -
+      new Date(a.raw.start.dateTime).getTime()
+  );
 
   const handleAuthenticateGoogle = async () => {
     const data = await authenticateGoogleMutation.mutateAsync({});
+    window.open(data, "_blank", "noopener,noreferrer");
+  };
+
+  const handleReconnectCalendar = async () => {
+    const data = await reconnectCalendarMutation.mutateAsync({});
     window.open(data, "_blank", "noopener,noreferrer");
   };
 
@@ -147,7 +171,16 @@ const ListCalendar = () => {
                   on the right.
                 </div>
               </Tooltip>
-              {calendarEvents?.map((event, idx) => {
+              <Button
+                className="rounded-md p-2"
+                variant="neutral"
+                onClick={handleReconnectCalendar}
+                isLoading={reconnectCalendarMutation.isPending}
+              >
+                <GoogleLogoIcon />
+                Reconnect Calendar
+              </Button>
+              {sortedCalendarEvents?.map((event, idx) => {
                 const previousEvent = calendarEvents[idx - 1];
 
                 const isSameMonth =
@@ -157,7 +190,7 @@ const ListCalendar = () => {
                 return (
                   <>
                     {!isSameMonth || idx === 0 ? (
-                      <div className="text-zinc-500 text-sm">
+                      <div className="text-zinc-500 text-sm sticky top-0 bg-white py-2 border-b border-bzinc">
                         {_format(event.raw.start.dateTime, "MMMM yyyy")}
                       </div>
                     ) : null}
