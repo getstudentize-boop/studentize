@@ -9,6 +9,7 @@ export const createSession = async (data: {
   studentUserId?: string | null;
   advisorUserId?: string | null;
   title: string;
+  createdAt?: Date;
 }) => {
   const [session] = await db
     .insert(schema.session)
@@ -16,6 +17,7 @@ export const createSession = async (data: {
       studentUserId: data.studentUserId,
       advisorUserId: data.advisorUserId,
       title: data.title,
+      createdAt: data.createdAt,
     })
     .returning({ id: schema.session.id });
 
@@ -46,6 +48,7 @@ export const getScheduledSessionByCreatedSessionId = async (input: {
       botId: true,
       studentUserId: true,
       createdSessionId: true,
+      scheduledAt: true,
     },
   });
 

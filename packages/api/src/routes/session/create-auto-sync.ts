@@ -1,5 +1,8 @@
 import { createRouteHelper } from "../../utils/middleware";
-import { updateSessionById } from "@student/db";
+import {
+  updateSessionById,
+  getScheduledSessionByCreatedSessionId,
+} from "@student/db";
 
 import { ORPCError } from "@orpc/server";
 import z from "zod";
@@ -28,7 +31,17 @@ export const createAutoSyncRoute = createRouteHelper({
 
     const { sessionId, advisorUserId, studentUserId } = input;
 
-    await updateSessionById({ sessionId, advisorUserId, studentUserId });
+    // Find the scheduled session linked to this session
+    const scheduledSession = await getScheduledSessionByCreatedSessionId({
+      sessionId,
+    });
+
+    await updateSessionById({
+      sessionId,
+      advisorUserId,
+      studentUserId,
+      createdAt: scheduledSession?.scheduledAt,
+    });
 
     const temporaryTranscriptionKey = createTemporaryTranscriptionObjectKey({
       sessionId,
