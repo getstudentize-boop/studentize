@@ -11,7 +11,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { orpc } from "orpc/client";
 import { useEffect, useState } from "react";
 
-import { format as _format } from "date-fns";
+import { format as _format, isBefore, subDays } from "date-fns";
 import { fromZonedTime } from "date-fns-tz";
 import { ScheduleCard } from "@/features/schedule-card";
 
@@ -183,9 +183,19 @@ const ListCalendar = () => {
               {sortedCalendarEvents?.map((event, idx) => {
                 const previousEvent = calendarEvents[idx - 1];
 
+                // is within this week and beyond
+                const isBeforeCurrentWeek = isBefore(
+                  event.raw.start.dateTime,
+                  subDays(new Date(), 7)
+                );
+
                 const isSameMonth =
                   new Date(event.raw.start.dateTime).getMonth() ===
                   new Date(previousEvent?.raw.start.dateTime).getMonth();
+
+                if (isBeforeCurrentWeek) {
+                  return null;
+                }
 
                 return (
                   <>
