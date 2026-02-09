@@ -14,7 +14,8 @@
     "import:uk-colleges": "tsx scripts/import-uk-colleges.ts",
     "export:uk-colleges-json": "tsx scripts/export-uk-colleges-json.ts",
     "export:us-colleges-json": "tsx scripts/export-us-colleges-json.ts",
-    "create:organization": "tsx scripts/create-organization.ts"
+    "create:organization": "tsx scripts/create-organization.ts",
+    "merge:student-profiles": "tsx scripts/merge-student-profiles.ts"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.8",
