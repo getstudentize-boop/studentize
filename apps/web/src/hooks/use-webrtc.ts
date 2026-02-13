@@ -88,6 +88,21 @@ export const useWebRTC = () => {
       const dc = pc.createDataChannel("oai-events");
       dataChannelRef.current = dc;
 
+      dc.addEventListener("open", () => {
+        dc.send(
+          JSON.stringify({
+            type: "conversation.item.create",
+            item: {
+              type: "message",
+              role: "user",
+              content: [{ type: "input_text", text: "Hi" }],
+            },
+          })
+        );
+
+        dc.send(JSON.stringify({ type: "response.create" }));
+      });
+
       dc.addEventListener("message", (e) => {
         try {
           const data = JSON.parse(e.data);
