@@ -89,25 +89,14 @@ export const useWebRTC = () => {
         dataChannelRef.current = dc;
 
         dc.addEventListener("open", () => {
-          dc.send(
-            JSON.stringify({
-              type: "session.update",
-              session: {
-                instructions,
-                voice: "coral",
-                input_audio_transcription: { model: "gpt-4o-transcribe" },
-                audio: {
-                  input: {
-                    transcription: {
-                      model: "gpt-4o-transcribe",
-                      language: "en",
-                    },
-                    noise_reduction: { type: "near_field" },
-                  },
-                },
-              },
-            })
-          );
+          if (instructions) {
+            dc.send(
+              JSON.stringify({
+                type: "session.update",
+                session: { instructions },
+              })
+            );
+          }
 
           dc.send(JSON.stringify({ type: "response.create" }));
         });

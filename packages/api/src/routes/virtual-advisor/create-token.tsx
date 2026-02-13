@@ -5,6 +5,13 @@ const sessionConfig = JSON.stringify({
     type: "realtime",
     model: "gpt-realtime",
     audio: {
+      input: {
+        transcription: {
+          model: "gpt-4o-transcribe",
+          language: "en",
+        },
+        noise_reduction: { type: "near_field" },
+      },
       output: {
         voice: "marin",
       },
