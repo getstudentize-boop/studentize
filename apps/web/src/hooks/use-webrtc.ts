@@ -96,6 +96,15 @@ export const useWebRTC = () => {
                 instructions,
                 voice: "coral",
                 input_audio_transcription: { model: "gpt-4o-transcribe" },
+                audio: {
+                  input: {
+                    transcription: {
+                      model: "gpt-4o-transcribe",
+                      language: "en",
+                    },
+                    noise_reduction: { type: "near_field" },
+                  },
+                },
               },
             })
           );
