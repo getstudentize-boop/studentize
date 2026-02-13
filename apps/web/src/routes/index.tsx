@@ -4,6 +4,7 @@ import { Button } from "@/components/button";
 import { useAuth } from "@workos-inc/authkit-react";
 import { getUserAuth } from "@/utils/workos";
 import { orpc } from "orpc/client";
+import { setLocalStorage } from "@/utils/local-storage";
 
 export const Route = createFileRoute("/")({
   component: App,
@@ -35,23 +36,29 @@ function App() {
 
   return (
     <div className="flex h-screen flex-1 bg-white">
-      <div className="flex-1 flex flex-col justify-center items-center gap-6 px-12">
-        <img src="/logo.png" alt="Studentize Logo" className="w-24 mb-2" />
-        <h1 className="text-2xl font-semibold text-zinc-900 mb-2">
+      <div className="flex-1 flex flex-col justify-center items-center px-12 relative">
+        <img src="/logo.png" alt="Studentize Logo" className="w-16 mb-2" />
+        <div className=" mt-4 font-semibold text-zinc-900 mb-1">
           All-in-One Admissions Solution
-        </h1>
-        <p className="text-zinc-600 text-center max-w-md">
+        </div>
+        <div className="text-zinc-600 text-center max-w-md mb-4">
           Powered by Real Mentors.
-        </p>
+        </div>
         <div className="flex flex-col gap-3 mt-2 w-56">
-          <Button
-            variant="neutral"
-            className="w-full"
-            onClick={() => signIn({ state: "student-signup" })}
-          >
+          <Button variant="neutral" className="w-full" onClick={() => signIn()}>
             Sign In
           </Button>
         </div>
+
+        <button
+          className="absolute bottom-10 right-10 hover:underline"
+          onClick={() => {
+            setLocalStorage("signupAsAdvisor", true);
+            signIn();
+          }}
+        >
+          Sign up as advisor
+        </button>
       </div>
       <div className="flex-1 p-6 flex bg-zinc-50">
         <div className="w-full h-full border overflow-hidden border-zinc-200 rounded-xl bg-gradient-to-b from-zinc-50 to-white relative shadow-sm">

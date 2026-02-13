@@ -9,6 +9,7 @@ import type { RouterClient, InferRouterOutputs } from "@orpc/server";
 
 import { router } from "@student/api";
 import { createClient } from "@workos-inc/authkit-js";
+import { getLocalStorage } from "@/utils/local-storage";
 
 export type RouterOutputs = InferRouterOutputs<typeof router>;
 
@@ -34,11 +35,13 @@ const getORPCClient = createIsomorphicFn()
           import.meta.env.VITE_WORKOS_CLIENT_ID!,
           { devMode: true }
         );
+
         const data = await workos.getAccessToken();
 
         return {
           Authorization: `Bearer ${data}`,
           Hostname: window.location.hostname,
+          SignupAsAdvisor: getLocalStorage("signupAsAdvisor")?.toString(),
         };
       },
       interceptors: [
