@@ -6,6 +6,7 @@ export type Context = {
   accessToken?: string;
   organizationId: string;
   userVerificationPayload?: any;
+  signupAsAdvisor?: boolean;
 };
 
 export type AuthContext = {
@@ -71,11 +72,7 @@ export const adminRoute = serverRoute.use(
 
 export const privateRoute = serverRoute.use(
   os.middleware(async ({ context, next }) => {
-    const { user, organizationId } = context as any;
-
-    // const data = await getCalendarList({ accessToken });
-
-    // console.log("data", data);
+    const { user, organizationId, signupAsAdvisor } = context as any;
 
     if (!user) {
       throw new ORPCError("UNAUTHORIZED");
@@ -84,7 +81,11 @@ export const privateRoute = serverRoute.use(
     // impersonate user if set
     const userEmail = process.env.IMPERSONATE_USER_EMAIL ?? user?.email;
     const u = userEmail
-      ? await findOrCreateUser({ email: userEmail, organizationId })
+      ? await findOrCreateUser({
+          email: userEmail,
+          organizationId,
+          role: signupAsAdvisor ? "ADVISOR" : "STUDENT",
+        })
       : null;
 
     return next({

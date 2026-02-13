@@ -6,6 +6,7 @@ type MembershipSelect = InferSelectModel<typeof schema.membership>;
 export const findOrCreateUser = async (data: {
   email: string;
   organizationId: string;
+  role: MembershipSelect["role"];
 }) => {
   // First, check if user exists (without requiring membership)
   const existingUser = await db.query.user.findFirst({
@@ -48,7 +49,7 @@ export const findOrCreateUser = async (data: {
         .values({
           userId: existingUser.id,
           organizationId: data.organizationId,
-          role: "STUDENT",
+          role: data.role,
         })
         .returning({
           id: schema.membership.id,
@@ -80,7 +81,7 @@ export const findOrCreateUser = async (data: {
       .values({
         userId: newUser.id,
         organizationId: data.organizationId,
-        role: "STUDENT",
+        role: data.role,
       })
       .returning({
         id: schema.membership.id,
