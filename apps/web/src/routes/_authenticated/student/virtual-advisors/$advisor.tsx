@@ -124,8 +124,8 @@ function RouteComponent() {
                 className={cn(
                   "max-w-[80%] rounded-xl px-3 py-2 text-sm",
                   entry.role === "user"
-                    ? "self-end bg-primary text-white"
-                    : "self-start bg-zinc-100 text-zinc-800"
+                    ? "self-end bg-zinc-100 text-zinc-800"
+                    : "self-start "
                 )}
               >
                 {entry.text}
