@@ -1,6 +1,5 @@
 import { Loader } from "@/components/loader";
 import { Repeat } from "@/components/repeat";
-import { TableSkeletonBody } from "@/components/skeletons";
 import {
   Table,
   TableHeader,
@@ -50,16 +49,18 @@ export const DataTable = ({
       </TableHeader>
       <TableBody className="overflow-y-auto custom-scrollbar bg-white">
         {isLoadingOrError ? (
-          <>
-            <tr>
-              {table.getAllColumns().map((c) => (
-                <td key={c.id} className="pr-4 first:pl-4 pt-4 pb-2">
-                  <Loader isError={isError} />
-                </td>
-              ))}
-            </tr>
-            <TableSkeletonBody columns={table.getAllColumns().length} rows={12} />
-          </>
+          <Repeat
+            times={12}
+            component={
+              <tr>
+                {table.getAllColumns().map((c) => (
+                  <td key={c.id} className="pr-4 first:pl-4 pt-4 pb-2">
+                    <Loader isError={isError} />
+                  </td>
+                ))}
+              </tr>
+            }
+          />
         ) : null}
         {!isLoadingOrError &&
           table.getRowModel().rows.map((row) => (
@@ -69,7 +70,8 @@ export const DataTable = ({
               className={cn(
                 "transition-colors duration-150 group",
                 !!onRowClick && "cursor-pointer",
-                isRowSelected?.(row) && "bg-[#BCFAF9]/20 border-l-2 border-l-[#BCFAF9]"
+                isRowSelected?.(row) &&
+                  "bg-[#BCFAF9]/20 border-l-2 border-l-[#BCFAF9]"
               )}
             >
               {row.getAllCells().map((cell) => {

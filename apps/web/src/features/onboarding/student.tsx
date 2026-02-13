@@ -20,7 +20,6 @@ const TOTAL_STEPS = 7;
 
 export const StudentOnboarding = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user } = useAuthUser();
 
