@@ -31,14 +31,17 @@ import { Route as AuthenticatedSessionsSessionIdRouteImport } from './routes/_au
 import { Route as AuthenticatedSessionsAutoSessionIdRouteImport } from './routes/_authenticated/sessions/$autoSessionId'
 import { Route as AuthenticatedEssaysEssayIdRouteImport } from './routes/_authenticated/essays/$essayId'
 import { Route as AuthenticatedAdvisorsUserIdRouteImport } from './routes/_authenticated/advisors/$userId'
+import { Route as AuthenticatedStudentVirtualAdvisorsIndexRouteImport } from './routes/_authenticated/student/virtual-advisors/index'
 import { Route as AuthenticatedStudentUniversitiesIndexRouteImport } from './routes/_authenticated/student/universities.index'
 import { Route as AuthenticatedStudentAptitudeIndexRouteImport } from './routes/_authenticated/student/aptitude/index'
+import { Route as AuthenticatedStudentVirtualAdvisorsAdvisorRouteImport } from './routes/_authenticated/student/virtual-advisors/$advisor'
 import { Route as AuthenticatedStudentUniversitiesShortlistRouteImport } from './routes/_authenticated/student/universities.shortlist'
 import { Route as AuthenticatedStudentUniversitiesExplorerRouteImport } from './routes/_authenticated/student/universities.explorer'
 import { Route as AuthenticatedStudentSessionsSessionIdRouteImport } from './routes/_authenticated/student/sessions/$sessionId'
 import { Route as AuthenticatedStudentAptitudeSessionIdRouteImport } from './routes/_authenticated/student/aptitude/$sessionId'
 import { Route as AuthenticatedSessionsUserSessionIdRouteImport } from './routes/_authenticated/sessions/user/$sessionId'
 import { Route as AuthenticatedStudentUniversitiesCountryIdRouteImport } from './routes/_authenticated/student/universities.$country.$id'
+import { ServerRoute as ApiSessionServerRouteImport } from './routes/api/session'
 import { ServerRoute as ApiGoogle_oauth_callbackServerRouteImport } from './routes/api/google_oauth_callback'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as ApiAuthLoginServerRouteImport } from './routes/api/auth/login'
@@ -157,6 +160,12 @@ const AuthenticatedAdvisorsUserIdRoute =
     path: '/$userId',
     getParentRoute: () => AuthenticatedAdvisorsRoute,
   } as any)
+const AuthenticatedStudentVirtualAdvisorsIndexRoute =
+  AuthenticatedStudentVirtualAdvisorsIndexRouteImport.update({
+    id: '/student/virtual-advisors/',
+    path: '/student/virtual-advisors/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedStudentUniversitiesIndexRoute =
   AuthenticatedStudentUniversitiesIndexRouteImport.update({
     id: '/',
@@ -167,6 +176,12 @@ const AuthenticatedStudentAptitudeIndexRoute =
   AuthenticatedStudentAptitudeIndexRouteImport.update({
     id: '/student/aptitude/',
     path: '/student/aptitude/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedStudentVirtualAdvisorsAdvisorRoute =
+  AuthenticatedStudentVirtualAdvisorsAdvisorRouteImport.update({
+    id: '/student/virtual-advisors/$advisor',
+    path: '/student/virtual-advisors/$advisor',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedStudentUniversitiesShortlistRoute =
@@ -205,6 +220,11 @@ const AuthenticatedStudentUniversitiesCountryIdRoute =
     path: '/$country/$id',
     getParentRoute: () => AuthenticatedStudentUniversitiesRoute,
   } as any)
+const ApiSessionServerRoute = ApiSessionServerRouteImport.update({
+  id: '/api/session',
+  path: '/api/session',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
 const ApiGoogle_oauth_callbackServerRoute =
   ApiGoogle_oauth_callbackServerRouteImport.update({
     id: '/api/google_oauth_callback',
@@ -252,8 +272,10 @@ export interface FileRoutesByFullPath {
   '/student/sessions/$sessionId': typeof AuthenticatedStudentSessionsSessionIdRoute
   '/student/universities/explorer': typeof AuthenticatedStudentUniversitiesExplorerRoute
   '/student/universities/shortlist': typeof AuthenticatedStudentUniversitiesShortlistRoute
+  '/student/virtual-advisors/$advisor': typeof AuthenticatedStudentVirtualAdvisorsAdvisorRoute
   '/student/aptitude': typeof AuthenticatedStudentAptitudeIndexRoute
   '/student/universities/': typeof AuthenticatedStudentUniversitiesIndexRoute
+  '/student/virtual-advisors': typeof AuthenticatedStudentVirtualAdvisorsIndexRoute
   '/student/universities/$country/$id': typeof AuthenticatedStudentUniversitiesCountryIdRoute
 }
 export interface FileRoutesByTo {
@@ -280,8 +302,10 @@ export interface FileRoutesByTo {
   '/student/sessions/$sessionId': typeof AuthenticatedStudentSessionsSessionIdRoute
   '/student/universities/explorer': typeof AuthenticatedStudentUniversitiesExplorerRoute
   '/student/universities/shortlist': typeof AuthenticatedStudentUniversitiesShortlistRoute
+  '/student/virtual-advisors/$advisor': typeof AuthenticatedStudentVirtualAdvisorsAdvisorRoute
   '/student/aptitude': typeof AuthenticatedStudentAptitudeIndexRoute
   '/student/universities': typeof AuthenticatedStudentUniversitiesIndexRoute
+  '/student/virtual-advisors': typeof AuthenticatedStudentVirtualAdvisorsIndexRoute
   '/student/universities/$country/$id': typeof AuthenticatedStudentUniversitiesCountryIdRoute
 }
 export interface FileRoutesById {
@@ -311,8 +335,10 @@ export interface FileRoutesById {
   '/_authenticated/student/sessions/$sessionId': typeof AuthenticatedStudentSessionsSessionIdRoute
   '/_authenticated/student/universities/explorer': typeof AuthenticatedStudentUniversitiesExplorerRoute
   '/_authenticated/student/universities/shortlist': typeof AuthenticatedStudentUniversitiesShortlistRoute
+  '/_authenticated/student/virtual-advisors/$advisor': typeof AuthenticatedStudentVirtualAdvisorsAdvisorRoute
   '/_authenticated/student/aptitude/': typeof AuthenticatedStudentAptitudeIndexRoute
   '/_authenticated/student/universities/': typeof AuthenticatedStudentUniversitiesIndexRoute
+  '/_authenticated/student/virtual-advisors/': typeof AuthenticatedStudentVirtualAdvisorsIndexRoute
   '/_authenticated/student/universities/$country/$id': typeof AuthenticatedStudentUniversitiesCountryIdRoute
 }
 export interface FileRouteTypes {
@@ -342,8 +368,10 @@ export interface FileRouteTypes {
     | '/student/sessions/$sessionId'
     | '/student/universities/explorer'
     | '/student/universities/shortlist'
+    | '/student/virtual-advisors/$advisor'
     | '/student/aptitude'
     | '/student/universities/'
+    | '/student/virtual-advisors'
     | '/student/universities/$country/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -370,8 +398,10 @@ export interface FileRouteTypes {
     | '/student/sessions/$sessionId'
     | '/student/universities/explorer'
     | '/student/universities/shortlist'
+    | '/student/virtual-advisors/$advisor'
     | '/student/aptitude'
     | '/student/universities'
+    | '/student/virtual-advisors'
     | '/student/universities/$country/$id'
   id:
     | '__root__'
@@ -400,8 +430,10 @@ export interface FileRouteTypes {
     | '/_authenticated/student/sessions/$sessionId'
     | '/_authenticated/student/universities/explorer'
     | '/_authenticated/student/universities/shortlist'
+    | '/_authenticated/student/virtual-advisors/$advisor'
     | '/_authenticated/student/aptitude/'
     | '/_authenticated/student/universities/'
+    | '/_authenticated/student/virtual-advisors/'
     | '/_authenticated/student/universities/$country/$id'
   fileRoutesById: FileRoutesById
 }
@@ -411,12 +443,14 @@ export interface RootRouteChildren {
 }
 export interface FileServerRoutesByFullPath {
   '/api/google_oauth_callback': typeof ApiGoogle_oauth_callbackServerRoute
+  '/api/session': typeof ApiSessionServerRoute
   '/api/auth/callback': typeof ApiAuthCallbackServerRoute
   '/api/auth/login': typeof ApiAuthLoginServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
 export interface FileServerRoutesByTo {
   '/api/google_oauth_callback': typeof ApiGoogle_oauth_callbackServerRoute
+  '/api/session': typeof ApiSessionServerRoute
   '/api/auth/callback': typeof ApiAuthCallbackServerRoute
   '/api/auth/login': typeof ApiAuthLoginServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
@@ -424,6 +458,7 @@ export interface FileServerRoutesByTo {
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
   '/api/google_oauth_callback': typeof ApiGoogle_oauth_callbackServerRoute
+  '/api/session': typeof ApiSessionServerRoute
   '/api/auth/callback': typeof ApiAuthCallbackServerRoute
   '/api/auth/login': typeof ApiAuthLoginServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
@@ -432,18 +467,21 @@ export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
   fullPaths:
     | '/api/google_oauth_callback'
+    | '/api/session'
     | '/api/auth/callback'
     | '/api/auth/login'
     | '/api/rpc/$'
   fileServerRoutesByTo: FileServerRoutesByTo
   to:
     | '/api/google_oauth_callback'
+    | '/api/session'
     | '/api/auth/callback'
     | '/api/auth/login'
     | '/api/rpc/$'
   id:
     | '__root__'
     | '/api/google_oauth_callback'
+    | '/api/session'
     | '/api/auth/callback'
     | '/api/auth/login'
     | '/api/rpc/$'
@@ -451,6 +489,7 @@ export interface FileServerRouteTypes {
 }
 export interface RootServerRouteChildren {
   ApiGoogle_oauth_callbackServerRoute: typeof ApiGoogle_oauth_callbackServerRoute
+  ApiSessionServerRoute: typeof ApiSessionServerRoute
   ApiAuthCallbackServerRoute: typeof ApiAuthCallbackServerRoute
   ApiAuthLoginServerRoute: typeof ApiAuthLoginServerRoute
   ApiRpcSplatServerRoute: typeof ApiRpcSplatServerRoute
@@ -598,6 +637,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdvisorsUserIdRouteImport
       parentRoute: typeof AuthenticatedAdvisorsRoute
     }
+    '/_authenticated/student/virtual-advisors/': {
+      id: '/_authenticated/student/virtual-advisors/'
+      path: '/student/virtual-advisors'
+      fullPath: '/student/virtual-advisors'
+      preLoaderRoute: typeof AuthenticatedStudentVirtualAdvisorsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/student/universities/': {
       id: '/_authenticated/student/universities/'
       path: '/'
@@ -610,6 +656,13 @@ declare module '@tanstack/react-router' {
       path: '/student/aptitude'
       fullPath: '/student/aptitude'
       preLoaderRoute: typeof AuthenticatedStudentAptitudeIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/student/virtual-advisors/$advisor': {
+      id: '/_authenticated/student/virtual-advisors/$advisor'
+      path: '/student/virtual-advisors/$advisor'
+      fullPath: '/student/virtual-advisors/$advisor'
+      preLoaderRoute: typeof AuthenticatedStudentVirtualAdvisorsAdvisorRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/student/universities/shortlist': {
@@ -658,6 +711,13 @@ declare module '@tanstack/react-router' {
 }
 declare module '@tanstack/react-start/server' {
   interface ServerFileRoutesByPath {
+    '/api/session': {
+      id: '/api/session'
+      path: '/api/session'
+      fullPath: '/api/session'
+      preLoaderRoute: typeof ApiSessionServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
     '/api/google_oauth_callback': {
       id: '/api/google_oauth_callback'
       path: '/api/google_oauth_callback'
@@ -789,7 +849,9 @@ interface AuthenticatedRouteChildren {
   AuthenticatedEssaysIndexRoute: typeof AuthenticatedEssaysIndexRoute
   AuthenticatedScheduleIndexRoute: typeof AuthenticatedScheduleIndexRoute
   AuthenticatedStudentAptitudeSessionIdRoute: typeof AuthenticatedStudentAptitudeSessionIdRoute
+  AuthenticatedStudentVirtualAdvisorsAdvisorRoute: typeof AuthenticatedStudentVirtualAdvisorsAdvisorRoute
   AuthenticatedStudentAptitudeIndexRoute: typeof AuthenticatedStudentAptitudeIndexRoute
+  AuthenticatedStudentVirtualAdvisorsIndexRoute: typeof AuthenticatedStudentVirtualAdvisorsIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -811,8 +873,12 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedScheduleIndexRoute: AuthenticatedScheduleIndexRoute,
   AuthenticatedStudentAptitudeSessionIdRoute:
     AuthenticatedStudentAptitudeSessionIdRoute,
+  AuthenticatedStudentVirtualAdvisorsAdvisorRoute:
+    AuthenticatedStudentVirtualAdvisorsAdvisorRoute,
   AuthenticatedStudentAptitudeIndexRoute:
     AuthenticatedStudentAptitudeIndexRoute,
+  AuthenticatedStudentVirtualAdvisorsIndexRoute:
+    AuthenticatedStudentVirtualAdvisorsIndexRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -828,6 +894,7 @@ export const routeTree = rootRouteImport
   ._addFileTypes<FileRouteTypes>()
 const rootServerRouteChildren: RootServerRouteChildren = {
   ApiGoogle_oauth_callbackServerRoute: ApiGoogle_oauth_callbackServerRoute,
+  ApiSessionServerRoute: ApiSessionServerRoute,
   ApiAuthCallbackServerRoute: ApiAuthCallbackServerRoute,
   ApiAuthLoginServerRoute: ApiAuthLoginServerRoute,
   ApiRpcSplatServerRoute: ApiRpcSplatServerRoute,

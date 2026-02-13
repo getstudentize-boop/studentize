@@ -100,6 +100,12 @@ export const Header = ({
             label: "Guru",
             isActive: route({ to: "/guru" }),
           },
+          {
+            to: "/student/virtual-advisors",
+            icon: <VideoCameraIcon className="size-4" />,
+            label: "Virtual Advisors",
+            isActive: route({ to: "/student/virtual-advisors" }),
+          },
           isAdmin
             ? {
                 to: "/sessions",
@@ -148,8 +154,8 @@ export const Header = ({
         "bg-zinc-50": !isGuru,
       })}
     >
-      <div className="border-r border-zinc-200 px-3 py-5 gap-2 flex flex-col items-start bg-white transition-all duration-300 ease-out overflow-hidden group hover:w-44 w-[60px]">
-        <div className="mb-4 flex items-center gap-3 w-full">
+      <div className="border-r border-zinc-200 px-3 py-5 gap-2 flex flex-col items-start bg-white transition-all duration-300 ease-out overflow-hidden group hover:w-46 w-[60px]">
+        <div className="mb-4 flex items-center gap-3 w-full translate-x-[2.8px]">
           <img
             src="/logo.png"
             alt="Studentize Logo"
@@ -165,13 +171,12 @@ export const Header = ({
             to={to}
             key={to}
             className={cn(
-              "p-2.5 rounded-lg transition-all duration-200 ease-out",
+              "px-2.5 py-2 rounded-xl transition-all duration-200 ease-out",
               "flex items-center gap-3 w-full",
               isActive
                 ? "bg-zinc-900 text-white shadow-sm"
                 : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
             )}
-            activeProps={{ className: "bg-zinc-900 text-white" }}
           >
             <span className="flex-shrink-0">{icon}</span>
             <span className="text-sm font-medium whitespace-nowrap transition-opacity duration-300 group-hover:opacity-100 opacity-0">

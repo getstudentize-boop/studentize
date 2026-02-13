@@ -45,6 +45,7 @@ import { scheduledSession } from "./routes/scheduled-session";
 import { admin } from "./routes/admin";
 import { session } from "./routes/session";
 import { organization } from "./routes/organization";
+import { virtualAdvisor } from "./routes/virtual-advisor";
 
 export const router = {
   admin,
@@ -95,6 +96,7 @@ export const router = {
     student: chatStudentHandler,
     newId: chatNewIdHandler,
   },
+  virtualAdvisor,
 };
 
 export * from "./utils/workos";

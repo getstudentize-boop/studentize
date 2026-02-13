@@ -23,8 +23,6 @@ async function handle({ request }: { request: Request }) {
   const hostname = request.headers.get("Hostname");
   const signupAsAdvisor = request.headers.get("SignupAsAdvisor");
 
-  console.log("signupAsAdvisor", signupAsAdvisor);
-
   const authResponse =
     accessToken === process.env.ADMIN_TOKEN
       ? null
