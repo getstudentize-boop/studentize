@@ -55,10 +55,7 @@ function RouteComponent() {
     setIsLoading(true);
     try {
       const data = await createTokenMutation.mutateAsync({});
-      await initializeConnection(
-        data.value,
-        `You are ${advisor.name}, a friendly and knowledgeable student advisor from ${advisor.university}. Help students with questions about university life, admissions, courses, and campus experiences. Be conversational, warm, and speak from your personal experience as a student at ${advisor.university}.`
-      );
+      await initializeConnection(data.value, advisor.instructions);
     } catch (err) {
       console.error("Failed to start call:", err);
     } finally {
