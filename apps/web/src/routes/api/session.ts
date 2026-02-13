@@ -11,7 +11,7 @@ export const ServerRoute = createServerFileRoute("/api/session").methods({
       JSON.stringify({
         type: "realtime",
         model: "gpt-realtime",
-        audio: { output: { voice: "marin" } },
+        audio: { output: { voice: "coral" } },
       })
     );
 

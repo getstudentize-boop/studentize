@@ -13,7 +13,6 @@ export const useWebRTC = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [transcript, setTranscript] = useState<TranscriptEntry[]>([]);
-  const assistantTextRef = useRef("");
 
   useEffect(() => {
     // Create a peer connection
@@ -69,107 +68,100 @@ export const useWebRTC = () => {
   }, []);
 
   // Initialize the connection
-  const initializeConnection = useCallback(async (token: string) => {
-    if (!pcRef.current) {
-      setError(new Error("Peer connection not initialized"));
-      return;
-    }
-
-    const pc = pcRef.current;
-
-    try {
-      // Add local audio track for microphone input in the browser
-      const ms = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      });
-      pc.addTrack(ms.getTracks()[0]);
-
-      // Set up data channel for sending and receiving events
-      const dc = pc.createDataChannel("oai-events");
-      dataChannelRef.current = dc;
-
-      dc.addEventListener("open", () => {
-        dc.send(
-          JSON.stringify({
-            type: "conversation.item.create",
-            item: {
-              type: "message",
-              role: "user",
-              content: [{ type: "input_text", text: "Hi" }],
-            },
-          })
-        );
-
-        dc.send(JSON.stringify({ type: "response.create" }));
-      });
-
-      dc.addEventListener("message", (e) => {
-        try {
-          const data = JSON.parse(e.data);
-
-          if (data.type === "response.audio_transcript.delta") {
-            assistantTextRef.current += data.delta;
-            setTranscript((prev) => {
-              const last = prev[prev.length - 1];
-              if (last?.role === "assistant") {
-                return [
-                  ...prev.slice(0, -1),
-                  { role: "assistant", text: assistantTextRef.current },
-                ];
-              }
-              return [
-                ...prev,
-                { role: "assistant", text: assistantTextRef.current },
-              ];
-            });
-          }
-
-          if (data.type === "response.audio_transcript.done") {
-            assistantTextRef.current = "";
-          }
-
-          if (
-            data.type ===
-            "conversation.item.input_audio_transcription.completed"
-          ) {
-            setTranscript((prev) => [
-              ...prev,
-              { role: "user", text: data.transcript },
-            ]);
-          }
-        } catch (e) {
-          console.error("Failed to parse data channel message:", e);
-        }
-      });
-
-      // Start the session using the Session Description Protocol (SDP)
-      const offer = await pc.createOffer();
-      await pc.setLocalDescription(offer);
-
-      const sdpResponse = await fetch("/api/session", {
-        method: "POST",
-        body: offer.sdp,
-        headers: {
-          "Content-Type": "application/sdp",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!sdpResponse.ok) {
-        throw new Error(`Failed to create session: ${sdpResponse.statusText}`);
+  const initializeConnection = useCallback(
+    async (token: string, instructions?: string) => {
+      if (!pcRef.current) {
+        setError(new Error("Peer connection not initialized"));
+        return;
       }
 
-      const answer: RTCSessionDescriptionInit = {
-        type: "answer",
-        sdp: await sdpResponse.text(),
-      };
-      await pc.setRemoteDescription(answer);
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error("Unknown error");
-      setError(error);
-      console.error("Failed to initialize WebRTC connection:", error);
-    }
-  }, []);
+      const pc = pcRef.current;
+
+      try {
+        // Add local audio track for microphone input in the browser
+        const ms = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        pc.addTrack(ms.getTracks()[0]);
+
+        // Set up data channel for sending and receiving events
+        const dc = pc.createDataChannel("oai-events");
+        dataChannelRef.current = dc;
+
+        dc.addEventListener("open", () => {
+          dc.send(
+            JSON.stringify({
+              type: "session.update",
+              session: {
+                instructions,
+                voice: "coral",
+                input_audio_transcription: { model: "gpt-4o-transcribe" },
+              },
+            })
+          );
+
+          dc.send(JSON.stringify({ type: "response.create" }));
+        });
+
+        dc.addEventListener("message", (e) => {
+          try {
+            const data = JSON.parse(e.data);
+
+            if (data.type === "response.output_item.done") {
+              const text = data.item?.content?.[0]?.transcript;
+              if (text) {
+                setTranscript((prev) => [...prev, { role: "assistant", text }]);
+              }
+            }
+
+            if (
+              data.type ===
+              "conversation.item.input_audio_transcription.completed"
+            ) {
+              if (data.transcript) {
+                setTranscript((prev) => [
+                  ...prev,
+                  { role: "user", text: data.transcript },
+                ]);
+              }
+            }
+          } catch (e) {
+            console.error("Failed to parse data channel message:", e);
+          }
+        });
+
+        // Start the session using the Session Description Protocol (SDP)
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+
+        const sdpResponse = await fetch("/api/session", {
+          method: "POST",
+          body: offer.sdp,
+          headers: {
+            "Content-Type": "application/sdp",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!sdpResponse.ok) {
+          throw new Error(
+            `Failed to create session: ${sdpResponse.statusText}`
+          );
+        }
+
+        const answer: RTCSessionDescriptionInit = {
+          type: "answer",
+          sdp: await sdpResponse.text(),
+        };
+        await pc.setRemoteDescription(answer);
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error("Unknown error");
+        setError(error);
+        console.error("Failed to initialize WebRTC connection:", error);
+      }
+    },
+    []
+  );
 
   const disconnect = () => {
     if (dataChannelRef.current) {
@@ -213,7 +205,6 @@ export const useWebRTC = () => {
     setIsMuted(false);
     setError(null);
     setTranscript([]);
-    assistantTextRef.current = "";
   };
 
   const toggleMute = () => {
