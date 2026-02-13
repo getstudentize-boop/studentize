@@ -27,9 +27,6 @@ export const ServerRoute = createServerFileRoute("/api/session").methods({
     try {
       const r = await fetch("https://api.openai.com/v1/realtime/calls", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        },
         body: fd,
       });
       const sdp = await r.text();

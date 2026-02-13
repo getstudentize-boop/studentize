@@ -69,7 +69,7 @@ export const useWebRTC = () => {
 
   // Initialize the connection
   const initializeConnection = useCallback(
-    async (token: string, instructions?: string) => {
+    async (token: string, advisor: string) => {
       if (!pcRef.current) {
         setError(new Error("Peer connection not initialized"));
         return;
@@ -89,15 +89,6 @@ export const useWebRTC = () => {
         dataChannelRef.current = dc;
 
         dc.addEventListener("open", () => {
-          if (instructions) {
-            dc.send(
-              JSON.stringify({
-                type: "session.update",
-                session: { instructions },
-              })
-            );
-          }
-
           dc.send(JSON.stringify({ type: "response.create" }));
         });
 
@@ -132,7 +123,7 @@ export const useWebRTC = () => {
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
 
-        const sdpResponse = await fetch("/api/session", {
+        const sdpResponse = await fetch(`/api/session/${advisor}`, {
           method: "POST",
           body: offer.sdp,
           headers: {

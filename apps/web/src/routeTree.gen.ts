@@ -43,6 +43,7 @@ import { Route as AuthenticatedSessionsUserSessionIdRouteImport } from './routes
 import { Route as AuthenticatedStudentUniversitiesCountryIdRouteImport } from './routes/_authenticated/student/universities.$country.$id'
 import { ServerRoute as ApiSessionServerRouteImport } from './routes/api/session'
 import { ServerRoute as ApiGoogle_oauth_callbackServerRouteImport } from './routes/api/google_oauth_callback'
+import { ServerRoute as ApiSessionAdvisorServerRouteImport } from './routes/api/session.$advisor'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as ApiAuthLoginServerRouteImport } from './routes/api/auth/login'
 import { ServerRoute as ApiAuthCallbackServerRouteImport } from './routes/api/auth/callback'
@@ -231,6 +232,11 @@ const ApiGoogle_oauth_callbackServerRoute =
     path: '/api/google_oauth_callback',
     getParentRoute: () => rootServerRouteImport,
   } as any)
+const ApiSessionAdvisorServerRoute = ApiSessionAdvisorServerRouteImport.update({
+  id: '/$advisor',
+  path: '/$advisor',
+  getParentRoute: () => ApiSessionServerRoute,
+} as any)
 const ApiRpcSplatServerRoute = ApiRpcSplatServerRouteImport.update({
   id: '/api/rpc/$',
   path: '/api/rpc/$',
@@ -443,25 +449,28 @@ export interface RootRouteChildren {
 }
 export interface FileServerRoutesByFullPath {
   '/api/google_oauth_callback': typeof ApiGoogle_oauth_callbackServerRoute
-  '/api/session': typeof ApiSessionServerRoute
+  '/api/session': typeof ApiSessionServerRouteWithChildren
   '/api/auth/callback': typeof ApiAuthCallbackServerRoute
   '/api/auth/login': typeof ApiAuthLoginServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
+  '/api/session/$advisor': typeof ApiSessionAdvisorServerRoute
 }
 export interface FileServerRoutesByTo {
   '/api/google_oauth_callback': typeof ApiGoogle_oauth_callbackServerRoute
-  '/api/session': typeof ApiSessionServerRoute
+  '/api/session': typeof ApiSessionServerRouteWithChildren
   '/api/auth/callback': typeof ApiAuthCallbackServerRoute
   '/api/auth/login': typeof ApiAuthLoginServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
+  '/api/session/$advisor': typeof ApiSessionAdvisorServerRoute
 }
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
   '/api/google_oauth_callback': typeof ApiGoogle_oauth_callbackServerRoute
-  '/api/session': typeof ApiSessionServerRoute
+  '/api/session': typeof ApiSessionServerRouteWithChildren
   '/api/auth/callback': typeof ApiAuthCallbackServerRoute
   '/api/auth/login': typeof ApiAuthLoginServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
+  '/api/session/$advisor': typeof ApiSessionAdvisorServerRoute
 }
 export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
@@ -471,6 +480,7 @@ export interface FileServerRouteTypes {
     | '/api/auth/callback'
     | '/api/auth/login'
     | '/api/rpc/$'
+    | '/api/session/$advisor'
   fileServerRoutesByTo: FileServerRoutesByTo
   to:
     | '/api/google_oauth_callback'
@@ -478,6 +488,7 @@ export interface FileServerRouteTypes {
     | '/api/auth/callback'
     | '/api/auth/login'
     | '/api/rpc/$'
+    | '/api/session/$advisor'
   id:
     | '__root__'
     | '/api/google_oauth_callback'
@@ -485,11 +496,12 @@ export interface FileServerRouteTypes {
     | '/api/auth/callback'
     | '/api/auth/login'
     | '/api/rpc/$'
+    | '/api/session/$advisor'
   fileServerRoutesById: FileServerRoutesById
 }
 export interface RootServerRouteChildren {
   ApiGoogle_oauth_callbackServerRoute: typeof ApiGoogle_oauth_callbackServerRoute
-  ApiSessionServerRoute: typeof ApiSessionServerRoute
+  ApiSessionServerRoute: typeof ApiSessionServerRouteWithChildren
   ApiAuthCallbackServerRoute: typeof ApiAuthCallbackServerRoute
   ApiAuthLoginServerRoute: typeof ApiAuthLoginServerRoute
   ApiRpcSplatServerRoute: typeof ApiRpcSplatServerRoute
@@ -725,6 +737,13 @@ declare module '@tanstack/react-start/server' {
       preLoaderRoute: typeof ApiGoogle_oauth_callbackServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
+    '/api/session/$advisor': {
+      id: '/api/session/$advisor'
+      path: '/$advisor'
+      fullPath: '/api/session/$advisor'
+      preLoaderRoute: typeof ApiSessionAdvisorServerRouteImport
+      parentRoute: typeof ApiSessionServerRoute
+    }
     '/api/rpc/$': {
       id: '/api/rpc/$'
       path: '/api/rpc/$'
@@ -885,6 +904,17 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface ApiSessionServerRouteChildren {
+  ApiSessionAdvisorServerRoute: typeof ApiSessionAdvisorServerRoute
+}
+
+const ApiSessionServerRouteChildren: ApiSessionServerRouteChildren = {
+  ApiSessionAdvisorServerRoute: ApiSessionAdvisorServerRoute,
+}
+
+const ApiSessionServerRouteWithChildren =
+  ApiSessionServerRoute._addFileChildren(ApiSessionServerRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
@@ -894,7 +924,7 @@ export const routeTree = rootRouteImport
   ._addFileTypes<FileRouteTypes>()
 const rootServerRouteChildren: RootServerRouteChildren = {
   ApiGoogle_oauth_callbackServerRoute: ApiGoogle_oauth_callbackServerRoute,
-  ApiSessionServerRoute: ApiSessionServerRoute,
+  ApiSessionServerRoute: ApiSessionServerRouteWithChildren,
   ApiAuthCallbackServerRoute: ApiAuthCallbackServerRoute,
   ApiAuthLoginServerRoute: ApiAuthLoginServerRoute,
   ApiRpcSplatServerRoute: ApiRpcSplatServerRoute,

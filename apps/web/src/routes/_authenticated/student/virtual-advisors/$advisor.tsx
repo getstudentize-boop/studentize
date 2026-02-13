@@ -55,7 +55,7 @@ function RouteComponent() {
     setIsLoading(true);
     try {
       const data = await createTokenMutation.mutateAsync({});
-      await initializeConnection(data.value, advisor.instructions);
+      await initializeConnection(data.value, advisor.slug);
     } catch (err) {
       console.error("Failed to start call:", err);
     } finally {
