@@ -55,7 +55,10 @@ function RouteComponent() {
     setIsLoading(true);
     try {
       const data = await createTokenMutation.mutateAsync({});
-      await initializeConnection(data.value);
+      await initializeConnection(
+        data.value,
+        `You are ${advisor.name}, a friendly and knowledgeable student advisor from ${advisor.university}. Help students with questions about university life, admissions, courses, and campus experiences. Be conversational, warm, and speak from your personal experience as a student at ${advisor.university}.`
+      );
     } catch (err) {
       console.error("Failed to start call:", err);
     } finally {
@@ -117,7 +120,7 @@ function RouteComponent() {
               {error.message}
             </p>
           )}
-          <div className="flex-1 overflow-y-auto flex flex-col gap-3 mt-4">
+          <div className="flex-1 overflow-y-auto text-left flex flex-col gap-3 mt-4">
             {transcript.map((entry, i) => (
               <div
                 key={i}
