@@ -11,6 +11,15 @@ import {
   Eye,
 } from "@phosphor-icons/react";
 import { College } from "./types";
+import {
+  GeneralTab,
+  OverviewTab,
+  AdmissionsTab,
+  AcademicsTab,
+  FinancesTab,
+  CampusLifeTab,
+  ContactTab,
+} from "./tabs";
 
 const MODAL_TABS = [
   { id: "general", label: "General", icon: House },
@@ -119,10 +128,13 @@ export function CollegeModal({
 
           {/* Tab Content */}
           <div className="p-6">
-            <p className="text-zinc-500">
-              Tab content goes here. Active tab: {activeTab}
-            </p>
-            {/* TODO: Implement tab components */}
+            {activeTab === "general" && <GeneralTab college={college} />}
+            {activeTab === "overview" && <OverviewTab college={college} />}
+            {activeTab === "admissions" && <AdmissionsTab college={college} />}
+            {activeTab === "academics" && <AcademicsTab college={college} />}
+            {activeTab === "finances" && <FinancesTab college={college} />}
+            {activeTab === "campus-life" && <CampusLifeTab college={college} />}
+            {activeTab === "contact" && <ContactTab college={college} />}
           </div>
         </div>
       </div>

@@ -43,6 +43,7 @@ export function ProgressBar({
   color: string;
   showPercentage?: boolean;
 }) {
+  const formattedValue = value.toFixed(1);
   return (
     <div className="space-y-1.5">
       <div className="flex items-center gap-2">
@@ -55,7 +56,7 @@ export function ProgressBar({
           style={{ width: `${Math.max(value, 8)}%` }}
         >
           {showPercentage && value > 10 && (
-            <span className="text-white text-sm font-medium">{value}%</span>
+            <span className="text-white text-sm font-medium">{formattedValue}%</span>
           )}
         </div>
         {showPercentage && value <= 10 && (
@@ -63,7 +64,7 @@ export function ProgressBar({
             className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium"
             style={{ color }}
           >
-            {value}%
+            {formattedValue}%
           </span>
         )}
       </div>

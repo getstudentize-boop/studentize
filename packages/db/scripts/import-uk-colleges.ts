@@ -25,7 +25,7 @@ const client = postgres(process.env.DATABASE_URL, {
 });
 const db = drizzle(client, { schema });
 
-// Load existing UK colleges JSON for imageUrl lookup
+// Load existing UK colleges JSON for data overlay
 const ukCollegesJsonPath = path.resolve(
   __dirname,
   "../../../apps/web/src/features/college/uk-colleges-data.json"
@@ -33,22 +33,41 @@ const ukCollegesJsonPath = path.resolve(
 
 interface UKCollegeJSON {
   id: string;
+  universityName?: string;
+  location?: string | null;
+  tuitionFees?: number | null;
+  examsAccepted?: string | null;
+  scholarships?: string | null;
   imageUrl?: string | null;
+  address?: string | null;
+  phone?: string | null;
+  internationalEmail?: string | null;
+  yearOfEstablishment?: string | null;
+  totalForeignStudents?: number | null;
+  numberOfCampuses?: string | null;
+  onCampusAccommodation?: string | null;
+  offCampusAccommodation?: string | null;
+  sizeOfCity?: string | null;
+  academicRequirements?: string | null;
+  studentComposition?: Record<string, unknown> | null;
+  historicRanking?: Record<string, Array<{ rank: number; year: number }>> | null;
+  about?: string | null;
+  website?: string | null;
+  studentLifeInfo?: Record<string, unknown> | null;
+  populationOfCity?: string | null;
 }
 
-let imageUrlLookup: Map<string, string> = new Map();
+let jsonLookup: Map<string, UKCollegeJSON> = new Map();
 
 if (fs.existsSync(ukCollegesJsonPath)) {
-  console.log("Loading existing UK colleges JSON for imageUrl lookup...");
+  console.log("Loading existing UK colleges JSON for data overlay...");
   const jsonData: UKCollegeJSON[] = JSON.parse(
     fs.readFileSync(ukCollegesJsonPath, "utf-8")
   );
-  imageUrlLookup = new Map(
-    jsonData
-      .filter((college) => college.imageUrl)
-      .map((college) => [college.id, college.imageUrl!])
+  jsonLookup = new Map(
+    jsonData.map((college) => [college.id, college])
   );
-  console.log(`Loaded ${imageUrlLookup.size} image URLs from JSON\n`);
+  console.log(`Loaded ${jsonLookup.size} colleges from JSON\n`);
 }
 
 // CSV row interface matching the CSV headers
@@ -119,12 +138,48 @@ function parseJsonSafe<T>(value: string | undefined | null): T | null {
 function transformToDbSchema(
   row: UKCollegeCSVRow
 ): typeof schema.ukCollege.$inferInsert {
-  // Parse the historic_ranking JSON
+  const jsonEntry = jsonLookup.get(row.id);
+
+  // If this college exists in the JSON, prefer JSON data with CSV fallback
+  if (jsonEntry) {
+    return {
+      id: jsonEntry.id,
+      universityName: jsonEntry.universityName ?? row["University Name"],
+      location: jsonEntry.location ?? row.Location ?? null,
+      tuitionFees: jsonEntry.tuitionFees != null ? String(jsonEntry.tuitionFees) : row["Tuition Fees"] || null,
+      examsAccepted: jsonEntry.examsAccepted ?? row["Exams Accepted"] ?? null,
+      scholarships: jsonEntry.scholarships ?? row.Scholarships ?? null,
+      imageUrl: jsonEntry.imageUrl ?? row.image_url ?? null,
+      address: jsonEntry.address ?? row.address ?? null,
+      phone: jsonEntry.phone ?? row.phone ?? null,
+      internationalEmail: jsonEntry.internationalEmail ?? row.international_email ?? null,
+      yearOfEstablishment: jsonEntry.yearOfEstablishment ?? row.year_of_establishment ?? null,
+      totalForeignStudents: jsonEntry.totalForeignStudents != null
+        ? String(jsonEntry.totalForeignStudents)
+        : row.total_foreign_students || null,
+      numberOfCampuses: jsonEntry.numberOfCampuses ?? row.number_of_campuses ?? null,
+      onCampusAccommodation: jsonEntry.onCampusAccommodation ?? row.on_campus_accommodation ?? null,
+      offCampusAccommodation: jsonEntry.offCampusAccommodation ?? row.off_campus_accommodation ?? null,
+      sizeOfCity: jsonEntry.sizeOfCity ?? row.Size_of_City ?? null,
+      academicRequirements: jsonEntry.academicRequirements ?? row.Academic_Requirements ?? null,
+      studentComposition: jsonEntry.studentComposition != null
+        ? JSON.stringify(jsonEntry.studentComposition)
+        : row.student_composition || null,
+      historicRanking: jsonEntry.historicRanking ?? parseJsonSafe<Record<string, Array<{ rank: number; year: number }>>>(row.historic_ranking),
+      about: jsonEntry.about ?? row.About ?? null,
+      website: jsonEntry.website ?? row.website ?? null,
+      studentLifeInfo: jsonEntry.studentLifeInfo != null
+        ? JSON.stringify(jsonEntry.studentLifeInfo)
+        : (() => { const parsed = parseJsonSafe<object>(row.student_life_info); return parsed ? JSON.stringify(parsed) : null; })(),
+      populationOfCity: jsonEntry.populationOfCity ?? row.Population_of_City ?? null,
+    };
+  }
+
+  // Fallback: no JSON entry, use CSV data as before
   const historicRanking = parseJsonSafe<
     Record<string, Array<{ rank: number; year: number }>>
   >(row.historic_ranking);
 
-  // Parse student_composition - it's a nested JSON with student_composition wrapper
   const studentCompositionRaw = parseJsonSafe<{
     student_composition?: object;
   }>(row.student_composition);
@@ -132,11 +187,7 @@ function transformToDbSchema(
     ? JSON.stringify(studentCompositionRaw.student_composition)
     : row.student_composition || null;
 
-  // Parse student_life_info - it's a nested JSON
   const studentLifeInfo = parseJsonSafe<object>(row.student_life_info);
-
-  // Prefer imageUrl from JSON lookup, fallback to CSV value
-  const imageUrl = imageUrlLookup.get(row.id) || row.image_url || null;
 
   return {
     id: row.id,
@@ -145,7 +196,7 @@ function transformToDbSchema(
     tuitionFees: row["Tuition Fees"] || null,
     examsAccepted: row["Exams Accepted"] || null,
     scholarships: row.Scholarships || null,
-    imageUrl,
+    imageUrl: row.image_url || null,
     address: row.address || null,
     phone: row.phone || null,
     internationalEmail: row.international_email || null,

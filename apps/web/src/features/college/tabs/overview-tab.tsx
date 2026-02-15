@@ -4,6 +4,18 @@ import { CollapsibleSection, ProgressBar, StatCard } from "../components";
 
 export function OverviewTab({ college }: { college: College }) {
   // Parse diversity data from ugRaceJson
+  const parsePercentage = (val: string | number): number => {
+    const str = String(val);
+    const hasPercent = str.includes("%");
+    const num = parseFloat(str.replace("%", "")) || 0;
+    // If value is less than 1 and doesn't have %, it's likely a decimal (0.195 = 19.5%)
+    // If it has % or is >= 1, it's already a percentage
+    if (!hasPercent && num < 1 && num > 0) {
+      return num * 100;
+    }
+    return num;
+  };
+
   const diversity = college.ugRaceJson
     ? Object.entries(college.ugRaceJson)
         .filter(
@@ -15,13 +27,13 @@ export function OverviewTab({ college }: { college: College }) {
             return Object.entries(value as Record<string, string>).map(
               ([raceKey, raceValue]) => ({
                 label: raceKey,
-                value: parseFloat(String(raceValue).replace("%", "")) || 0,
+                value: parsePercentage(raceValue),
               })
             );
           }
           return {
             label: key,
-            value: parseFloat(String(value).replace("%", "")) || 0,
+            value: parsePercentage(value),
           };
         })
         .flat()
@@ -32,7 +44,7 @@ export function OverviewTab({ college }: { college: College }) {
   const residence = college.ugStudentResidenceJson
     ? Object.entries(college.ugStudentResidenceJson).map(([key, value]) => ({
         label: key,
-        value: parseFloat(String(value).replace("%", "")) || 0,
+        value: parsePercentage(value),
       }))
     : null;
 
@@ -40,7 +52,7 @@ export function OverviewTab({ college }: { college: College }) {
   const ageDistribution = college.ugAgeDistributionJson
     ? Object.entries(college.ugAgeDistributionJson).map(([key, value]) => ({
         label: key,
-        value: parseFloat(String(value).replace("%", "")) || 0,
+        value: parsePercentage(value),
       }))
     : null;
 
