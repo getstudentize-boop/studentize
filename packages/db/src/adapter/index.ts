@@ -9,3 +9,4 @@ export * from "./essay";
 export * from "./task";
 export * from "./aptitude";
 export * from "./calendar";
+export * from "./virtual-advisor";
