@@ -32,7 +32,7 @@ const client = postgres(process.env.DATABASE_URL, {
 });
 const db = drizzle(client, { schema });
 
-// Load existing US colleges JSON for imageUrl lookup
+// Load existing US colleges JSON for data overlay
 const usCollegesJsonPath = path.resolve(
   __dirname,
   "../../../apps/web/src/features/college/us-colleges-data.json"
@@ -40,22 +40,77 @@ const usCollegesJsonPath = path.resolve(
 
 interface USCollegeJSON {
   id: string;
+  schoolName?: string;
+  schoolCity?: string;
+  schoolState?: string;
+  admissionRate?: number | null;
+  tuitionOutOfState?: number | null;
+  satScoreAverage?: number | null;
+  studentSize?: number | null;
   imageUrl?: string | null;
+  address?: string | null;
+  phone?: string | null;
+  internationalEmail?: string | null;
+  yearOfEstablishment?: string | null;
+  totalForeignStudents?: number | null;
+  noOfCampus?: string | null;
+  overallGraduationRate?: string | null;
+  ugRaceJson?: Record<string, string> | null;
+  ugStudentResidenceJson?: Record<string, string> | null;
+  ugAgeDistributionJson?: Record<string, string> | null;
+  graduationRate?: number | null;
+  postGradEarnings?: number | null;
+  medianFamilyIncome?: number | null;
+  retentionRate?: number | null;
+  shareFirstGeneration?: number | null;
+  plusLoanDebtMedian?: number | null;
+  pellGrantRate?: number | null;
+  federalLoanRate?: number | null;
+  avgFamilyIncome?: number | null;
+  actScoreMidpoint?: number | null;
+  totalEnrollment?: number | null;
+  undergraduateEnrollment?: number | null;
+  graduateEnrollment?: number | null;
+  femaleShare?: number | null;
+  maleShare?: number | null;
+  medianDebt?: number | null;
+  website?: string | null;
+  campusSetting?: string | null;
+  servicesData?: { campus_security?: string[]; student_services?: string[] } | null;
+  admissionsFactors?: Record<string, string> | null;
+  applicationDeadlines?: unknown;
+  applicationRequirements?: Array<Record<string, string>> | null;
+  aboutSection?: string | null;
+  essayPrompts?: unknown;
+  mathSatRange?: string | null;
+  readingSatRange?: string | null;
+  satAcceptanceChances?: {
+    title?: string;
+    ranges?: Array<{ chance?: string; score_text?: string; chance_level?: string }>;
+    headers?: { column1?: string; column2?: string };
+  } | null;
+  greekLife?: string | null;
+  environment?: string | null;
+  politicalAndSocialClimate?: string | null;
+  costOfLiving?: string | null;
+  safetyAndCrime?: string | null;
+  healthAndWellbeing?: string | null;
+  gymAndHealth?: string | null;
+  usNewsNationalRanking?: string | null;
+  virtualTour?: string | null;
 }
 
-let imageUrlLookup: Map<string, string> = new Map();
+let jsonLookup: Map<string, USCollegeJSON> = new Map();
 
 if (fs.existsSync(usCollegesJsonPath)) {
-  console.log("Loading existing US colleges JSON for imageUrl lookup...");
+  console.log("Loading existing US colleges JSON for data overlay...");
   const jsonData: USCollegeJSON[] = JSON.parse(
     fs.readFileSync(usCollegesJsonPath, "utf-8")
   );
-  imageUrlLookup = new Map(
-    jsonData
-      .filter((college) => college.imageUrl)
-      .map((college) => [college.id, college.imageUrl!])
+  jsonLookup = new Map(
+    jsonData.map((college) => [college.id, college])
   );
-  console.log(`Loaded ${imageUrlLookup.size} image URLs from JSON\n`);
+  console.log(`Loaded ${jsonLookup.size} colleges from JSON\n`);
 }
 
 interface CollegeData {
@@ -148,11 +203,10 @@ function generateLogoUrl(websiteUrl: string | null): string | null {
 function transformToDbSchema(college: CollegeData): typeof schema.usCollege.$inferInsert {
   const websiteUrl = college["school.school_url"] || null;
   const collegeId = college.id.toString();
+  const jsonEntry = jsonLookup.get(collegeId);
 
-  // Prefer imageUrl from JSON lookup, fallback to Clearbit-generated URL
-  const imageUrl = imageUrlLookup.get(collegeId) || generateLogoUrl(websiteUrl);
-
-  return {
+  // Build base record from API data
+  const record: typeof schema.usCollege.$inferInsert = {
     id: collegeId,
     schoolName: college["school.name"],
     schoolCity: college["school.city"] || null,
@@ -187,9 +241,7 @@ function transformToDbSchema(college: CollegeData): typeof schema.usCollege.$inf
       Hispanic: college["latest.student.demographics.race_ethnicity.hispanic"]?.toString(),
       White: college["latest.student.demographics.race_ethnicity.white"]?.toString(),
     },
-    // Use imageUrl from JSON lookup, fallback to Clearbit-generated URL
-    imageUrl,
-    // Placeholder fields
+    imageUrl: generateLogoUrl(websiteUrl),
     address: null,
     phone: null,
     internationalEmail: null,
@@ -219,6 +271,72 @@ function transformToDbSchema(college: CollegeData): typeof schema.usCollege.$inf
     virtualTour: null,
     actScoreMidpoint: null,
   };
+
+  // Overlay JSON data if college exists in the JSON file
+  if (jsonEntry) {
+    // Text fields - direct assignment
+    if (jsonEntry.imageUrl != null) record.imageUrl = jsonEntry.imageUrl;
+    if (jsonEntry.address != null) record.address = jsonEntry.address;
+    if (jsonEntry.phone != null) record.phone = jsonEntry.phone;
+    if (jsonEntry.internationalEmail != null) record.internationalEmail = jsonEntry.internationalEmail;
+    if (jsonEntry.yearOfEstablishment != null) record.yearOfEstablishment = jsonEntry.yearOfEstablishment;
+    if (jsonEntry.noOfCampus != null) record.noOfCampus = jsonEntry.noOfCampus;
+    if (jsonEntry.overallGraduationRate != null) record.overallGraduationRate = jsonEntry.overallGraduationRate;
+    if (jsonEntry.website != null) record.website = jsonEntry.website;
+    if (jsonEntry.campusSetting != null) record.campusSetting = jsonEntry.campusSetting;
+    if (jsonEntry.aboutSection != null) record.aboutSection = jsonEntry.aboutSection;
+    if (jsonEntry.mathSatRange != null) record.mathSatRange = jsonEntry.mathSatRange;
+    if (jsonEntry.readingSatRange != null) record.readingSatRange = jsonEntry.readingSatRange;
+    if (jsonEntry.greekLife != null) record.greekLife = jsonEntry.greekLife;
+    if (jsonEntry.environment != null) record.environment = jsonEntry.environment;
+    if (jsonEntry.politicalAndSocialClimate != null) record.politicalAndSocialClimate = jsonEntry.politicalAndSocialClimate;
+    if (jsonEntry.costOfLiving != null) record.costOfLiving = jsonEntry.costOfLiving;
+    if (jsonEntry.safetyAndCrime != null) record.safetyAndCrime = jsonEntry.safetyAndCrime;
+    if (jsonEntry.healthAndWellbeing != null) record.healthAndWellbeing = jsonEntry.healthAndWellbeing;
+    if (jsonEntry.gymAndHealth != null) record.gymAndHealth = jsonEntry.gymAndHealth;
+    if (jsonEntry.usNewsNationalRanking != null) record.usNewsNationalRanking = jsonEntry.usNewsNationalRanking;
+    if (jsonEntry.virtualTour != null) record.virtualTour = jsonEntry.virtualTour;
+
+    // Number → text fields
+    if (jsonEntry.tuitionOutOfState != null) record.tuitionOutOfState = String(jsonEntry.tuitionOutOfState);
+    if (jsonEntry.studentSize != null) record.studentSize = String(jsonEntry.studentSize);
+    if (jsonEntry.totalForeignStudents != null) record.totalForeignStudents = String(jsonEntry.totalForeignStudents);
+    if (jsonEntry.totalEnrollment != null) record.totalEnrollment = String(jsonEntry.totalEnrollment);
+    if (jsonEntry.undergraduateEnrollment != null) record.undergraduateEnrollment = String(jsonEntry.undergraduateEnrollment);
+    if (jsonEntry.graduationRate != null) record.graduationRate = String(jsonEntry.graduationRate);
+    if (jsonEntry.postGradEarnings != null) record.postGradEarnings = String(jsonEntry.postGradEarnings);
+    if (jsonEntry.medianFamilyIncome != null) record.medianFamilyIncome = String(jsonEntry.medianFamilyIncome);
+    if (jsonEntry.avgFamilyIncome != null) record.avgFamilyIncome = String(jsonEntry.avgFamilyIncome);
+    if (jsonEntry.actScoreMidpoint != null) record.actScoreMidpoint = String(jsonEntry.actScoreMidpoint);
+    if (jsonEntry.medianDebt != null) record.medianDebt = String(jsonEntry.medianDebt);
+
+    // Number → numeric fields
+    if (jsonEntry.admissionRate != null) record.admissionRate = String(jsonEntry.admissionRate);
+    if (jsonEntry.retentionRate != null) record.retentionRate = String(jsonEntry.retentionRate);
+    if (jsonEntry.shareFirstGeneration != null) record.shareFirstGeneration = String(jsonEntry.shareFirstGeneration);
+    if (jsonEntry.pellGrantRate != null) record.pellGrantRate = String(jsonEntry.pellGrantRate);
+    if (jsonEntry.federalLoanRate != null) record.federalLoanRate = String(jsonEntry.federalLoanRate);
+    if (jsonEntry.femaleShare != null) record.femaleShare = String(jsonEntry.femaleShare);
+    if (jsonEntry.maleShare != null) record.maleShare = String(jsonEntry.maleShare);
+
+    // Number → integer fields
+    if (jsonEntry.satScoreAverage != null) record.satScoreAverage = jsonEntry.satScoreAverage;
+    if (jsonEntry.graduateEnrollment != null) record.graduateEnrollment = jsonEntry.graduateEnrollment;
+    if (jsonEntry.plusLoanDebtMedian != null) record.plusLoanDebtMedian = jsonEntry.plusLoanDebtMedian;
+
+    // JSONB fields - direct assignment
+    if (jsonEntry.ugRaceJson != null) record.ugRaceJson = jsonEntry.ugRaceJson;
+    if (jsonEntry.ugStudentResidenceJson != null) record.ugStudentResidenceJson = jsonEntry.ugStudentResidenceJson;
+    if (jsonEntry.ugAgeDistributionJson != null) record.ugAgeDistributionJson = jsonEntry.ugAgeDistributionJson;
+    if (jsonEntry.servicesData != null) record.servicesData = jsonEntry.servicesData;
+    if (jsonEntry.admissionsFactors != null) record.admissionsFactors = jsonEntry.admissionsFactors;
+    if (jsonEntry.applicationDeadlines != null) record.applicationDeadlines = jsonEntry.applicationDeadlines;
+    if (jsonEntry.applicationRequirements != null) record.applicationRequirements = jsonEntry.applicationRequirements;
+    if (jsonEntry.essayPrompts != null) record.essayPrompts = jsonEntry.essayPrompts;
+    if (jsonEntry.satAcceptanceChances != null) record.satAcceptanceChances = jsonEntry.satAcceptanceChances;
+  }
+
+  return record;
 }
 
 async function fetchColleges(page: number = 0): Promise<CollegeData[]> {
