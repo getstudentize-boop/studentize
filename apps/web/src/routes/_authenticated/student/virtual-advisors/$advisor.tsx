@@ -229,7 +229,7 @@ function RouteComponent() {
               {error.message}
             </p>
           )}
-          <div className="flex-1 overflow-y-auto text-left flex flex-col gap-3 mt-4 min-h-0">
+          <div className="flex-1 overflow-y-auto no-scrollbar text-left flex flex-col gap-3 mt-4 min-h-0">
             {/* Show existing session messages if loading from history */}
             {existingSession?.messages && transcript.length === 0
               ? existingSession.messages.map(
@@ -306,10 +306,10 @@ function RouteComponent() {
             className="relative w-full max-w-2xl max-h-[85vh] bg-white rounded-xl shadow-xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between p-6 border-b border-zinc-200">
-              <h2 className="text-xl font-semibold text-zinc-900">
+            <div className="flex items-center justify-between p-4 border-b border-zinc-200">
+              <div className="text-md font-semibold text-zinc-900">
                 Session History
-              </h2>
+              </div>
               <button
                 onClick={() => setShowHistory(false)}
                 className="p-1.5 bg-zinc-100 rounded-full hover:bg-zinc-200 transition-colors"
