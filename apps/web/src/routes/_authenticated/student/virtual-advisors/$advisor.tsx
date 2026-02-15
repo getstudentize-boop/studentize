@@ -98,7 +98,7 @@ function RouteComponent() {
       />
       <div className="flex-2 flex flex-col gap-4">
         <div className="flex-1 rounded-xl border border-bzinc bg-white p-4">
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center">
             <Link to="/student/virtual-advisors">
               <ArrowLeftIcon className="size-4" weight="bold" />
             </Link>
@@ -110,7 +110,11 @@ function RouteComponent() {
                 </div>
               </div>
             )}
-            <div />
+            <div>
+              <div className="px-2 py-0.5 bg-zinc-50 border border-bzinc rounded-md text-md">
+                History
+              </div>
+            </div>
           </div>
           {error && (
             <p className="text-red-500 text-sm text-center mt-2">
