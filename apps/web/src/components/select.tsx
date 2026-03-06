@@ -20,7 +20,10 @@ export interface SelectProps {
   error?: string;
 }
 
-const SelectComponent = React.forwardRef<HTMLButtonElement, SelectProps>(
+const SelectComponent = React.forwardRef<
+  HTMLButtonElement,
+  SelectProps & { contentClassName?: string }
+>(
   (
     {
       options,
@@ -31,9 +34,10 @@ const SelectComponent = React.forwardRef<HTMLButtonElement, SelectProps>(
       className,
       label,
       error,
+      contentClassName,
       ...props
     },
-    ref
+    ref,
   ) => {
     return (
       <div className="flex flex-col w-full text-left">
@@ -49,7 +53,7 @@ const SelectComponent = React.forwardRef<HTMLButtonElement, SelectProps>(
             className={cn(
               "inline-flex h-10 items-center justify-between gap-2 rounded-md border border-bzinc bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 data-[placeholder]:text-gray-500",
               error && "border-red-500 focus:ring-red-500",
-              className
+              className,
             )}
             aria-label={label}
             {...props}
@@ -62,7 +66,10 @@ const SelectComponent = React.forwardRef<HTMLButtonElement, SelectProps>(
 
           <Select.Portal>
             <Select.Content
-              className="rounded-lg bg-white p-[5px] overflow-hidden shadow-xs border border-bzinc w-full will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade z-50 min-w-[var(--radix-select-trigger-width)]"
+              className={cn(
+                "rounded-lg bg-white p-[5px] overflow-hidden shadow-xs border border-bzinc w-full will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade z-50 min-w-[var(--radix-select-trigger-width)]",
+                contentClassName,
+              )}
               position="popper"
               sideOffset={5}
             >
@@ -94,7 +101,7 @@ const SelectComponent = React.forwardRef<HTMLButtonElement, SelectProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 const SelectItem = React.forwardRef<
@@ -106,7 +113,7 @@ const SelectItem = React.forwardRef<
       ref={ref}
       className={cn(
         "relative flex cursor-pointer select-none items-center justify-between rounded-sm py-1.5 px-2 text-sm leading-6 font-normal text-zinc-950 hover:bg-gray-100 data-[highlighted]:bg-gray-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-        className
+        className,
       )}
       {...props}
     >

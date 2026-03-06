@@ -59,6 +59,7 @@ export const Step2Country = ({
               value={field.state.value}
               onValueChange={(value) => field.handleChange(value)}
               placeholder="Select your country"
+              contentClassName="max-h-96"
             />
             {field.state.meta.errors[0] && (
               <span className="text-red-500 text-sm mt-1">
