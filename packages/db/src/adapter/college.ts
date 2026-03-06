@@ -293,6 +293,19 @@ export const getUSCollegeCampusSettings = async () => {
   return settings.map((s) => s.campusSetting).filter(Boolean);
 };
 
+export const updateUKCollege = async (
+  id: string,
+  data: Partial<Omit<typeof schema.ukCollege.$inferInsert, "id">>
+) => {
+  const [updated] = await db
+    .update(schema.ukCollege)
+    .set(data)
+    .where(eq(schema.ukCollege.id, id))
+    .returning();
+
+  return updated;
+};
+
 export const getUKCollegeCitySizes = async () => {
   const sizes = await db
     .selectDistinct({ sizeOfCity: schema.ukCollege.sizeOfCity })
