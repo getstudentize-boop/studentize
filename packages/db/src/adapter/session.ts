@@ -33,6 +33,9 @@ export const getSessionById = (input: { sessionId: string }) => {
       summary: true,
       title: true,
       createdAt: true,
+      rating: true,
+      ratingFeedback: true,
+      ratedAt: true,
     },
   });
 };
@@ -149,6 +152,9 @@ export const getSessionSummaryById = async (input: { sessionId: string }) => {
       title: true,
       studentUserId: true,
       advisorUserId: true,
+      rating: true,
+      ratingFeedback: true,
+      ratedAt: true,
     },
   });
 };
@@ -172,6 +178,21 @@ export const updateSessionById = async (
     .update(schema.session)
     .set(data)
     .where(eq(schema.session.id, sessionId));
+};
+
+export const updateSessionRating = async (input: {
+  sessionId: string;
+  rating: number;
+  ratingFeedback?: string | null;
+}) => {
+  return db
+    .update(schema.session)
+    .set({
+      rating: input.rating,
+      ratingFeedback: input.ratingFeedback ?? null,
+      ratedAt: new Date(),
+    })
+    .where(eq(schema.session.id, input.sessionId));
 };
 
 export const deleteSessionById = async (input: { sessionId: string }) => {

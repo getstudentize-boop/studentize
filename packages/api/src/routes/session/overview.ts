@@ -19,7 +19,11 @@ export const getSessionOverviewRoute = createRouteHelper({
     }
 
     if (ctx.user.organization.role === "STUDENT") {
-      throw new ORPCError("UNAUTHORIZED");
+      if (ctx.user.id !== session.studentUserId) {
+        throw new ORPCError("UNAUTHORIZED");
+      }
+
+      return session;
     }
 
     if (ctx.user.organization.role === "ADVISOR") {
