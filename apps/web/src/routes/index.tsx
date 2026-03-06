@@ -15,7 +15,7 @@ export const Route = createFileRoute("/")({
     if (user) {
       // Fetch full user data to check their role
       const fullUser = await context.queryClient.ensureQueryData(
-        orpc.user.current.queryOptions()
+        orpc.user.current.queryOptions(),
       );
 
       // Redirect students to their dashboard, others to /home
@@ -46,19 +46,19 @@ function App() {
         </div>
         <div className="flex flex-col gap-3 mt-2 w-56">
           <Button variant="neutral" className="w-full" onClick={() => signIn()}>
-            Sign In
+            Sign In as Student
+          </Button>
+          <Button
+            variant="primary"
+            className="w-full"
+            onClick={() => {
+              setLocalStorage("signupAsAdvisor", true);
+              signIn();
+            }}
+          >
+            Sign In as Advisor
           </Button>
         </div>
-
-        <button
-          className="absolute bottom-10 right-10 hover:underline"
-          onClick={() => {
-            setLocalStorage("signupAsAdvisor", true);
-            signIn();
-          }}
-        >
-          Sign up as advisor
-        </button>
       </div>
       <div className="flex-1 p-6 flex bg-zinc-50">
         <div className="w-full h-full border overflow-hidden border-zinc-200 rounded-xl bg-gradient-to-b from-zinc-50 to-white relative shadow-sm">
