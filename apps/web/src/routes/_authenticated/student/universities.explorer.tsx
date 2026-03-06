@@ -13,9 +13,10 @@ import { orpc } from "orpc/client";
 import { type College, type UKCollegeData } from "@/features/college/types";
 import { CollegeCard } from "@/features/college/college-card";
 import { CollegeModal } from "@/features/college/college-modal";
+import { UKCollegeModal } from "@/features/college/uk-college-modal";
 
 export const Route = createFileRoute(
-  "/_authenticated/student/universities/explorer"
+  "/_authenticated/student/universities/explorer",
 )({
   component: CollegesPage,
 });
@@ -43,12 +44,12 @@ function CollegesPage() {
   });
   const [offset, setOffset] = useState(0);
   const [allColleges, setAllColleges] = useState<(College | UKCollegeData)[]>(
-    []
+    [],
   );
 
   // Fetch filter options
   const filterOptionsQuery = useQuery(
-    orpc.college.getFilterOptions.queryOptions({ input: {} })
+    orpc.college.getFilterOptions.queryOptions({ input: {} }),
   );
 
   const availableStates = filterOptionsQuery.data?.usStates ?? [];
@@ -75,8 +76,8 @@ function CollegesPage() {
   ]);
 
   // Fetch US colleges
-  const usCollegesQuery = useQuery({
-    ...orpc.college.searchUS.queryOptions({
+  const usCollegesQuery = useQuery(
+    orpc.college.searchUS.queryOptions({
       input: {
         search: debouncedSearch || undefined,
         states: filters.state ? [filters.state] : undefined,
@@ -91,13 +92,13 @@ function CollegesPage() {
         limit: 50,
         offset: offset,
       },
+      enabled: country === "us",
     }),
-    enabled: country === "us",
-  });
+  );
 
   // Fetch UK colleges
-  const ukCollegesQuery = useQuery({
-    ...orpc.college.searchUK.queryOptions({
+  const ukCollegesQuery = useQuery(
+    orpc.college.searchUK.queryOptions({
       input: {
         search: debouncedSearch || undefined,
         locations: filters.location ? [filters.location] : undefined,
@@ -106,9 +107,9 @@ function CollegesPage() {
         limit: 50,
         offset: offset,
       },
+      enabled: country === "uk",
     }),
-    enabled: country === "uk",
-  });
+  );
 
   const activeQuery = country === "us" ? usCollegesQuery : ukCollegesQuery;
   const newColleges = activeQuery.data?.colleges ?? [];
@@ -256,7 +257,7 @@ function CollegesPage() {
                         <option value="">All</option>
                         {availableCampusSettings
                           .filter((setting): setting is string =>
-                            Boolean(setting)
+                            Boolean(setting),
                           )
                           .map((setting) => (
                             <option key={setting} value={setting}>
@@ -470,9 +471,16 @@ function CollegesPage() {
         </div>
       </div>
 
-      {selectedCollege && (
+      {selectedCollege && country === "us" && (
         <CollegeModal
           college={selectedCollege as College}
+          onClose={() => setSelectedCollege(null)}
+        />
+      )}
+      {selectedCollege && country === "uk" && (
+        <UKCollegeModal
+          collegeId={selectedCollege.id}
+          collegeName={(selectedCollege as UKCollegeData).universityName}
           onClose={() => setSelectedCollege(null)}
         />
       )}
