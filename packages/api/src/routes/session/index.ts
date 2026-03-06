@@ -126,6 +126,7 @@ import {
   RegenerateTranscriptionInputSchema,
   regenerateTranscription,
 } from "./regenerate-transcription";
+import { rateSession, RateSessionInputSchema } from "./rate";
 
 // todo: move all the handlers above to this format
 export const session = {
@@ -154,4 +155,7 @@ export const session = {
     .handler(async ({ context, input }) => {
       return regenerateTranscription(context, input);
     }),
+  rate: privateRoute.input(RateSessionInputSchema).handler(async ({ context, input }) => {
+    return rateSession(context, input);
+  }),
 };
