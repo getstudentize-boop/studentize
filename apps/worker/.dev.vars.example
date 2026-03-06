@@ -1,1 +1,4 @@
 API_URL="http://localhost:3000/api/rpc"
+RESEND_API_KEY="re_xxxxxxxxx"
+RESEND_FROM_EMAIL="noreply@example.com"
+RESEND_FROM_NAME="Studentize"

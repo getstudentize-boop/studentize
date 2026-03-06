@@ -1,4 +1,5 @@
 import { and, db, desc, eq, gte, isNotNull, isNull, lt, or, schema } from "..";
+import { alias } from "drizzle-orm/pg-core";
 
 export const createScheduleSession = async ({
   scheduledAt,
@@ -134,12 +135,32 @@ export const getScheduledSessionByBotId = async (input: { botId: string }) => {
 export const getScheduledSessionTimeById = async (input: {
   scheduledSessionId: string;
 }) => {
-  const session = await db.query.scheduledSession.findFirst({
-    where: (session, { eq }) => eq(session.id, input.scheduledSessionId),
-    columns: {
-      scheduledAt: true,
-    },
-  });
+  const studentUser = alias(schema.user, "scheduled_student_user");
+  const advisorUser = alias(schema.user, "scheduled_advisor_user");
+
+  const [session] = await db
+    .select({
+      scheduledAt: schema.scheduledSession.scheduledAt,
+      meetingCode: schema.scheduledSession.meetingCode,
+      title: schema.scheduledSession.title,
+      student: {
+        name: studentUser.name,
+        email: studentUser.email,
+      },
+      advisor: {
+        name: advisorUser.name,
+        email: advisorUser.email,
+      },
+    })
+    .from(schema.scheduledSession)
+    .leftJoin(studentUser, eq(schema.scheduledSession.studentUserId, studentUser.id))
+    .leftJoin(advisorUser, eq(schema.scheduledSession.advisorUserId, advisorUser.id))
+    .where(
+      and(
+        eq(schema.scheduledSession.id, input.scheduledSessionId),
+        isNull(schema.scheduledSession.deletedAt)
+      )
+    );
 
   return session;
 };
