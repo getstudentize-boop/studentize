@@ -35,6 +35,8 @@ function CollegesPage() {
     location: undefined as string | undefined,
     campusSetting: undefined as string | undefined,
     citySize: undefined as string | undefined,
+    minSATScore: undefined as number | undefined,
+    maxSATScore: undefined as number | undefined,
     maxTuition: undefined as number | undefined,
     minAdmissionRate: undefined as number | undefined,
     maxAdmissionRate: undefined as number | undefined,
@@ -64,6 +66,8 @@ function CollegesPage() {
     filters.location,
     filters.campusSetting,
     filters.citySize,
+    filters.minSATScore,
+    filters.maxSATScore,
     filters.maxTuition,
     filters.minAdmissionRate,
     filters.maxAdmissionRate,
@@ -79,6 +83,8 @@ function CollegesPage() {
         campusSetting: filters.campusSetting
           ? [filters.campusSetting]
           : undefined,
+        minSATScore: filters.minSATScore,
+        maxSATScore: filters.maxSATScore,
         maxTuition: filters.maxTuition,
         minAdmissionRate: filters.minAdmissionRate,
         maxAdmissionRate: filters.maxAdmissionRate,
@@ -136,6 +142,8 @@ function CollegesPage() {
       location: undefined,
       campusSetting: undefined,
       citySize: undefined,
+      minSATScore: undefined,
+      maxSATScore: undefined,
       maxTuition: undefined,
       minAdmissionRate: undefined,
       maxAdmissionRate: undefined,
@@ -256,6 +264,48 @@ function CollegesPage() {
                             </option>
                           ))}
                       </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-zinc-600 mb-1.5">
+                        Min SAT
+                      </label>
+                      <input
+                        type="number"
+                        min={400}
+                        max={1600}
+                        placeholder="e.g. 1200"
+                        value={filters.minSATScore ?? ""}
+                        onChange={(e) =>
+                          setFilters({
+                            ...filters,
+                            minSATScore: e.target.value
+                              ? Number(e.target.value)
+                              : undefined,
+                          })
+                        }
+                        className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-zinc-600 mb-1.5">
+                        Max SAT
+                      </label>
+                      <input
+                        type="number"
+                        min={400}
+                        max={1600}
+                        placeholder="e.g. 1450"
+                        value={filters.maxSATScore ?? ""}
+                        onChange={(e) =>
+                          setFilters({
+                            ...filters,
+                            maxSATScore: e.target.value
+                              ? Number(e.target.value)
+                              : undefined,
+                          })
+                        }
+                        className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      />
                     </div>
                   </>
                 ) : (
