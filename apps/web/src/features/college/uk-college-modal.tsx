@@ -62,11 +62,17 @@ function Section({
 }
 
 /** Try to parse a value as JSON. Returns the parsed object or null. */
-function tryParseJson(value: string | null | undefined): Record<string, unknown> | null {
+function tryParseJson(
+  value: string | null | undefined,
+): Record<string, unknown> | null {
   if (!value) return null;
   try {
     const parsed = JSON.parse(value);
-    if (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) {
+    if (
+      typeof parsed === "object" &&
+      parsed !== null &&
+      !Array.isArray(parsed)
+    ) {
       return parsed as Record<string, unknown>;
     }
     return null;
@@ -247,7 +253,10 @@ function OverviewTab({ college }: { college: UKCollegeData }) {
           />
           <InfoRow label="City Size" value={college.sizeOfCity} />
           <InfoRow label="City Population" value={college.populationOfCity} />
-          <InfoRow label="Number of Campuses" value={college.numberOfCampuses} />
+          <InfoRow
+            label="Number of Campuses"
+            value={college.numberOfCampuses}
+          />
           <InfoRow
             label="International Students"
             value={
@@ -391,7 +400,7 @@ export function UKCollegeModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 text-left"
       onClick={onClose}
     >
       <div
