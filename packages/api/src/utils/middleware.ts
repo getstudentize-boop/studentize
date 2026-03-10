@@ -53,7 +53,7 @@ export const createAdminRouteHelper = <
 export const serverRoute = os.$context<Context>().use(
   onError((err) => {
     console.error("Error in route:", err);
-  })
+  }),
 );
 
 export const adminRoute = serverRoute.use(
@@ -67,7 +67,7 @@ export const adminRoute = serverRoute.use(
     }
 
     return next();
-  })
+  }),
 );
 
 export const privateRoute = serverRoute.use(
@@ -91,5 +91,5 @@ export const privateRoute = serverRoute.use(
     return next({
       context: { user: u, organizationId } as AuthContext,
     });
-  })
+  }),
 );
