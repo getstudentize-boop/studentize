@@ -13,6 +13,7 @@ import { createServerRootRoute } from '@tanstack/react-start/server'
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MarketingIndexOldRouteImport } from './routes/_marketing/index-old'
 import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/users'
 import { Route as AuthenticatedStudentsRouteImport } from './routes/_authenticated/students'
 import { Route as AuthenticatedSessionsRouteImport } from './routes/_authenticated/sessions'
@@ -57,6 +58,11 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketingIndexOldRoute = MarketingIndexOldRouteImport.update({
+  id: '/_marketing/index-old',
+  path: '/index-old',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedUsersRoute = AuthenticatedUsersRouteImport.update({
@@ -261,6 +267,7 @@ export interface FileRoutesByFullPath {
   '/sessions': typeof AuthenticatedSessionsRouteWithChildren
   '/students': typeof AuthenticatedStudentsRouteWithChildren
   '/users': typeof AuthenticatedUsersRoute
+  '/index-old': typeof MarketingIndexOldRoute
   '/advisors/$userId': typeof AuthenticatedAdvisorsUserIdRoute
   '/essays/$essayId': typeof AuthenticatedEssaysEssayIdRoute
   '/sessions/$autoSessionId': typeof AuthenticatedSessionsAutoSessionIdRoute
@@ -292,6 +299,7 @@ export interface FileRoutesByTo {
   '/sessions': typeof AuthenticatedSessionsRouteWithChildren
   '/students': typeof AuthenticatedStudentsRouteWithChildren
   '/users': typeof AuthenticatedUsersRoute
+  '/index-old': typeof MarketingIndexOldRoute
   '/advisors/$userId': typeof AuthenticatedAdvisorsUserIdRoute
   '/essays/$essayId': typeof AuthenticatedEssaysEssayIdRoute
   '/sessions/$autoSessionId': typeof AuthenticatedSessionsAutoSessionIdRoute
@@ -324,6 +332,7 @@ export interface FileRoutesById {
   '/_authenticated/sessions': typeof AuthenticatedSessionsRouteWithChildren
   '/_authenticated/students': typeof AuthenticatedStudentsRouteWithChildren
   '/_authenticated/users': typeof AuthenticatedUsersRoute
+  '/_marketing/index-old': typeof MarketingIndexOldRoute
   '/_authenticated/advisors/$userId': typeof AuthenticatedAdvisorsUserIdRoute
   '/_authenticated/essays/$essayId': typeof AuthenticatedEssaysEssayIdRoute
   '/_authenticated/sessions/$autoSessionId': typeof AuthenticatedSessionsAutoSessionIdRoute
@@ -357,6 +366,7 @@ export interface FileRouteTypes {
     | '/sessions'
     | '/students'
     | '/users'
+    | '/index-old'
     | '/advisors/$userId'
     | '/essays/$essayId'
     | '/sessions/$autoSessionId'
@@ -388,6 +398,7 @@ export interface FileRouteTypes {
     | '/sessions'
     | '/students'
     | '/users'
+    | '/index-old'
     | '/advisors/$userId'
     | '/essays/$essayId'
     | '/sessions/$autoSessionId'
@@ -419,6 +430,7 @@ export interface FileRouteTypes {
     | '/_authenticated/sessions'
     | '/_authenticated/students'
     | '/_authenticated/users'
+    | '/_marketing/index-old'
     | '/_authenticated/advisors/$userId'
     | '/_authenticated/essays/$essayId'
     | '/_authenticated/sessions/$autoSessionId'
@@ -446,6 +458,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  MarketingIndexOldRoute: typeof MarketingIndexOldRoute
 }
 export interface FileServerRoutesByFullPath {
   '/api/google_oauth_callback': typeof ApiGoogle_oauth_callbackServerRoute
@@ -521,6 +534,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_marketing/index-old': {
+      id: '/_marketing/index-old'
+      path: '/index-old'
+      fullPath: '/index-old'
+      preLoaderRoute: typeof MarketingIndexOldRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/users': {
@@ -918,6 +938,7 @@ const ApiSessionServerRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  MarketingIndexOldRoute: MarketingIndexOldRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
