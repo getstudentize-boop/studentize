@@ -10,12 +10,14 @@ import {
 
 export const SendBotToMeetingInputSchema = z.object({
   scheduledSessionId: z.string(),
+  /** ISO 8601 date-time. When set, creates a scheduled bot that joins at this time (must be >10 min in future). Omit for instant bot. */
+  joinAt: z.string().datetime().optional(),
 });
 
 export const sendBotToMeetingRoute = createRouteHelper({
   inputSchema: SendBotToMeetingInputSchema,
   execute: async ({ input }) => {
-    const { scheduledSessionId } = input;
+    const { scheduledSessionId, joinAt } = input;
 
     const scheduledSession = await getScheduledSessionById({
       scheduledSessionId,
@@ -29,6 +31,7 @@ export const sendBotToMeetingRoute = createRouteHelper({
 
     const response = await meetingBotService.sendToMeeting({
       meetingCode: scheduledSession.meetingCode,
+      ...(joinAt && { joinAt }),
     });
 
     // If the scheduled session already has a botId, create a new one

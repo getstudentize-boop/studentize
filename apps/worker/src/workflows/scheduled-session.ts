@@ -10,6 +10,7 @@ import { client } from "../utils/orpc";
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 const MINUTE_IN_MS = 60 * 1000;
+const BOT_JOIN_BEFORE_MEETING_MS = 10 * MINUTE_IN_MS;
 
 type SessionParticipant = {
   email: string | null;
@@ -58,7 +59,17 @@ export class AutoJoinSessionWorkflow extends WorkflowEntrypoint<Env, Params> {
     }
 
     const reminderAt = new Date(scheduledAt.getTime() - DAY_IN_MS);
-    const botJoinAt = new Date(scheduledAt.getTime() - MINUTE_IN_MS);
+    const botJoinAt = new Date(scheduledAt.getTime() - BOT_JOIN_BEFORE_MEETING_MS);
+
+    await step.do(`send bot to scheduled session ${scheduledSessionId}`, async () =>
+      client.admin.sendBotToMeeting(
+        {
+          scheduledSessionId,
+          joinAt: botJoinAt.toISOString(),
+        },
+        options,
+      ),
+    );
 
     if (scheduledAt.getTime() > Date.now() && hasReminderRecipients(session)) {
       if (reminderAt.getTime() > Date.now()) {
@@ -79,22 +90,6 @@ export class AutoJoinSessionWorkflow extends WorkflowEntrypoint<Env, Params> {
         },
       );
     }
-
-    if (botJoinAt.getTime() > Date.now()) {
-      await step.sleepUntil(
-        `wait for scheduled session ${scheduledSessionId} to start`,
-        botJoinAt,
-      );
-    }
-
-    await step.do(`send bot to scheduled session ${scheduledSessionId}`, async () =>
-      client.admin.sendBotToMeeting(
-        {
-          scheduledSessionId,
-        },
-        options,
-      ),
-    );
   }
 }
 

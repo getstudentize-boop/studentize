@@ -46,18 +46,27 @@ const downloadTranscript = async (downloadUrl: string) => {
 };
 
 export class MeetingBotService {
-  async sendToMeeting(input: { meetingCode: string }) {
-    const { meetingCode } = input;
+  async sendToMeeting(input: {
+    meetingCode: string;
+    joinAt?: string;
+  }) {
+    const { meetingCode, joinAt } = input;
+
+    const body: Record<string, unknown> = {
+      meeting_url: `https://meet.google.com/${meetingCode}`,
+      bot_name: BOT_NAME,
+      recording_config: {
+        transcript: { provider: { meeting_captions: {} } },
+      },
+    };
+
+    if (joinAt) {
+      body.join_at = joinAt;
+    }
 
     const response = await recallRequest({
       endpoint: "/bot",
-      body: {
-        meeting_url: `https://meet.google.com/${meetingCode}`,
-        bot_name: BOT_NAME,
-        recording_config: {
-          transcript: { provider: { meeting_captions: {} } },
-        },
-      },
+      body,
     });
 
     return response as {
