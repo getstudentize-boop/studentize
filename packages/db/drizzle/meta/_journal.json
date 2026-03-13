@@ -274,6 +274,13 @@
       "when": 1773435124428,
       "tag": "0038_careful_beast",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1773436720608,
+      "tag": "0039_chunky_veda",
+      "breakpoints": true
     }
   ]
 }
