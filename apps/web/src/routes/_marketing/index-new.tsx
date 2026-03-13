@@ -13,8 +13,8 @@ import {
   ShieldCheck,
   Lock,
   EnvelopeIcon,
-  ChatCircle,
 } from "@phosphor-icons/react";
+import { SpeakToAdvisor } from "@/components/SpeakToAdvisor";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
@@ -529,13 +529,7 @@ function RouteComponent() {
         </div>
       </footer>
 
-      <button
-        type="button"
-        aria-label="Speak to a Virtual Advisor"
-        className="fixed bottom-6 right-6 z-50 flex size-14 items-center justify-center rounded-full bg-cyan-600 text-white shadow-lg hover:bg-cyan-500 transition-colors"
-      >
-        <ChatCircle className="size-4" weight="fill" />
-      </button>
+      <SpeakToAdvisor />
     </div>
   );
 }

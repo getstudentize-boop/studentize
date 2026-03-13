@@ -14,6 +14,7 @@
     "@ariakit/react": "^0.4.19",
     "@orpc/client": "^1.8.6",
     "@orpc/server": "^1.8.6",
+    "motion": "12.36.0",
     "@orpc/tanstack-query": "^1.8.6",
     "@phosphor-icons/react": "^2.1.10",
     "@student/api": "workspace:*",

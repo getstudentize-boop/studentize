@@ -267,6 +267,13 @@
       "when": 1772803196262,
       "tag": "0037_lame_prodigy",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1773435124428,
+      "tag": "0038_careful_beast",
+      "breakpoints": true
     }
   ]
 }
