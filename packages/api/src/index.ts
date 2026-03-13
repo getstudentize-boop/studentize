@@ -47,6 +47,7 @@ import { session } from "./routes/session";
 import { organization } from "./routes/organization";
 import { virtualAdvisor } from "./routes/virtual-advisor";
 import { consultationRequest } from "./routes/consultation-request";
+import { visitorChatHandler, visitorChatNewIdHandler } from "./routes/visitor-chat";
 
 export const router = {
   admin,
@@ -99,6 +100,10 @@ export const router = {
   },
   virtualAdvisor,
   consultationRequest,
+  visitorChat: {
+    chat: visitorChatHandler,
+    newId: visitorChatNewIdHandler,
+  },
 };
 
 export * from "./utils/workos";
