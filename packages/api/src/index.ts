@@ -46,6 +46,7 @@ import { admin } from "./routes/admin";
 import { session } from "./routes/session";
 import { organization } from "./routes/organization";
 import { virtualAdvisor } from "./routes/virtual-advisor";
+import { consultationRequest } from "./routes/consultation-request";
 
 export const router = {
   admin,
@@ -97,6 +98,7 @@ export const router = {
     newId: chatNewIdHandler,
   },
   virtualAdvisor,
+  consultationRequest,
 };
 
 export * from "./utils/workos";

@@ -1,6 +1,8 @@
-import { cn } from "@/utils/cn";
+import { motion } from "motion/react";
 import { Popover as PrimitivePopover } from "radix-ui";
 import { ReactNode } from "react";
+
+import { cn } from "@/utils/cn";
 
 type Props = {
   trigger: ReactNode;
@@ -8,6 +10,7 @@ type Props = {
   onOpenChange?: (open: boolean) => void;
   open?: boolean;
   isAnchor?: boolean;
+  children?: ReactNode;
 } & PrimitivePopover.PopoverContentProps;
 
 export const Popover = ({
@@ -16,6 +19,8 @@ export const Popover = ({
   onOpenChange,
   open,
   isAnchor,
+  children,
+  className,
   ...props
 }: Props) => {
   const Trigger = isAnchor ? PrimitivePopover.Anchor : PrimitivePopover.Trigger;
@@ -25,14 +30,19 @@ export const Popover = ({
       <Trigger asChild={triggerAsChild}>{trigger}</Trigger>
 
       <PrimitivePopover.Portal>
-        <PrimitivePopover.Content
-          sideOffset={5}
-          {...props}
-          className={cn(
-            "p-4 rounded-md bg-white shadow z-[51] will-change-[transform,opacity] data-[state=open]:data-[side=bottom]:animate-slideUpAndFade data-[state=open]:data-[side=left]:animate-slideRightAndFade data-[state=open]:data-[side=right]:animate-slideLeftAndFade data-[state=open]:data-[side=top]:animate-slideDownAndFade",
-            props.className
-          )}
-        />
+        <PrimitivePopover.Content asChild sideOffset={5} {...props}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96, y: -4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            className={cn(
+              "p-4 rounded-md bg-white shadow z-[51]",
+              className
+            )}
+          >
+            {children}
+          </motion.div>
+        </PrimitivePopover.Content>
       </PrimitivePopover.Portal>
     </PrimitivePopover.Root>
   );
