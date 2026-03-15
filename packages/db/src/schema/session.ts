@@ -9,6 +9,7 @@ export const session = pgTable("session", {
   advisorUserId: text("advisor_user_id"),
   title: text("title").notNull(),
   summary: text("summary").default(""),
+  systemSummary: text("system_summary"),
   rating: integer("rating"),
   ratingFeedback: text("rating_feedback"),
   ratedAt: timestamp("rated_at"),

@@ -8,6 +8,7 @@ import {
   ArrowClockwiseIcon,
   BrainIcon,
   ListDashesIcon,
+  ShieldCheckIcon,
   SparkleIcon,
 } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -15,6 +16,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { orpc, client } from "orpc/client";
 import { useState } from "react";
 import z from "zod";
+import { useAuthUser } from "@/routes/_authenticated";
 
 export const Route = createFileRoute(
   "/_authenticated/sessions/user/$sessionId",
@@ -35,6 +37,8 @@ function RouteComponent() {
 
   const sessionId = params.sessionId;
   const queryClient = useQueryClient();
+  const { user } = useAuthUser();
+  const isAdmin = ["OWNER", "ADMIN"].includes(user.organization?.role ?? "");
 
   const { downloadSessionReplay } = useSessionDownloadReplay();
 
@@ -49,6 +53,17 @@ function RouteComponent() {
       });
     },
   });
+
+  const generateSystemSummaryMutation = useMutation(
+    orpc.session.generateSystemSummary.mutationOptions({
+      onSuccess: () => {
+        return queryClient.invalidateQueries({
+          queryKey: orpc.session.overview.queryOptions({ input: { sessionId } })
+            .queryKey,
+        });
+      },
+    }),
+  );
 
   const regenerateTranscriptionMutation = useMutation({
     mutationFn: async () => {
@@ -211,6 +226,54 @@ function RouteComponent() {
               )}
             </div>
           </div>
+
+          {isAdmin ? (
+            <div className="border border-bzinc bg-gradient-to-t to-zinc-100 from-white rounded-lg">
+              <div className="flex gap-4 items-center mb-2 px-4 py-2 border-b border-bzinc">
+                <ShieldCheckIcon />
+                <div>System Summary</div>
+                <span className="text-xs bg-zinc-200 text-zinc-600 px-2 py-0.5 rounded ml-auto">
+                  Admin Only
+                </span>
+              </div>
+              <div className="p-4 pt-2">
+                {sessionOverviewQuery.isPending ? (
+                  <div className="text-zinc-500">Loading...</div>
+                ) : sessionOverview?.systemSummary ? (
+                  <Markdown>{sessionOverview.systemSummary}</Markdown>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-6 text-center">
+                    <p className="text-zinc-500 mb-4">
+                      No system summary has been generated for this session yet.
+                    </p>
+                    <Button
+                      onClick={() =>
+                        generateSystemSummaryMutation.mutate({
+                          sessionId: sessionId ?? "",
+                        })
+                      }
+                      disabled={generateSystemSummaryMutation.isPending}
+                      className="rounded-md"
+                    >
+                      {generateSystemSummaryMutation.isPending ? (
+                        <>Generating...</>
+                      ) : (
+                        <>
+                          <ShieldCheckIcon className="size-4" />
+                          Generate System Summary
+                        </>
+                      )}
+                    </Button>
+                    {generateSystemSummaryMutation.isError && (
+                      <p className="text-red-500 text-sm mt-2">
+                        Failed to generate system summary. Please try again.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : null}
         </div>
       </div>
       <div className="w-96 rounded-lg border border-bzinc bg-white overflow-y-auto custom-scrollbar">

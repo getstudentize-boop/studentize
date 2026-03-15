@@ -148,6 +148,7 @@ export const getSessionSummaryById = async (input: { sessionId: string }) => {
     where: eq(schema.session.id, input.sessionId),
     columns: {
       summary: true,
+      systemSummary: true,
       createdAt: true,
       title: true,
       studentUserId: true,
@@ -157,6 +158,16 @@ export const getSessionSummaryById = async (input: { sessionId: string }) => {
       ratedAt: true,
     },
   });
+};
+
+export const updateSessionSystemSummary = async (input: {
+  sessionId: string;
+  systemSummary: string;
+}) => {
+  await db
+    .update(schema.session)
+    .set({ systemSummary: input.systemSummary })
+    .where(eq(schema.session.id, input.sessionId));
 };
 
 export const getLatestSessionSummaryByStudent = async (input: {
