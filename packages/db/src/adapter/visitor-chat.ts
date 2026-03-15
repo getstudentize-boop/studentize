@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { db } from "..";
 import * as schema from "../schema";
 
@@ -54,4 +54,11 @@ export const getVisitorChatMessages = async (data: { chatId: string }) => {
     .from(schema.visitorChatMessage)
     .where(eq(schema.visitorChatMessage.chatId, data.chatId))
     .orderBy(schema.visitorChatMessage.createdAt);
+};
+
+export const listVisitorChats = async () => {
+  return db
+    .select()
+    .from(schema.visitorChat)
+    .orderBy(desc(schema.visitorChat.createdAt));
 };

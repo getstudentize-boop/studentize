@@ -1,25 +1,20 @@
 import { openai } from "@ai-sdk/openai";
-import { streamToEventIterator } from "@orpc/server";
 import {
   createVisitorChat,
   createVisitorChatMessage,
   updateVisitorChatTitle,
+  getVisitorChatMessages,
+  createId,
 } from "@student/db";
-import {
-  convertToModelMessages,
-  streamText,
-  TextPart,
-  UIMessage,
-  generateObject,
-} from "ai";
+import { generateText, generateObject } from "ai";
 import z from "zod";
 
 export type VisitorChatInput = {
-  chatId: string;
+  chatId?: string;
   fullName: string;
   email: string;
   phone: string;
-  messages: UIMessage[];
+  message: string;
 };
 
 const visitorChatPrompt = (visitor: { fullName: string }) => {
@@ -72,63 +67,55 @@ You represent **Studentize**, a platform that connects students with expert advi
 };
 
 export const visitorChat = async (input: VisitorChatInput) => {
-  const isNewChat = input.messages.length === 1;
+  const isNewChat = !input.chatId;
+  let chatId = input.chatId;
 
   if (isNewChat) {
-    const chat = await createVisitorChat({
-      id: input.chatId,
+    chatId = createId();
+    await createVisitorChat({
+      id: chatId,
       fullName: input.fullName,
       email: input.email,
       phone: input.phone,
     });
 
-    // Generate title from first message
-    const firstMessage = input.messages[0];
-    if (firstMessage) {
-      const text = firstMessage.parts
-        ?.filter((p: any) => p.type === "text")
-        .map((p: any) => p.text)
-        .join("");
-
-      if (text) {
-        generateObject({
-          model: openai("gpt-4.1-mini"),
-          schema: z.object({ title: z.string().max(60) }),
-          prompt: `Generate a short, descriptive title (max 60 characters) for a chat that starts with this message: "${text}"`,
-        }).then(async ({ object }) => {
-          await updateVisitorChatTitle({
-            chatId: input.chatId,
-            title: object.title,
-          });
-        });
-      }
-    }
+    // Generate title in the background
+    generateObject({
+      model: openai("gpt-4.1-mini"),
+      schema: z.object({ title: z.string().max(60) }),
+      prompt: `Generate a short, descriptive title (max 60 characters) for a chat that starts with this message: "${input.message}"`,
+    }).then(async ({ object }) => {
+      await updateVisitorChatTitle({
+        chatId: chatId!,
+        title: object.title,
+      });
+    });
   }
 
-  const modelMessages = convertToModelMessages(input.messages);
-  const userMessage = modelMessages.at(-1)?.content as TextPart[];
-
   await createVisitorChatMessage({
-    chatId: input.chatId,
-    content: userMessage.map((part) => part.text).join(""),
+    chatId: chatId!,
+    content: input.message,
     role: "user",
   });
 
-  const result = streamText({
+  // Build conversation history from DB
+  const history = await getVisitorChatMessages({ chatId: chatId! });
+  const messages = history.map((m) => ({
+    role: m.role as "user" | "assistant",
+    content: m.content,
+  }));
+
+  const result = await generateText({
     model: openai("gpt-4.1-mini"),
     system: visitorChatPrompt({ fullName: input.fullName }),
-    messages: modelMessages,
-    onFinish: async (result) => {
-      const resultMessages = result.response.messages;
-      const message = resultMessages.at(-1)?.content as unknown as TextPart[];
-
-      await createVisitorChatMessage({
-        chatId: input.chatId,
-        content: message.map((part) => part.text).join(""),
-        role: "assistant",
-      });
-    },
+    messages,
   });
 
-  return streamToEventIterator(result.toUIMessageStream());
+  await createVisitorChatMessage({
+    chatId: chatId!,
+    content: result.text,
+    role: "assistant",
+  });
+
+  return { chatId: chatId!, response: result.text };
 };
