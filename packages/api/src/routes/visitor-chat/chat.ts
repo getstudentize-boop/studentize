@@ -163,7 +163,7 @@ export const visitorChat = async (input: VisitorChatInput) => {
 
     // Generate title in the background
     generateObject({
-      model: openai("gpt-4.1-mini"),
+      model: openai("gpt-5-mini"),
       schema: z.object({ title: z.string().max(60) }),
       prompt: `Generate a short, descriptive title (max 60 characters) for a chat that starts with this message: "${input.message}"`,
     }).then(async ({ object }) => {
@@ -188,7 +188,7 @@ export const visitorChat = async (input: VisitorChatInput) => {
   }));
 
   const result = await generateText({
-    model: openai("gpt-4.1-mini"),
+    model: openai("gpt-5-mini"),
     system: visitorChatPrompt({ fullName: input.fullName }),
     messages,
   });

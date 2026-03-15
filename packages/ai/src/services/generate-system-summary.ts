@@ -4,10 +4,10 @@ import { z } from "zod";
 
 export const generateSystemSummary = async (transcript: string) => {
   const { object } = await generateObject({
-    model: openai("gpt-4.1-mini"),
+    model: openai("gpt-5.1"),
     system: `You are an internal quality assurance reviewer for Studentize, an admissions guidance platform. Your job is to review recorded advising sessions and produce a structured quality and compliance report for administrators.
 
-Your report must be written in markdown and should include timestamps (e.g. [00:12:30]) where relevant, referencing specific moments in the transcript.
+Your report must be written in markdown and should include timestamps where relevant, referencing specific moments in the transcript. Format timestamps in bold (e.g. **[00:12:30]**).
 
 ## Report Structure
 

@@ -15,7 +15,7 @@ export const SaveSessionInputSchema = z.object({
     z.object({
       role: z.enum(["user", "assistant"]),
       text: z.string(),
-    })
+    }),
   ),
 });
 
@@ -56,7 +56,7 @@ export const saveSessionRoute = async ({
         sessionId: currentSessionId!,
         role: msg.role,
         text: msg.text,
-      }))
+      })),
     );
   }
 
@@ -69,13 +69,13 @@ export const saveSessionRoute = async ({
   if (!session?.title && session?.messages && session.messages.length >= 2) {
     const conversationText = session.messages
       .map(
-        (msg) => `${msg.role === "user" ? "User" : "Assistant"}: ${msg.text}`
+        (msg) => `${msg.role === "user" ? "User" : "Assistant"}: ${msg.text}`,
       )
       .join("\n");
 
     try {
       const { object } = await generateObject({
-        model: openai("gpt-4.1-mini"),
+        model: openai("gpt-5-mini"),
         schema: z.object({
           title: z.string().max(60),
         }),

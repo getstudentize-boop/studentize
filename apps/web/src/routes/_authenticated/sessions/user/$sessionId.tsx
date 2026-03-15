@@ -6,7 +6,9 @@ import { useSessionDownloadReplay } from "@/hooks/use-session";
 import {
   ArrowLineDownIcon,
   ArrowClockwiseIcon,
+  ArrowsOutIcon,
   BrainIcon,
+  XIcon,
   ListDashesIcon,
   ShieldCheckIcon,
   SparkleIcon,
@@ -17,6 +19,15 @@ import { orpc, client } from "orpc/client";
 import { useState } from "react";
 import z from "zod";
 import { useAuthUser } from "@/routes/_authenticated";
+import {
+  Dialog,
+  DialogRoot,
+  DialogTrigger,
+  DialogPortal,
+  DialogOverlay,
+  DialogContent,
+  DialogClose,
+} from "@/components/dialog";
 
 export const Route = createFileRoute(
   "/_authenticated/sessions/user/$sessionId",
@@ -240,7 +251,42 @@ function RouteComponent() {
                 {sessionOverviewQuery.isPending ? (
                   <div>Loading...</div>
                 ) : sessionOverview?.systemSummary ? (
-                  <Markdown>{sessionOverview.systemSummary}</Markdown>
+                  <div>
+                    <div className="max-h-48 overflow-hidden relative">
+                      <Markdown>{sessionOverview.systemSummary}</Markdown>
+                      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-cyan-800 to-transparent" />
+                    </div>
+                    <DialogRoot>
+                      <DialogTrigger>
+                        <button className="mt-3 flex items-center gap-2 text-sm font-medium text-cyan-200 hover:text-white transition-colors">
+                          <ArrowsOutIcon className="size-4" />
+                          Expand Full Analysis
+                        </button>
+                      </DialogTrigger>
+                      <DialogPortal>
+                        <DialogOverlay />
+                        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto custom-scrollbar">
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                              <ShieldCheckIcon className="size-5 text-cyan-700" />
+                              <h2 className="text-lg font-semibold text-zinc-900">
+                                System Summary
+                              </h2>
+                              <span className="text-xs bg-cyan-100 text-cyan-700 px-2 py-0.5 rounded">
+                                Admin Only
+                              </span>
+                            </div>
+                            <DialogClose>
+                              <button className="text-zinc-400 hover:text-zinc-600 transition-colors">
+                                <XIcon className="size-5" />
+                              </button>
+                            </DialogClose>
+                          </div>
+                          <Markdown>{sessionOverview.systemSummary}</Markdown>
+                        </DialogContent>
+                      </DialogPortal>
+                    </DialogRoot>
+                  </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-6 text-center">
                     <p className="text-white mb-4">

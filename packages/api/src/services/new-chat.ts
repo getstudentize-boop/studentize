@@ -13,7 +13,7 @@ export const createNewChat = async (input: {
   messages: ModelMessage[];
 }) => {
   const { object } = await generateObject({
-    model: openai("gpt-4.1-mini"),
+    model: openai("gpt-5-mini"),
     schema: z.object({
       title: z.string(),
     }),
