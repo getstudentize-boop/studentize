@@ -131,7 +131,7 @@ export async function enrichUKCollege(college: UKCollege): Promise<UKCollege> {
   );
 
   const { text } = await generateText({
-    model: openai("gpt-4o-mini"),
+    model: openai("gpt-5-mini"),
     tools: {
       web_search_preview: openai.tools.webSearchPreview({}),
     },
