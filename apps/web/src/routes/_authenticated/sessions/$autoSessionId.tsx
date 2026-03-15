@@ -16,7 +16,7 @@ import { useAuthUser } from "@/routes/_authenticated";
 export const Route = createFileRoute("/_authenticated/sessions/$autoSessionId")(
   {
     component: RouteComponent,
-  }
+  },
 );
 
 type StudentOrAdvisor = { userId: string; name: string };
@@ -29,13 +29,13 @@ function RouteComponent() {
   const autoSyncSessionQuery = useQuery(
     orpc.session.getOneAutoSync.queryOptions({
       input: { sessionId: autoSessionId },
-    })
+    }),
   );
 
   const readTemporaryTranscriptionQuery = useQuery(
     orpc.session.readTemporaryTranscription.queryOptions({
       input: { sessionId: autoSessionId },
-    })
+    }),
   );
 
   const uploadTranscriptionMutation = useMutation(
@@ -61,7 +61,7 @@ function RouteComponent() {
 
         navigate({ to: "/sessions" });
       },
-    })
+    }),
   );
 
   const utils = useQueryClient();
@@ -91,12 +91,13 @@ function RouteComponent() {
         advisorUserId: advisor.userId,
         studentUserId: student.userId,
         sessionId: autoSessionId,
+        title: form.state.values.title,
       });
     },
   });
 
   const searchStudentsMutation = useMutation(
-    orpc.student.search.mutationOptions()
+    orpc.student.search.mutationOptions(),
   );
 
   const searchAdvisorsMutation = useMutation(
@@ -110,7 +111,7 @@ function RouteComponent() {
           });
         }
       },
-    })
+    }),
   );
 
   const students = searchStudentsMutation.data ?? [];
