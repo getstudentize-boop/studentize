@@ -44,6 +44,7 @@ import { Route as AuthenticatedStudentSessionsSessionIdRouteImport } from './rou
 import { Route as AuthenticatedStudentAptitudeSessionIdRouteImport } from './routes/_authenticated/student/aptitude/$sessionId'
 import { Route as AuthenticatedSessionsUserSessionIdRouteImport } from './routes/_authenticated/sessions/user/$sessionId'
 import { Route as AuthenticatedStudentUniversitiesCountryIdRouteImport } from './routes/_authenticated/student/universities.$country.$id'
+import { ServerRoute as ApiVisitorChatServerRouteImport } from './routes/api/visitor-chat'
 import { ServerRoute as ApiSessionServerRouteImport } from './routes/api/session'
 import { ServerRoute as ApiGoogle_oauth_callbackServerRouteImport } from './routes/api/google_oauth_callback'
 import { ServerRoute as ApiSessionAdvisorServerRouteImport } from './routes/api/session.$advisor'
@@ -240,6 +241,11 @@ const AuthenticatedStudentUniversitiesCountryIdRoute =
     path: '/$country/$id',
     getParentRoute: () => AuthenticatedStudentUniversitiesRoute,
   } as any)
+const ApiVisitorChatServerRoute = ApiVisitorChatServerRouteImport.update({
+  id: '/api/visitor-chat',
+  path: '/api/visitor-chat',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
 const ApiSessionServerRoute = ApiSessionServerRouteImport.update({
   id: '/api/session',
   path: '/api/session',
@@ -488,6 +494,7 @@ export interface RootRouteChildren {
 export interface FileServerRoutesByFullPath {
   '/api/google_oauth_callback': typeof ApiGoogle_oauth_callbackServerRoute
   '/api/session': typeof ApiSessionServerRouteWithChildren
+  '/api/visitor-chat': typeof ApiVisitorChatServerRoute
   '/api/auth/callback': typeof ApiAuthCallbackServerRoute
   '/api/auth/login': typeof ApiAuthLoginServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
@@ -496,6 +503,7 @@ export interface FileServerRoutesByFullPath {
 export interface FileServerRoutesByTo {
   '/api/google_oauth_callback': typeof ApiGoogle_oauth_callbackServerRoute
   '/api/session': typeof ApiSessionServerRouteWithChildren
+  '/api/visitor-chat': typeof ApiVisitorChatServerRoute
   '/api/auth/callback': typeof ApiAuthCallbackServerRoute
   '/api/auth/login': typeof ApiAuthLoginServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
@@ -505,6 +513,7 @@ export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
   '/api/google_oauth_callback': typeof ApiGoogle_oauth_callbackServerRoute
   '/api/session': typeof ApiSessionServerRouteWithChildren
+  '/api/visitor-chat': typeof ApiVisitorChatServerRoute
   '/api/auth/callback': typeof ApiAuthCallbackServerRoute
   '/api/auth/login': typeof ApiAuthLoginServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
@@ -515,6 +524,7 @@ export interface FileServerRouteTypes {
   fullPaths:
     | '/api/google_oauth_callback'
     | '/api/session'
+    | '/api/visitor-chat'
     | '/api/auth/callback'
     | '/api/auth/login'
     | '/api/rpc/$'
@@ -523,6 +533,7 @@ export interface FileServerRouteTypes {
   to:
     | '/api/google_oauth_callback'
     | '/api/session'
+    | '/api/visitor-chat'
     | '/api/auth/callback'
     | '/api/auth/login'
     | '/api/rpc/$'
@@ -531,6 +542,7 @@ export interface FileServerRouteTypes {
     | '__root__'
     | '/api/google_oauth_callback'
     | '/api/session'
+    | '/api/visitor-chat'
     | '/api/auth/callback'
     | '/api/auth/login'
     | '/api/rpc/$'
@@ -540,6 +552,7 @@ export interface FileServerRouteTypes {
 export interface RootServerRouteChildren {
   ApiGoogle_oauth_callbackServerRoute: typeof ApiGoogle_oauth_callbackServerRoute
   ApiSessionServerRoute: typeof ApiSessionServerRouteWithChildren
+  ApiVisitorChatServerRoute: typeof ApiVisitorChatServerRoute
   ApiAuthCallbackServerRoute: typeof ApiAuthCallbackServerRoute
   ApiAuthLoginServerRoute: typeof ApiAuthLoginServerRoute
   ApiRpcSplatServerRoute: typeof ApiRpcSplatServerRoute
@@ -782,6 +795,13 @@ declare module '@tanstack/react-router' {
 }
 declare module '@tanstack/react-start/server' {
   interface ServerFileRoutesByPath {
+    '/api/visitor-chat': {
+      id: '/api/visitor-chat'
+      path: '/api/visitor-chat'
+      fullPath: '/api/visitor-chat'
+      preLoaderRoute: typeof ApiVisitorChatServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
     '/api/session': {
       id: '/api/session'
       path: '/api/session'
@@ -1000,6 +1020,7 @@ export const routeTree = rootRouteImport
 const rootServerRouteChildren: RootServerRouteChildren = {
   ApiGoogle_oauth_callbackServerRoute: ApiGoogle_oauth_callbackServerRoute,
   ApiSessionServerRoute: ApiSessionServerRouteWithChildren,
+  ApiVisitorChatServerRoute: ApiVisitorChatServerRoute,
   ApiAuthCallbackServerRoute: ApiAuthCallbackServerRoute,
   ApiAuthLoginServerRoute: ApiAuthLoginServerRoute,
   ApiRpcSplatServerRoute: ApiRpcSplatServerRoute,

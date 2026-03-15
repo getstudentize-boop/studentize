@@ -114,3 +114,5 @@ export const router = {
 export * from "./utils/workos";
 
 export * from "./utils/google";
+
+export { visitorChat } from "./routes/visitor-chat/chat";

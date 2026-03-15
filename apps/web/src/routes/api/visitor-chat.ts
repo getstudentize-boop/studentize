@@ -1,5 +1,5 @@
 import { createServerFileRoute } from "@tanstack/react-start/server";
-import { visitorChat } from "@student/api/src/routes/visitor-chat/chat";
+import { visitorChat } from "@student/api";
 
 export const ServerRoute = createServerFileRoute("/api/visitor-chat").methods({
   POST: async ({ request }) => {
