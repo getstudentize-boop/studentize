@@ -1,8 +1,9 @@
 import { type } from "@orpc/server";
-import { createId } from "@student/db";
+import { listVisitorChats, getVisitorChatMessages } from "@student/db";
+import z from "zod";
 
 import { visitorChat, VisitorChatInput } from "./chat";
-import { serverRoute } from "../../utils/middleware";
+import { serverRoute, privateRoute } from "../../utils/middleware";
 
 export const visitorChatHandler = serverRoute
   .input(type<VisitorChatInput>())
@@ -10,6 +11,12 @@ export const visitorChatHandler = serverRoute
     return await visitorChat(input);
   });
 
-export const visitorChatNewIdHandler = serverRoute.handler(async () => {
-  return createId();
+export const visitorChatListHandler = privateRoute.handler(async () => {
+  return await listVisitorChats();
 });
+
+export const visitorChatMessagesHandler = privateRoute
+  .input(z.object({ chatId: z.string() }))
+  .handler(async ({ input }) => {
+    return await getVisitorChatMessages({ chatId: input.chatId });
+  });

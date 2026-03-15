@@ -12,6 +12,7 @@ import {
   VideoCameraIcon,
   PencilIcon,
   GraduationCapIcon,
+  GlobeIcon,
 } from "@phosphor-icons/react";
 import { Link, useMatchRoute, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@workos-inc/authkit-react";
@@ -144,6 +145,14 @@ export const Header = ({
                 icon: <ClockIcon className="size-4" />,
                 label: "Pending Users",
                 isActive: route({ to: "/users" }),
+              }
+            : null,
+          isAdmin
+            ? {
+                to: "/visitors",
+                icon: <GlobeIcon className="size-4" />,
+                label: "Visitors",
+                isActive: route({ to: "/visitors" }),
               }
             : null,
         ].filter(Boolean);

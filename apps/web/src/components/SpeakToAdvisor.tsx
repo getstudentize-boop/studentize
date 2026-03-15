@@ -1,5 +1,4 @@
 import { useForm } from "@tanstack/react-form";
-import { useQuery } from "@tanstack/react-query";
 import {
   ArrowUpIcon,
   BrainIcon,
@@ -7,15 +6,12 @@ import {
   XIcon,
 } from "@phosphor-icons/react";
 import { z } from "zod";
-import { UIMessage, useChat } from "@ai-sdk/react";
-import { eventIteratorToStream } from "@orpc/client";
 
 import { Popover } from "@/components/popover";
 import { Button } from "@/components/button";
 import { Input } from "@/components/input";
 import { Markdown } from "@/components/markdown";
 import { LoadingIndicator } from "@/components/loading-indicator";
-import { orpc } from "orpc/client";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/utils/cn";
 
@@ -25,17 +21,13 @@ type VisitorInfo = {
   phone: string;
 };
 
-const ChatMessage = ({
-  role,
-  message,
-}: {
-  role: "assistant" | "user" | "system";
-  message: UIMessage;
-}) => {
-  const content = message.parts
-    .map((part) => (part.type === "text" ? part.text : ""))
-    .join("");
+type Message = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+};
 
+const ChatMessage = ({ role, content }: { role: string; content: string }) => {
   return (
     <div
       className={cn(
@@ -43,15 +35,10 @@ const ChatMessage = ({
         "transition-all duration-200",
         role === "assistant"
           ? "mr-auto rounded-bl-none bg-white border border-zinc-100"
-          : "ml-auto rounded-br-none bg-violet-100 text-zinc-900"
+          : "ml-auto rounded-br-none bg-violet-100 text-zinc-900",
       )}
     >
       <Markdown className="text-sm">{content}</Markdown>
-      {!content ? (
-        <div className="flex gap-2">
-          <LoadingIndicator />
-        </div>
-      ) : null}
     </div>
   );
 };
@@ -110,7 +97,7 @@ const InfoForm = ({
               onChange={(ev) => field.handleChange(ev.target.value)}
               className={cn(
                 field.state.meta.errors?.[0] &&
-                  "border-red-500 focus:ring-red-500"
+                  "border-red-500 focus:ring-red-500",
               )}
             />
             {field.state.meta.errors?.[0] && (
@@ -140,7 +127,7 @@ const InfoForm = ({
               onChange={(ev) => field.handleChange(ev.target.value)}
               className={cn(
                 field.state.meta.errors?.[0] &&
-                  "border-red-500 focus:ring-red-500"
+                  "border-red-500 focus:ring-red-500",
               )}
             />
             {field.state.meta.errors?.[0] && (
@@ -170,7 +157,7 @@ const InfoForm = ({
               onChange={(ev) => field.handleChange(ev.target.value)}
               className={cn(
                 field.state.meta.errors?.[0] &&
-                  "border-red-500 focus:ring-red-500"
+                  "border-red-500 focus:ring-red-500",
               )}
             />
             {field.state.meta.errors?.[0] && (
@@ -203,45 +190,68 @@ const ChatView = ({ visitor }: { visitor: VisitorInfo }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const submitRef = useRef<HTMLButtonElement>(null);
   const [input, setInput] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [chatId, setChatId] = useState<string | undefined>();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const newChatIdQuery = useQuery(orpc.visitorChat.newId.queryOptions());
-  const chatId = newChatIdQuery.data;
+  const sendMessage = async (text: string) => {
+    const userMsg: Message = {
+      id: `user-${Date.now()}`,
+      role: "user",
+      content: text,
+    };
+    setMessages((prev) => [...prev, userMsg]);
+    setIsLoading(true);
 
-  const chat = useChat({
-    id: chatId ? `visitor-${chatId}` : "visitor-new",
-    transport: {
-      sendMessages: async (options) => {
-        return eventIteratorToStream(
-          await orpc.visitorChat.chat.call(
-            {
-              chatId: chatId!,
-              fullName: visitor.fullName,
-              email: visitor.email,
-              phone: visitor.phone,
-              messages: options.messages,
-            },
-            { signal: options.abortSignal }
-          )
-        );
-      },
-      reconnectToStream: () => {
-        throw new Error("Unsupported");
-      },
-    },
-  });
+    try {
+      const res = await fetch("/api/visitor-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chatId,
+          fullName: visitor.fullName,
+          email: visitor.email,
+          phone: visitor.phone,
+          message: text,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!chatId) {
+        setChatId(data.chatId);
+      }
+
+      const assistantMsg: Message = {
+        id: `assistant-${Date.now()}`,
+        role: "assistant",
+        content: data.response,
+      };
+      setMessages((prev) => [...prev, assistantMsg]);
+    } catch {
+      const errorMsg: Message = {
+        id: `error-${Date.now()}`,
+        role: "assistant",
+        content: "Sorry, something went wrong. Please try again.",
+      };
+      setMessages((prev) => [...prev, errorMsg]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chat.messages.length]);
+  }, [messages.length]);
 
-  const isEmpty = chat.messages.length === 0;
+  const isEmpty = messages.length === 0;
 
   return (
     <div className="flex flex-col h-[28rem]">
       <div
         className={cn(
           "flex-1 overflow-y-auto p-4 min-h-0",
-          isEmpty ? "flex flex-col items-center justify-center" : "space-y-3"
+          isEmpty ? "flex flex-col items-center justify-center" : "space-y-3",
         )}
       >
         {isEmpty ? (
@@ -261,10 +271,17 @@ const ChatView = ({ visitor }: { visitor: VisitorInfo }) => {
             </p>
           </>
         ) : (
-          chat.messages.map((msg) => (
-            <ChatMessage key={msg.id} role={msg.role} message={msg} />
+          messages.map((msg) => (
+            <ChatMessage key={msg.id} role={msg.role} content={msg.content} />
           ))
         )}
+        {isLoading ? (
+          <div className="py-2.5 px-3 rounded-xl rounded-bl-none bg-white border border-zinc-100 shadow-sm mr-auto">
+            <div className="flex gap-2">
+              <LoadingIndicator />
+            </div>
+          </div>
+        ) : null}
         <div ref={bottomRef} />
       </div>
 
@@ -272,8 +289,8 @@ const ChatView = ({ visitor }: { visitor: VisitorInfo }) => {
         className="border-t border-zinc-200 p-3 flex gap-2 items-end flex-shrink-0"
         onSubmit={(ev) => {
           ev.preventDefault();
-          if (input.trim() && chatId) {
-            chat.sendMessage({ text: input });
+          if (input.trim() && !isLoading) {
+            sendMessage(input.trim());
             setInput("");
           }
         }}
@@ -294,7 +311,7 @@ const ChatView = ({ visitor }: { visitor: VisitorInfo }) => {
         <Button
           ref={submitRef}
           type="submit"
-          disabled={!input.trim() || !chatId}
+          disabled={!input.trim() || isLoading}
           className="flex-shrink-0 size-8 !p-0"
         >
           <ArrowUpIcon weight="bold" className="size-3.5" />
