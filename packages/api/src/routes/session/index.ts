@@ -127,6 +127,10 @@ import {
   regenerateTranscription,
 } from "./regenerate-transcription";
 import { rateSession, RateSessionInputSchema } from "./rate";
+import {
+  GenerateSystemSummaryInputSchema,
+  generateSystemSummaryRoute,
+} from "./generate-system-summary";
 
 // todo: move all the handlers above to this format
 export const session = {
@@ -158,4 +162,9 @@ export const session = {
   rate: privateRoute.input(RateSessionInputSchema).handler(async ({ context, input }) => {
     return rateSession(context, input);
   }),
+  generateSystemSummary: privateRoute
+    .input(GenerateSystemSummaryInputSchema)
+    .handler(async ({ context, input }) => {
+      return generateSystemSummaryRoute(context, input);
+    }),
 };

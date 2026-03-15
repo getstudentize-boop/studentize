@@ -1,0 +1,1 @@
+ALTER TABLE "session" ADD COLUMN "system_summary" text;

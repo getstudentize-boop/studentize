@@ -281,6 +281,13 @@
       "when": 1773436720608,
       "tag": "0039_chunky_veda",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1773597686363,
+      "tag": "0040_left_the_renegades",
+      "breakpoints": true
     }
   ]
 }
