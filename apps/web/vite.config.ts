@@ -7,7 +7,6 @@ import tailwindcss from "@tailwindcss/vite";
 const config = defineConfig({
   server: {
     port: 3000,
-    cors: true,
   },
   plugins: [
     // this is the plugin that enables path aliases
