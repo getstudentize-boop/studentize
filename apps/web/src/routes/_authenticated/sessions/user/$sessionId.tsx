@@ -228,22 +228,22 @@ function RouteComponent() {
           </div>
 
           {isAdmin ? (
-            <div className="border border-bzinc bg-gradient-to-t to-zinc-100 from-white rounded-lg">
-              <div className="flex gap-4 items-center mb-2 px-4 py-2 border-b border-bzinc">
-                <ShieldCheckIcon />
+            <div className="border border-cyan-800 bg-gradient-to-t to-cyan-900 from-cyan-800 text-white rounded-lg">
+              <div className="flex gap-4 items-center mb-2 px-4 py-2 border-b border-cyan-800">
+                <ShieldCheckIcon className="text-white" />
                 <div>System Summary</div>
-                <span className="text-xs bg-zinc-200 text-zinc-600 px-2 py-0.5 rounded ml-auto">
+                <span className="text-xs bg-white text-cyan-600 px-2 py-0.5 rounded ml-auto">
                   Admin Only
                 </span>
               </div>
               <div className="p-4 pt-2">
                 {sessionOverviewQuery.isPending ? (
-                  <div className="text-zinc-500">Loading...</div>
+                  <div>Loading...</div>
                 ) : sessionOverview?.systemSummary ? (
                   <Markdown>{sessionOverview.systemSummary}</Markdown>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-6 text-center">
-                    <p className="text-zinc-500 mb-4">
+                    <p className="text-white mb-4">
                       No system summary has been generated for this session yet.
                     </p>
                     <Button
