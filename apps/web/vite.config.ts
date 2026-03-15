@@ -8,7 +8,11 @@ const config = defineConfig({
   server: {
     port: 3000,
     cors: {
-      origin: ["https://studentize.com", "https://www.studentize.com"],
+      origin: [
+        "https://studentize.com",
+        "https://www.studentize.com",
+        "http://localhost:3000",
+      ],
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
       credentials: true,
