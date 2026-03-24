@@ -45,6 +45,7 @@ function RouteComponent() {
     isMuted,
     error,
     transcript,
+    setTranscript,
     markShortlistSaved,
     disconnect,
     toggleMute,
@@ -178,9 +179,39 @@ function RouteComponent() {
     setIsLoading(true);
     try {
       const data = await createTokenMutation.mutateAsync({});
-      await initializeConnection(data.value, advisor.slug);
-      // Reset saved transcript length for new session
-      lastSavedTranscriptLength.current = 0;
+      // Seed transcript with existing messages so they stay visible
+      if (existingSession?.messages && transcript.length === 0) {
+        const seeded: typeof transcript = existingSession.messages
+          .map((m) => {
+            if (m.role === "tool" && m.metadata) {
+              const meta = m.metadata as {
+                toolName: string;
+                input: { universities: Array<{ name: string; country: string; category: "reach" | "target" | "safety"; notes?: string }> };
+                output?: { saved?: boolean };
+              };
+              if (meta.toolName === "save_shortlist") {
+                return {
+                  role: "shortlist" as const,
+                  universities: meta.input.universities,
+                  saved: meta.output?.saved ?? true,
+                };
+              }
+              return null;
+            }
+            if (!m.text) return null;
+            return { role: m.role as "user" | "assistant", text: m.text };
+          })
+          .filter((m): m is NonNullable<typeof m> => m !== null);
+        setTranscript(seeded);
+        lastSavedTranscriptLength.current = seeded.length;
+      } else {
+        lastSavedTranscriptLength.current = 0;
+      }
+      // Pass existing messages so the model has prior context
+      const priorMessages = existingSession?.messages?.filter(
+        (m) => m.role !== "tool" && m.text,
+      );
+      await initializeConnection(data.value, advisor.slug, priorMessages);
     } catch (err) {
       console.error("Failed to start call:", err);
     } finally {
@@ -207,6 +238,7 @@ function RouteComponent() {
     try {
       await bulkSaveShortlistMutation.mutateAsync({
         universities: activeShortlistUniversities,
+        virtualAdvisorSessionId: sessionId || undefined,
       });
       markShortlistSaved(shortlistDialogIndex);
       setShortlistDialogIndex(null);
@@ -299,7 +331,21 @@ function RouteComponent() {
               ) : null}
             </div>
             <div className="flex gap-2">
-              <button>
+              <button
+                onClick={() => {
+                  if (isConnected) {
+                    handleCall(); // end current call first
+                  }
+                  setSessionId(null);
+                  lastSavedTranscriptLength.current = 0;
+                  navigate({
+                    to: Route.fullPath,
+                    params: { advisor: params.advisor },
+                    search: {},
+                    replace: true,
+                  });
+                }}
+              >
                 <PlusIcon weight="bold" className="size-4" />
               </button>
               <button
@@ -592,6 +638,7 @@ function RouteComponent() {
             try {
               await bulkSaveShortlistMutation.mutateAsync({
                 universities: historyShortlist.universities,
+                virtualAdvisorSessionId: sessionId || undefined,
               });
               setHistoryShortlist({
                 ...historyShortlist,

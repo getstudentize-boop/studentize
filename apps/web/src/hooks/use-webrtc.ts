@@ -77,9 +77,13 @@ export const useWebRTC = () => {
     };
   }, []);
 
-  // Initialize the connection
+  // Initialize the connection, optionally seeding prior conversation context
   const initializeConnection = useCallback(
-    async (token: string, advisor: string) => {
+    async (
+      token: string,
+      advisor: string,
+      priorMessages?: Array<{ role: string; text: string | null }>,
+    ) => {
       if (!pcRef.current) {
         setError(new Error("Peer connection not initialized"));
         return;
@@ -99,6 +103,27 @@ export const useWebRTC = () => {
         dataChannelRef.current = dc;
 
         dc.addEventListener("open", () => {
+          // Seed prior conversation context so the model can pick up where we left off
+          if (priorMessages && priorMessages.length > 0) {
+            for (const msg of priorMessages) {
+              if (!msg.text) continue;
+              dc.send(
+                JSON.stringify({
+                  type: "conversation.item.create",
+                  item: {
+                    type: "message",
+                    role: msg.role === "assistant" ? "assistant" : "user",
+                    content: [
+                      {
+                        type: "input_text",
+                        text: msg.text,
+                      },
+                    ],
+                  },
+                }),
+              );
+            }
+          }
           dc.send(JSON.stringify({ type: "response.create" }));
         });
 
@@ -343,6 +368,7 @@ export const useWebRTC = () => {
     isMuted,
     error,
     transcript,
+    setTranscript,
     markShortlistSaved,
     sendEvent,
     disconnect,
