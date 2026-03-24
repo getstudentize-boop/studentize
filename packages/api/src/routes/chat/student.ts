@@ -42,7 +42,7 @@ const createListStudentSessionsTool = (input: { studentUserId: string }) => {
       });
 
       return history.map(
-        (session) => `${session.createdAt};${session.title};${session.id};`
+        (session) => `${session.createdAt};${session.title};${session.id};`,
       );
     },
   });
@@ -94,7 +94,7 @@ const createSearchSessionTranscriptions = (input: {
       query: z
         .string()
         .describe(
-          "A specific question or topic to search for in the student's session transcriptions. Be specific about what information you're looking for (e.g., 'college application progress', 'discussion about career goals', 'feedback on essays')."
+          "A specific question or topic to search for in the student's session transcriptions. Be specific about what information you're looking for (e.g., 'college application progress', 'discussion about career goals', 'feedback on essays').",
         ),
     }),
     execute: async ({ query }) => {
@@ -144,7 +144,7 @@ const createSessionSummaryTool = (input: { studentId: string }) => {
       sessionId: z
         .string()
         .describe(
-          "The specific session ID to get a summary for. This is typically obtained from searchSessionTranscriptions results or when an advisor references a particular session."
+          "The specific session ID to get a summary for. This is typically obtained from searchSessionTranscriptions results or when an advisor references a particular session.",
         ),
     }),
     execute: async ({ sessionId }) => {
@@ -455,13 +455,15 @@ You've made excellent progress! You've completed your initial college research a
 
 export const chatStudent = async (
   ctx: AuthContext,
-  input: ChatStudentInput
+  input: ChatStudentInput,
 ) => {
   const isNewMessage = input.messages.length === 1;
 
   const modelMessages = convertToModelMessages(input.messages);
 
   const user = await getUserName({ userId: input.studentUserId });
+
+  console.log("user", user);
 
   if (isNewMessage) {
     await createNewChat({
@@ -481,7 +483,9 @@ export const chatStudent = async (
   });
 
   const studentId =
-    ctx.user.organization.role === "STUDENT" ? ctx.user.id : input.studentUserId;
+    ctx.user.organization.role === "STUDENT"
+      ? ctx.user.id
+      : input.studentUserId;
 
   const result = streamText({
     model: openai("gpt-5.2"),
@@ -511,12 +515,11 @@ export const chatStudent = async (
         studentUserId: studentId,
       }),
     },
-    system:
-      ["OWNER", "ADMIN", "ADVISOR"].includes(ctx.user.organization.role)
-        ? advisorChatPrompt({ user })
-        : ctx.user.organization.role === "STUDENT"
-          ? studentChatPrompt({ user })
-          : advisorChatPrompt({ user }),
+    system: ["OWNER", "ADMIN", "ADVISOR"].includes(ctx.user.organization.role)
+      ? advisorChatPrompt({ user })
+      : ctx.user.organization.role === "STUDENT"
+        ? studentChatPrompt({ user })
+        : advisorChatPrompt({ user }),
     messages: convertToModelMessages(input.messages),
     stopWhen: stepCountIs(10),
     onError: async (error) => {
@@ -537,7 +540,7 @@ export const chatStudent = async (
         .filter((t) => t.role === "assistant")
         .map((m) => {
           const t = [...m.content].find(
-            (part: any) => part.type === "tool-call"
+            (part: any) => part.type === "tool-call",
           ) as any;
 
           return {
@@ -550,12 +553,12 @@ export const chatStudent = async (
         .filter((m) => m.role === "tool")
         .map((t) => {
           const toolResult = t.content.find(
-            (part) => part.type === "tool-result"
+            (part) => part.type === "tool-result",
           );
 
           if (toolResult) {
             const toolInput = toolCalls.find(
-              (tc) => tc.toolCallId === toolResult.toolCallId
+              (tc) => tc.toolCallId === toolResult.toolCallId,
             )?.input;
 
             return {
