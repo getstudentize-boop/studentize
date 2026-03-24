@@ -36,6 +36,7 @@ const categoryConfig = {
 export function ShortlistConfirmationDialog({
   universities,
   isOpen,
+  isSaved,
   onConfirm,
   onCancel,
   isSaving,
@@ -43,6 +44,7 @@ export function ShortlistConfirmationDialog({
 }: {
   universities: ShortlistUniversity[];
   isOpen: boolean;
+  isSaved?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
   isSaving: boolean;
@@ -64,8 +66,9 @@ export function ShortlistConfirmationDialog({
             <DialogTitle>Your University Shortlist</DialogTitle>
           </div>
           <DialogDescription>
-            Review your shortlist below. Confirming will save it to your profile
-            (replacing any previous AI-generated shortlist).
+            {isSaved
+              ? "This shortlist has been saved to your profile."
+              : "Review your shortlist below. Confirming will save it to your profile (replacing any previous AI-generated shortlist)."}
           </DialogDescription>
 
           <div className="max-h-[50vh] overflow-y-auto space-y-4 pr-1">
@@ -127,20 +130,31 @@ export function ShortlistConfirmationDialog({
           )}
 
           <div className="flex justify-end gap-2 mt-4">
-            <button
-              onClick={onCancel}
-              disabled={isSaving}
-              className="px-4 py-2 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 transition-colors disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={onConfirm}
-              disabled={isSaving}
-              className="px-4 py-2 text-sm font-medium text-white bg-zinc-900 rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-50"
-            >
-              {isSaving ? "Saving..." : "Confirm & Save"}
-            </button>
+            {isSaved ? (
+              <button
+                onClick={onCancel}
+                className="px-4 py-2 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 transition-colors"
+              >
+                Close
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={onCancel}
+                  disabled={isSaving}
+                  className="px-4 py-2 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={onConfirm}
+                  disabled={isSaving}
+                  className="px-4 py-2 text-sm font-medium text-white bg-zinc-900 rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-50"
+                >
+                  {isSaving ? "Saving..." : "Confirm & Save"}
+                </button>
+              </>
+            )}
           </div>
         </DialogContent>
       </DialogPortal>

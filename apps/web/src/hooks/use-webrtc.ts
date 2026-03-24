@@ -1,10 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export type TranscriptEntry = {
-  role: "user" | "assistant";
-  text: string;
-};
-
 export type ShortlistUniversity = {
   name: string;
   country: string;
@@ -12,10 +7,13 @@ export type ShortlistUniversity = {
   notes?: string;
 };
 
-export type PendingShortlist = {
-  universities: ShortlistUniversity[];
-  callId: string;
-};
+export type TranscriptEntry =
+  | { role: "user" | "assistant"; text: string }
+  | {
+      role: "shortlist";
+      universities: ShortlistUniversity[];
+      saved: boolean;
+    };
 
 export const useWebRTC = () => {
   const pcRef = useRef<RTCPeerConnection | null>(null);
@@ -25,8 +23,6 @@ export const useWebRTC = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [transcript, setTranscript] = useState<TranscriptEntry[]>([]);
-  const [pendingShortlist, setPendingShortlist] =
-    useState<PendingShortlist | null>(null);
 
   useEffect(() => {
     // Create a peer connection
@@ -157,17 +153,21 @@ export const useWebRTC = () => {
                 return;
               }
 
-              // Handle save_shortlist — surface to UI for confirmation
+              // Handle save_shortlist — insert into transcript for inline confirmation
               if (
                 item?.type === "function_call" &&
                 item.name === "save_shortlist"
               ) {
                 try {
                   const args = JSON.parse(item.arguments);
-                  setPendingShortlist({
-                    universities: args.universities,
-                    callId: item.call_id,
-                  });
+                  setTranscript((prev) => [
+                    ...prev,
+                    {
+                      role: "shortlist" as const,
+                      universities: args.universities,
+                      saved: false,
+                    },
+                  ]);
                   // Send acknowledgement back to the model so it can continue talking
                   dc.send(
                     JSON.stringify({
@@ -303,7 +303,6 @@ export const useWebRTC = () => {
     setIsMuted(false);
     setError(null);
     setTranscript([]);
-    setPendingShortlist(null);
   };
 
   const toggleMute = () => {
@@ -328,13 +327,23 @@ export const useWebRTC = () => {
     }
   };
 
+  // Mark a shortlist entry as saved (by transcript index)
+  const markShortlistSaved = useCallback((index: number) => {
+    setTranscript((prev) =>
+      prev.map((entry, i) =>
+        i === index && entry.role === "shortlist"
+          ? { ...entry, saved: true }
+          : entry
+      )
+    );
+  }, []);
+
   return {
     isConnected,
     isMuted,
     error,
     transcript,
-    pendingShortlist,
-    setPendingShortlist,
+    markShortlistSaved,
     sendEvent,
     disconnect,
     toggleMute,
