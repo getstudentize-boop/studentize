@@ -11,7 +11,64 @@ You have access to a search_web tool that lets you look up real-time information
 
 When you use the search tool, let the student know you're looking something up (e.g. "Let me check that for you...") so they know there may be a brief pause. After receiving the search results, synthesize the information into clear, actionable advice — don't just read out raw results. Always cite specifics (numbers, dates, requirements) when available. Always stay in character.`;
 
-const advisors: Record<string, { voice: string; instructions: string }> = {
+const searchWebTool = {
+  type: "function" as const,
+  name: "search_web",
+  description:
+    "Search the web for up-to-date information about universities, courses, admissions, student life, or any other topic the student asks about. Use this when the student asks a factual question you're not confident about or when they need current information.",
+  parameters: {
+    type: "object",
+    properties: {
+      query: {
+        type: "string",
+        description: "The search query to look up on the web",
+      },
+    },
+    required: ["query"],
+  },
+};
+
+const saveShortlistTool = {
+  type: "function" as const,
+  name: "save_shortlist",
+  description:
+    "Save the student's university shortlist for their review. Call this when the student is happy with their shortlist and wants to save it. The student will see a confirmation dialog to review, edit, and confirm the list before it is persisted. Calling this again replaces any previous unsaved shortlist.",
+  parameters: {
+    type: "object",
+    properties: {
+      universities: {
+        type: "array",
+        description: "The list of universities in the shortlist",
+        items: {
+          type: "object",
+          properties: {
+            name: {
+              type: "string",
+              description: "Full university name (e.g. 'University of Cape Town')",
+            },
+            country: {
+              type: "string",
+              description: "Country code: 'us', 'uk', or the full country name for others",
+            },
+            category: {
+              type: "string",
+              enum: ["reach", "target", "safety"],
+              description: "Classification relative to the student's profile",
+            },
+            notes: {
+              type: "string",
+              description: "Brief explanation of why this university is classified this way, including relevant admission requirements or stats",
+            },
+          },
+          required: ["name", "country", "category"],
+        },
+      },
+    },
+    required: ["universities"],
+  },
+};
+
+const advisors: Record<string, { voice: string; instructions: string; tools?: object[] }> = {
   shortlister: {
     voice: "marin",
     instructions:
@@ -57,8 +114,16 @@ INTERACTIVE FEATURES TO SUPPORT:
 - If the student's SAT score or grades change, proactively reassess the list.
 - Always be ready to compare two universities side by side when asked.
 
+SAVING THE SHORTLIST:
+- When you have built a balanced shortlist with the student and they seem satisfied, proactively offer to save it.
+- When the student explicitly asks to save, finalize, or confirm the shortlist, call the save_shortlist tool.
+- The tool accepts an array of universities. For each university, provide: name, country (us/uk/other), category (reach/target/safety), and notes explaining why it's classified that way relative to the student's profile.
+- After calling save_shortlist, let the student know the list has been sent for their review and they can confirm or edit it.
+- If the student wants to make changes after saving, they can refine the list and you can call save_shortlist again — it will replace the previous unsaved shortlist.
+
 Keep responses concise and conversational. When presenting a shortlist, use a clear structure but keep it natural for voice conversation.` +
       SEARCH_TOOL_INSTRUCTIONS,
+    tools: [saveShortlistTool],
   },
   essaycoach: {
     voice: "cedar",
@@ -218,24 +283,7 @@ export const ServerRoute = createServerFileRoute(
             noise_reduction: { type: "near_field" },
           },
         },
-        tools: [
-          {
-            type: "function",
-            name: "search_web",
-            description:
-              "Search the web for up-to-date information about universities, courses, admissions, student life, or any other topic the student asks about. Use this when the student asks a factual question you're not confident about or when they need current information.",
-            parameters: {
-              type: "object",
-              properties: {
-                query: {
-                  type: "string",
-                  description: "The search query to look up on the web",
-                },
-              },
-              required: ["query"],
-            },
-          },
-        ],
+        tools: [searchWebTool, ...(advisor.tools || [])],
         tool_choice: "auto",
       }),
     );

@@ -1,4 +1,5 @@
 import { VirtualAdvisorCard } from "@/features/virtual-advisor-card";
+import { ShortlistConfirmationDialog } from "@/features/shortlist-confirmation-dialog";
 import { useWebRTC } from "@/hooks/use-webrtc";
 import { cn } from "@/utils/cn";
 import {
@@ -42,6 +43,8 @@ function RouteComponent() {
     isMuted,
     error,
     transcript,
+    pendingShortlist,
+    setPendingShortlist,
     disconnect,
     toggleMute,
     initializeConnection,
@@ -61,12 +64,17 @@ function RouteComponent() {
     orpc.virtualAdvisor.endSession.mutationOptions(),
   );
 
+  const bulkSaveShortlistMutation = useMutation(
+    orpc.shortlist.bulkSave.mutationOptions(),
+  );
+
   const [isLoading, setIsLoading] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [sessionId, setSessionId] = useState<string | null>(
     search.sessionId || null,
   );
   const [showHistory, setShowHistory] = useState(false);
+  const [shortlistError, setShortlistError] = useState<string | null>(null);
   const lastSavedTranscriptLength = useRef(0);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -150,6 +158,25 @@ function RouteComponent() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleConfirmShortlist = async () => {
+    if (!pendingShortlist) return;
+    setShortlistError(null);
+    try {
+      await bulkSaveShortlistMutation.mutateAsync({
+        universities: pendingShortlist.universities,
+      });
+      setPendingShortlist(null);
+    } catch (err) {
+      console.error("Failed to save shortlist:", err);
+      setShortlistError("Failed to save your shortlist. Please try again.");
+    }
+  };
+
+  const handleCancelShortlist = () => {
+    setPendingShortlist(null);
+    setShortlistError(null);
   };
 
   useEffect(() => {
@@ -405,6 +432,18 @@ function RouteComponent() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Shortlist Confirmation Dialog */}
+      {pendingShortlist && (
+        <ShortlistConfirmationDialog
+          universities={pendingShortlist.universities}
+          isOpen={!!pendingShortlist}
+          onConfirm={handleConfirmShortlist}
+          onCancel={handleCancelShortlist}
+          isSaving={bulkSaveShortlistMutation.isPending}
+          error={shortlistError}
+        />
       )}
     </div>
   );

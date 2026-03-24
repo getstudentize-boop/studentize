@@ -5,6 +5,18 @@ export type TranscriptEntry = {
   text: string;
 };
 
+export type ShortlistUniversity = {
+  name: string;
+  country: string;
+  category: "reach" | "target" | "safety";
+  notes?: string;
+};
+
+export type PendingShortlist = {
+  universities: ShortlistUniversity[];
+  callId: string;
+};
+
 export const useWebRTC = () => {
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
@@ -13,6 +25,8 @@ export const useWebRTC = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [transcript, setTranscript] = useState<TranscriptEntry[]>([]);
+  const [pendingShortlist, setPendingShortlist] =
+    useState<PendingShortlist | null>(null);
 
   useEffect(() => {
     // Create a peer connection
@@ -143,6 +157,39 @@ export const useWebRTC = () => {
                 return;
               }
 
+              // Handle save_shortlist — surface to UI for confirmation
+              if (
+                item?.type === "function_call" &&
+                item.name === "save_shortlist"
+              ) {
+                try {
+                  const args = JSON.parse(item.arguments);
+                  setPendingShortlist({
+                    universities: args.universities,
+                    callId: item.call_id,
+                  });
+                  // Send acknowledgement back to the model so it can continue talking
+                  dc.send(
+                    JSON.stringify({
+                      type: "conversation.item.create",
+                      item: {
+                        type: "function_call_output",
+                        call_id: item.call_id,
+                        output: JSON.stringify({
+                          status: "pending_confirmation",
+                          message:
+                            "The shortlist has been sent to the student for review. They will see a confirmation dialog.",
+                        }),
+                      },
+                    })
+                  );
+                  dc.send(JSON.stringify({ type: "response.create" }));
+                } catch (err) {
+                  console.error("Failed to parse shortlist:", err);
+                }
+                return;
+              }
+
               const text = item?.content?.[0]?.transcript;
               if (text) {
                 setTranscript((prev) => [...prev, { role: "assistant", text }]);
@@ -256,6 +303,7 @@ export const useWebRTC = () => {
     setIsMuted(false);
     setError(null);
     setTranscript([]);
+    setPendingShortlist(null);
   };
 
   const toggleMute = () => {
@@ -285,6 +333,8 @@ export const useWebRTC = () => {
     isMuted,
     error,
     transcript,
+    pendingShortlist,
+    setPendingShortlist,
     sendEvent,
     disconnect,
     toggleMute,
