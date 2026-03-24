@@ -38,6 +38,9 @@ importers:
       '@phosphor-icons/react':
         specifier: ^2.1.10
         version: 2.1.10(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@student/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
       '@student/api':
         specifier: workspace:*
         version: link:../../packages/api

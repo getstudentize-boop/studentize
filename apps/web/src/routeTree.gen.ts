@@ -47,6 +47,7 @@ import { Route as AuthenticatedStudentUniversitiesCountryIdRouteImport } from '.
 import { ServerRoute as ApiVisitorChatServerRouteImport } from './routes/api/visitor-chat'
 import { ServerRoute as ApiSessionServerRouteImport } from './routes/api/session'
 import { ServerRoute as ApiGoogle_oauth_callbackServerRouteImport } from './routes/api/google_oauth_callback'
+import { ServerRoute as ApiVirtualAdvisorSearchServerRouteImport } from './routes/api/virtual-advisor.search'
 import { ServerRoute as ApiSessionAdvisorServerRouteImport } from './routes/api/session.$advisor'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as ApiAuthLoginServerRouteImport } from './routes/api/auth/login'
@@ -255,6 +256,12 @@ const ApiGoogle_oauth_callbackServerRoute =
   ApiGoogle_oauth_callbackServerRouteImport.update({
     id: '/api/google_oauth_callback',
     path: '/api/google_oauth_callback',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
+const ApiVirtualAdvisorSearchServerRoute =
+  ApiVirtualAdvisorSearchServerRouteImport.update({
+    id: '/api/virtual-advisor/search',
+    path: '/api/virtual-advisor/search',
     getParentRoute: () => rootServerRouteImport,
   } as any)
 const ApiSessionAdvisorServerRoute = ApiSessionAdvisorServerRouteImport.update({
@@ -499,6 +506,7 @@ export interface FileServerRoutesByFullPath {
   '/api/auth/login': typeof ApiAuthLoginServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
   '/api/session/$advisor': typeof ApiSessionAdvisorServerRoute
+  '/api/virtual-advisor/search': typeof ApiVirtualAdvisorSearchServerRoute
 }
 export interface FileServerRoutesByTo {
   '/api/google_oauth_callback': typeof ApiGoogle_oauth_callbackServerRoute
@@ -508,6 +516,7 @@ export interface FileServerRoutesByTo {
   '/api/auth/login': typeof ApiAuthLoginServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
   '/api/session/$advisor': typeof ApiSessionAdvisorServerRoute
+  '/api/virtual-advisor/search': typeof ApiVirtualAdvisorSearchServerRoute
 }
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
@@ -518,6 +527,7 @@ export interface FileServerRoutesById {
   '/api/auth/login': typeof ApiAuthLoginServerRoute
   '/api/rpc/$': typeof ApiRpcSplatServerRoute
   '/api/session/$advisor': typeof ApiSessionAdvisorServerRoute
+  '/api/virtual-advisor/search': typeof ApiVirtualAdvisorSearchServerRoute
 }
 export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
@@ -529,6 +539,7 @@ export interface FileServerRouteTypes {
     | '/api/auth/login'
     | '/api/rpc/$'
     | '/api/session/$advisor'
+    | '/api/virtual-advisor/search'
   fileServerRoutesByTo: FileServerRoutesByTo
   to:
     | '/api/google_oauth_callback'
@@ -538,6 +549,7 @@ export interface FileServerRouteTypes {
     | '/api/auth/login'
     | '/api/rpc/$'
     | '/api/session/$advisor'
+    | '/api/virtual-advisor/search'
   id:
     | '__root__'
     | '/api/google_oauth_callback'
@@ -547,6 +559,7 @@ export interface FileServerRouteTypes {
     | '/api/auth/login'
     | '/api/rpc/$'
     | '/api/session/$advisor'
+    | '/api/virtual-advisor/search'
   fileServerRoutesById: FileServerRoutesById
 }
 export interface RootServerRouteChildren {
@@ -556,6 +569,7 @@ export interface RootServerRouteChildren {
   ApiAuthCallbackServerRoute: typeof ApiAuthCallbackServerRoute
   ApiAuthLoginServerRoute: typeof ApiAuthLoginServerRoute
   ApiRpcSplatServerRoute: typeof ApiRpcSplatServerRoute
+  ApiVirtualAdvisorSearchServerRoute: typeof ApiVirtualAdvisorSearchServerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -816,6 +830,13 @@ declare module '@tanstack/react-start/server' {
       preLoaderRoute: typeof ApiGoogle_oauth_callbackServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
+    '/api/virtual-advisor/search': {
+      id: '/api/virtual-advisor/search'
+      path: '/api/virtual-advisor/search'
+      fullPath: '/api/virtual-advisor/search'
+      preLoaderRoute: typeof ApiVirtualAdvisorSearchServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
     '/api/session/$advisor': {
       id: '/api/session/$advisor'
       path: '/$advisor'
@@ -1024,6 +1045,7 @@ const rootServerRouteChildren: RootServerRouteChildren = {
   ApiAuthCallbackServerRoute: ApiAuthCallbackServerRoute,
   ApiAuthLoginServerRoute: ApiAuthLoginServerRoute,
   ApiRpcSplatServerRoute: ApiRpcSplatServerRoute,
+  ApiVirtualAdvisorSearchServerRoute: ApiVirtualAdvisorSearchServerRoute,
 }
 export const serverRouteTree = rootServerRouteImport
   ._addFileChildren(rootServerRouteChildren)
