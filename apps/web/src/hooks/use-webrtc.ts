@@ -154,10 +154,17 @@ export const useWebRTC = () => {
               "conversation.item.input_audio_transcription.completed"
             ) {
               if (data.transcript) {
-                setTranscript((prev) => [
-                  ...prev,
-                  { role: "user", text: data.transcript },
-                ]);
+                setTranscript((prev) => {
+                  const last = prev[prev.length - 1];
+                  if (last && last.role === "user") {
+                    // Merge consecutive user fragments into one bubble
+                    return [
+                      ...prev.slice(0, -1),
+                      { role: "user" as const, text: last.text + "\n" + data.transcript },
+                    ];
+                  }
+                  return [...prev, { role: "user", text: data.transcript }];
+                });
               }
             }
           } catch (e) {
@@ -199,9 +206,22 @@ export const useWebRTC = () => {
   );
 
   const disconnect = () => {
-    if (dataChannelRef.current) {
+    // Cancel any in-progress response before closing
+    if (
+      dataChannelRef.current &&
+      dataChannelRef.current.readyState === "open"
+    ) {
+      dataChannelRef.current.send(
+        JSON.stringify({ type: "response.cancel" })
+      );
       dataChannelRef.current.close();
       dataChannelRef.current = null;
+    }
+
+    // Stop audio playback immediately
+    if (audioElementRef.current) {
+      audioElementRef.current.pause();
+      audioElementRef.current.srcObject = null;
     }
 
     const pc = pcRef.current;
@@ -210,10 +230,6 @@ export const useWebRTC = () => {
         if (sender.track) sender.track.stop();
       });
       pc.close();
-    }
-
-    if (audioElementRef.current) {
-      audioElementRef.current.srcObject = null;
     }
 
     // Reset to a fresh peer connection

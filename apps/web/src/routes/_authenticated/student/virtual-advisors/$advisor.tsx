@@ -15,6 +15,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import { useEffect, useRef, useState, useCallback } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { virtualAdvisors } from "../virtual-advisors";
 import z from "zod";
 import { format } from "date-fns";
@@ -155,21 +156,31 @@ function RouteComponent() {
     transcriptEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [transcript]);
 
+  // Timer effect - only depends on isConnected
   useEffect(() => {
     if (isConnected) {
       setElapsed(0);
       timerRef.current = setInterval(() => setElapsed((t) => t + 1), 1000);
-      // Save conversation every 10 seconds while connected
-      saveIntervalRef.current = setInterval(() => {
-        saveConversation();
-      }, 10000);
     } else {
       if (timerRef.current) clearInterval(timerRef.current);
-      if (saveIntervalRef.current) clearInterval(saveIntervalRef.current);
     }
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [isConnected]);
+
+  // Save conversation periodically while connected
+  useEffect(() => {
+    if (isConnected) {
+      saveIntervalRef.current = setInterval(() => {
+        saveConversation();
+      }, 10000);
+    } else {
+      if (saveIntervalRef.current) clearInterval(saveIntervalRef.current);
+    }
+
+    return () => {
       if (saveIntervalRef.current) clearInterval(saveIntervalRef.current);
     };
   }, [isConnected, saveConversation]);
@@ -232,35 +243,43 @@ function RouteComponent() {
           )}
           <div className="flex-1 overflow-y-auto no-scrollbar text-left flex flex-col gap-3 mt-4 min-h-0">
             {/* Show existing session messages if loading from history */}
-            {existingSession?.messages && transcript.length === 0
-              ? existingSession.messages.map(
-                  (entry: { role: string; text: string }, i: number) => (
-                    <div
+            <AnimatePresence initial={false}>
+              {existingSession?.messages && transcript.length === 0
+                ? existingSession.messages.map(
+                    (entry: { role: string; text: string }, i: number) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ duration: 0.25, ease: "easeOut" }}
+                        className={cn(
+                          "max-w-[80%] rounded-xl px-3 py-2 text-sm whitespace-pre-line",
+                          entry.role === "user"
+                            ? "self-end bg-zinc-100 text-zinc-800"
+                            : "self-start ",
+                        )}
+                      >
+                        {entry.text}
+                      </motion.div>
+                    ),
+                  )
+                : transcript.map((entry, i) => (
+                    <motion.div
                       key={i}
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ duration: 0.25, ease: "easeOut" }}
                       className={cn(
-                        "max-w-[80%] rounded-xl px-3 py-2 text-sm",
+                        "max-w-[80%] rounded-xl px-3 py-2 text-sm whitespace-pre-line",
                         entry.role === "user"
                           ? "self-end bg-zinc-100 text-zinc-800"
                           : "self-start ",
                       )}
                     >
                       {entry.text}
-                    </div>
-                  ),
-                )
-              : transcript.map((entry, i) => (
-                  <div
-                    key={i}
-                    className={cn(
-                      "max-w-[80%] rounded-xl px-3 py-2 text-sm",
-                      entry.role === "user"
-                        ? "self-end bg-zinc-100 text-zinc-800"
-                        : "self-start ",
-                    )}
-                  >
-                    {entry.text}
-                  </div>
-                ))}
+                    </motion.div>
+                  ))}
+            </AnimatePresence>
             <div ref={transcriptEndRef} />
           </div>
         </div>
