@@ -288,6 +288,13 @@
       "when": 1773597686363,
       "tag": "0040_left_the_renegades",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1774375927017,
+      "tag": "0041_clean_the_professor",
+      "breakpoints": true
     }
   ]
 }

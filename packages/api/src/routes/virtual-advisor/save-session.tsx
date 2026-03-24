@@ -12,10 +12,24 @@ export const SaveSessionInputSchema = z.object({
   sessionId: z.string().optional(),
   advisorSlug: z.string(),
   messages: z.array(
-    z.object({
-      role: z.enum(["user", "assistant"]),
-      text: z.string(),
-    }),
+    z.discriminatedUnion("role", [
+      z.object({
+        role: z.literal("user"),
+        text: z.string(),
+      }),
+      z.object({
+        role: z.literal("assistant"),
+        text: z.string(),
+      }),
+      z.object({
+        role: z.literal("tool"),
+        metadata: z.object({
+          toolName: z.string(),
+          input: z.unknown(),
+          output: z.unknown().optional(),
+        }),
+      }),
+    ]),
   ),
 });
 
@@ -52,11 +66,22 @@ export const saveSessionRoute = async ({
   // Save messages
   if (messages.length > 0) {
     await createVirtualAdvisorMessages(
-      messages.map((msg) => ({
-        sessionId: currentSessionId!,
-        role: msg.role,
-        text: msg.text,
-      })),
+      messages.map((msg) => {
+        if (msg.role === "tool") {
+          return {
+            sessionId: currentSessionId!,
+            role: msg.role,
+            text: null,
+            metadata: msg.metadata,
+          };
+        }
+        return {
+          sessionId: currentSessionId!,
+          role: msg.role,
+          text: msg.text,
+          metadata: null,
+        };
+      }),
     );
   }
 
@@ -68,6 +93,7 @@ export const saveSessionRoute = async ({
 
   if (!session?.title && session?.messages && session.messages.length >= 2) {
     const conversationText = session.messages
+      .filter((msg) => msg.role !== "tool" && msg.text)
       .map(
         (msg) => `${msg.role === "user" ? "User" : "Assistant"}: ${msg.text}`,
       )
