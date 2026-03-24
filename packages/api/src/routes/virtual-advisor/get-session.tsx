@@ -30,6 +30,7 @@ export const getSessionRoute = async ({
     messages: session.messages.map((msg) => ({
       role: msg.role,
       text: msg.text,
+      metadata: msg.metadata,
       createdAt: msg.createdAt,
     })),
   };

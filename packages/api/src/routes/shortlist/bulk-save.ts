@@ -10,7 +10,7 @@ export const BulkSaveShortlistInputSchema = z.object({
       country: z.string(),
       category: z.enum(["reach", "target", "safety"]),
       notes: z.string().optional(),
-    })
+    }),
   ),
 });
 
@@ -20,17 +20,17 @@ export type BulkSaveShortlistInput = z.infer<
 
 export const bulkSaveShortlist = async (
   ctx: AuthContext,
-  input: BulkSaveShortlistInput
+  input: BulkSaveShortlistInput,
 ) => {
   if (!ctx.user) {
     throw new ORPCError("UNAUTHORIZED", { message: "User not authenticated" });
   }
 
-  if (ctx.user.organization.role !== "STUDENT") {
-    throw new ORPCError("FORBIDDEN", {
-      message: "Only students can save a shortlist",
-    });
-  }
+  // if (ctx.user.organization.role !== "STUDENT") {
+  //   throw new ORPCError("FORBIDDEN", {
+  //     message: "Only students can save a shortlist",
+  //   });
+  // }
 
   // Map the university names to shortlist insert records
   // Since these come from the AI advisor (not from our college DB), we store

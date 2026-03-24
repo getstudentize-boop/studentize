@@ -17,6 +17,7 @@ export const virtualAdvisorMessage = pgTable("virtual_advisor_message", {
   sessionId: text("session_id")
     .notNull()
     .references(() => virtualAdvisorSession.id, { onDelete: "cascade" }),
-  role: text("role").notNull(), // "user" | "assistant"
-  text: text("text").notNull(),
+  role: text("role").notNull(), // "user" | "assistant" | "tool"
+  text: text("text"), // null for tool-call entries
+  metadata: jsonb("metadata"), // tool call data: { toolName, input, output }
 });
