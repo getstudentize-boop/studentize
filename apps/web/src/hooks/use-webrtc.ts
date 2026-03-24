@@ -92,12 +92,58 @@ export const useWebRTC = () => {
           dc.send(JSON.stringify({ type: "response.create" }));
         });
 
-        dc.addEventListener("message", (e) => {
+        dc.addEventListener("message", async (e) => {
           try {
             const data = JSON.parse(e.data);
 
             if (data.type === "response.output_item.done") {
-              const text = data.item?.content?.[0]?.transcript;
+              const item = data.item;
+
+              // Handle function calls
+              if (item?.type === "function_call" && item.name === "search_web") {
+                const args = JSON.parse(item.arguments);
+                try {
+                  const res = await fetch("/api/virtual-advisor/search", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ query: args.query }),
+                  });
+                  const { result } = await res.json();
+
+                  // Send function call output back to the model
+                  dc.send(
+                    JSON.stringify({
+                      type: "conversation.item.create",
+                      item: {
+                        type: "function_call_output",
+                        call_id: item.call_id,
+                        output: JSON.stringify({ result }),
+                      },
+                    })
+                  );
+
+                  // Trigger the model to respond with the search results
+                  dc.send(JSON.stringify({ type: "response.create" }));
+                } catch (err) {
+                  console.error("Search function call failed:", err);
+                  dc.send(
+                    JSON.stringify({
+                      type: "conversation.item.create",
+                      item: {
+                        type: "function_call_output",
+                        call_id: item.call_id,
+                        output: JSON.stringify({
+                          error: "Search failed, please try answering from your own knowledge.",
+                        }),
+                      },
+                    })
+                  );
+                  dc.send(JSON.stringify({ type: "response.create" }));
+                }
+                return;
+              }
+
+              const text = item?.content?.[0]?.transcript;
               if (text) {
                 setTranscript((prev) => [...prev, { role: "assistant", text }]);
               }

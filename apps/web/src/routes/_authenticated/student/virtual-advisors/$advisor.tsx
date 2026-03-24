@@ -20,7 +20,7 @@ import z from "zod";
 import { format } from "date-fns";
 
 export const Route = createFileRoute(
-  "/_authenticated/student/virtual-advisors/$advisor"
+  "/_authenticated/student/virtual-advisors/$advisor",
 )({
   component: RouteComponent,
   validateSearch: (search) =>
@@ -49,21 +49,21 @@ function RouteComponent() {
   const transcriptEndRef = useRef<HTMLDivElement>(null);
 
   const createTokenMutation = useMutation(
-    orpc.virtualAdvisor.createToken.mutationOptions()
+    orpc.virtualAdvisor.createToken.mutationOptions(),
   );
 
   const saveSessionMutation = useMutation(
-    orpc.virtualAdvisor.saveSession.mutationOptions()
+    orpc.virtualAdvisor.saveSession.mutationOptions(),
   );
 
   const endSessionMutation = useMutation(
-    orpc.virtualAdvisor.endSession.mutationOptions()
+    orpc.virtualAdvisor.endSession.mutationOptions(),
   );
 
   const [isLoading, setIsLoading] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [sessionId, setSessionId] = useState<string | null>(
-    search.sessionId || null
+    search.sessionId || null,
   );
   const [showHistory, setShowHistory] = useState(false);
   const lastSavedTranscriptLength = useRef(0);
@@ -72,20 +72,20 @@ function RouteComponent() {
   const saveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const advisor = virtualAdvisors.find(
-    (advisor) => advisor.slug === params.advisor
+    (advisor) => advisor.slug === params.advisor,
   )!;
 
   // Load existing session if sessionId is provided
-  const { data: existingSession } = useQuery({
-    ...orpc.virtualAdvisor.getSession.queryOptions({
+  const { data: existingSession } = useQuery(
+    orpc.virtualAdvisor.getSession.queryOptions({
       input: { sessionId: search.sessionId! },
+      enabled: !!search.sessionId,
     }),
-    enabled: !!search.sessionId,
-  });
+  );
 
   // Load all sessions for history
   const { data: allSessions } = useQuery(
-    orpc.virtualAdvisor.listSessions.queryOptions({})
+    orpc.virtualAdvisor.listSessions.queryOptions({}),
   );
 
   // Save conversation periodically
@@ -193,7 +193,8 @@ function RouteComponent() {
       <VirtualAdvisorCard
         src={advisor?.src}
         name={advisor?.name}
-        university={advisor?.university}
+        subtitle={advisor?.subtitle}
+        slug={advisor?.slug}
         logo={advisor?.logo}
         isSelected
       />
@@ -240,12 +241,12 @@ function RouteComponent() {
                         "max-w-[80%] rounded-xl px-3 py-2 text-sm",
                         entry.role === "user"
                           ? "self-end bg-zinc-100 text-zinc-800"
-                          : "self-start "
+                          : "self-start ",
                       )}
                     >
                       {entry.text}
                     </div>
-                  )
+                  ),
                 )
               : transcript.map((entry, i) => (
                   <div
@@ -254,7 +255,7 @@ function RouteComponent() {
                       "max-w-[80%] rounded-xl px-3 py-2 text-sm",
                       entry.role === "user"
                         ? "self-end bg-zinc-100 text-zinc-800"
-                        : "self-start "
+                        : "self-start ",
                     )}
                   >
                     {entry.text}
@@ -273,7 +274,7 @@ function RouteComponent() {
               "p-3 rounded-full text-white cursor-pointer disabled:opacity-50",
               isConnected
                 ? "bg-radial to-red-800 from-red-600"
-                : "bg-radial to-green-800 from-green-700"
+                : "bg-radial to-green-800 from-green-700",
             )}
           >
             {isConnected ? (
@@ -336,7 +337,7 @@ function RouteComponent() {
                         "w-full text-left p-4 rounded-lg border transition-colors",
                         session.id === search.sessionId
                           ? "border-blue-500 bg-blue-50"
-                          : "border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50"
+                          : "border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50",
                       )}
                     >
                       <div className="flex items-start justify-between gap-4">
@@ -348,7 +349,7 @@ function RouteComponent() {
                             <span>
                               {format(
                                 new Date(session.createdAt as string | Date),
-                                "MMM d, yyyy 'at' h:mm a"
+                                "MMM d, yyyy 'at' h:mm a",
                               )}
                             </span>
                             {session.endedAt && (
@@ -358,7 +359,7 @@ function RouteComponent() {
                                   Ended{" "}
                                   {format(
                                     new Date(session.endedAt as string | Date),
-                                    "MMM d, yyyy"
+                                    "MMM d, yyyy",
                                   )}
                                 </span>
                               </>

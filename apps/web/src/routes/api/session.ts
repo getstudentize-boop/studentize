@@ -10,7 +10,7 @@ export const ServerRoute = createServerFileRoute("/api/session").methods({
       "session",
       JSON.stringify({
         type: "realtime",
-        model: "gpt-realtime",
+        model: "gpt-realtime-1.5",
         audio: {
           output: { voice: "ash" },
           input: {
@@ -21,7 +21,7 @@ export const ServerRoute = createServerFileRoute("/api/session").methods({
             noise_reduction: { type: "near_field" },
           },
         },
-      })
+      }),
     );
 
     try {
@@ -36,7 +36,7 @@ export const ServerRoute = createServerFileRoute("/api/session").methods({
       console.error("Token generation error:", error);
       return Response.json(
         { error: "Failed to generate token" },
-        { status: 500 }
+        { status: 500 },
       );
     }
   },

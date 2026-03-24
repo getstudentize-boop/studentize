@@ -75,7 +75,7 @@ export const saveSessionRoute = async ({
 
     try {
       const { object } = await generateObject({
-        model: openai("gpt-5-mini"),
+        model: openai("gpt-5.4-mini"),
         schema: z.object({
           title: z.string().max(60),
         }),
