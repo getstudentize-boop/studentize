@@ -11,7 +11,5 @@ export const searchWeb = async (query: string) => {
     toolChoice: "required",
   });
 
-  console.log(sources, text);
-
   return { text, sources };
 };

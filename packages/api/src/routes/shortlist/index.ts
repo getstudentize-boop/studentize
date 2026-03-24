@@ -12,6 +12,10 @@ import {
   checkIfShortlisted,
   CheckIfShortlistedInputSchema,
 } from "./check-if-shortlisted";
+import {
+  bulkSaveShortlist,
+  BulkSaveShortlistInputSchema,
+} from "./bulk-save";
 
 import { privateRoute } from "../../utils/middleware";
 
@@ -50,10 +54,18 @@ const checkIfShortlistedHandler = privateRoute
     return result;
   });
 
+const bulkSaveShortlistHandler = privateRoute
+  .input(BulkSaveShortlistInputSchema)
+  .handler(async ({ context, input }) => {
+    const result = await bulkSaveShortlist(context, input);
+    return result;
+  });
+
 export const shortlist = {
   add: addToShortlistHandler,
   remove: removeFromShortlistHandler,
   update: updateShortlistHandler,
   getMyShortlist: getMyShortlistHandler,
   checkIfShortlisted: checkIfShortlistedHandler,
+  bulkSave: bulkSaveShortlistHandler,
 };
