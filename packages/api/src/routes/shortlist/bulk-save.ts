@@ -12,6 +12,7 @@ export const BulkSaveShortlistInputSchema = z.object({
       notes: z.string().optional(),
     }),
   ),
+  virtualAdvisorSessionId: z.string().optional(),
 });
 
 export type BulkSaveShortlistInput = z.infer<
@@ -42,6 +43,7 @@ export const bulkSaveShortlist = async (
     category: u.category,
     source: "ai" as const,
     notes: u.notes || null,
+    virtualAdvisorSessionId: input.virtualAdvisorSessionId || null,
   }));
 
   const result = await bulkReplaceShortlist({
