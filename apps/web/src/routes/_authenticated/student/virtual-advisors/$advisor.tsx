@@ -4,11 +4,13 @@ import { useWebRTC } from "@/hooks/use-webrtc";
 import { cn } from "@/utils/cn";
 import {
   ArrowLeftIcon,
+  GraduationCapIcon,
   InfoIcon,
   MicrophoneIcon,
   MicrophoneSlashIcon,
   PhoneDisconnectIcon,
   PhoneOutgoingIcon,
+  PlusIcon,
   RecordIcon,
   XIcon,
 } from "@phosphor-icons/react";
@@ -43,8 +45,7 @@ function RouteComponent() {
     isMuted,
     error,
     transcript,
-    pendingShortlist,
-    setPendingShortlist,
+    markShortlistSaved,
     disconnect,
     toggleMute,
     initializeConnection,
@@ -74,6 +75,9 @@ function RouteComponent() {
     search.sessionId || null,
   );
   const [showHistory, setShowHistory] = useState(false);
+  const [shortlistDialogIndex, setShortlistDialogIndex] = useState<
+    number | null
+  >(null);
   const [shortlistError, setShortlistError] = useState<string | null>(null);
   const lastSavedTranscriptLength = useRef(0);
 
@@ -107,7 +111,13 @@ function RouteComponent() {
     }
 
     try {
-      const newMessages = transcript.slice(lastSavedTranscriptLength.current);
+      const newMessages = transcript
+        .slice(lastSavedTranscriptLength.current)
+        .filter(
+          (entry): entry is { role: "user" | "assistant"; text: string } =>
+            entry.role !== "shortlist",
+        );
+      if (newMessages.length === 0) return;
       const result = await saveSessionMutation.mutateAsync({
         sessionId: sessionId || undefined,
         advisorSlug: advisor.slug,
@@ -160,22 +170,36 @@ function RouteComponent() {
     }
   };
 
+  // Auto-open the dialog when a new shortlist entry appears
+  useEffect(() => {
+    const lastEntry = transcript[transcript.length - 1];
+    if (lastEntry?.role === "shortlist" && !lastEntry.saved) {
+      setShortlistDialogIndex(transcript.length - 1);
+    }
+  }, [transcript]);
+
+  const activeShortlist =
+    shortlistDialogIndex !== null ? transcript[shortlistDialogIndex] : null;
+  const activeShortlistUniversities =
+    activeShortlist?.role === "shortlist" ? activeShortlist.universities : null;
+
   const handleConfirmShortlist = async () => {
-    if (!pendingShortlist) return;
+    if (!activeShortlistUniversities || shortlistDialogIndex === null) return;
     setShortlistError(null);
     try {
       await bulkSaveShortlistMutation.mutateAsync({
-        universities: pendingShortlist.universities,
+        universities: activeShortlistUniversities,
       });
-      setPendingShortlist(null);
+      markShortlistSaved(shortlistDialogIndex);
+      setShortlistDialogIndex(null);
     } catch (err) {
       console.error("Failed to save shortlist:", err);
       setShortlistError("Failed to save your shortlist. Please try again.");
     }
   };
 
-  const handleCancelShortlist = () => {
-    setPendingShortlist(null);
+  const handleCloseShortlistDialog = () => {
+    setShortlistDialogIndex(null);
     setShortlistError(null);
   };
 
@@ -256,12 +280,17 @@ function RouteComponent() {
                 </div>
               ) : null}
             </div>
-            <button
-              onClick={() => setShowHistory(true)}
-              className="px-2 py-0.5 bg-zinc-50 border border-bzinc rounded-md text-md hover:bg-zinc-100 transition-colors"
-            >
-              History
-            </button>
+            <div className="flex gap-2">
+              <button>
+                <PlusIcon weight="bold" className="size-4" />
+              </button>
+              <button
+                onClick={() => setShowHistory(true)}
+                className="px-2 py-0.5 bg-zinc-50 border border-bzinc rounded-md text-md hover:bg-zinc-100 transition-colors"
+              >
+                History
+              </button>
+            </div>
           </div>
           {error && (
             <p className="text-red-500 text-sm text-center mt-2 flex-shrink-0">
@@ -290,22 +319,47 @@ function RouteComponent() {
                       </motion.div>
                     ),
                   )
-                : transcript.map((entry, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      transition={{ duration: 0.25, ease: "easeOut" }}
-                      className={cn(
-                        "max-w-[80%] rounded-xl px-3 py-2 text-sm whitespace-pre-line",
-                        entry.role === "user"
-                          ? "self-end bg-zinc-100 text-zinc-800"
-                          : "self-start ",
-                      )}
-                    >
-                      {entry.text}
-                    </motion.div>
-                  ))}
+                : transcript.map((entry, i) =>
+                    entry.role === "shortlist" ? (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ duration: 0.25, ease: "easeOut" }}
+                        className="self-start"
+                      >
+                        <button
+                          onClick={() => setShortlistDialogIndex(i)}
+                          className={cn(
+                            "flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-colors",
+                            entry.saved
+                              ? "border-green-200 bg-green-50 text-green-700"
+                              : "border-zinc-200 bg-white text-zinc-800 hover:bg-zinc-50",
+                          )}
+                        >
+                          <GraduationCapIcon className="size-4" weight="fill" />
+                          {entry.saved
+                            ? `Shortlist saved (${entry.universities.length})`
+                            : `Review shortlist (${entry.universities.length})`}
+                        </button>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ duration: 0.25, ease: "easeOut" }}
+                        className={cn(
+                          "max-w-[80%] rounded-xl px-3 py-2 text-sm whitespace-pre-line",
+                          entry.role === "user"
+                            ? "self-end bg-zinc-100 text-zinc-800"
+                            : "self-start ",
+                        )}
+                      >
+                        {entry.text}
+                      </motion.div>
+                    ),
+                  )}
             </AnimatePresence>
             <div ref={transcriptEndRef} />
           </div>
@@ -435,12 +489,15 @@ function RouteComponent() {
       )}
 
       {/* Shortlist Confirmation Dialog */}
-      {pendingShortlist && (
+      {activeShortlistUniversities && (
         <ShortlistConfirmationDialog
-          universities={pendingShortlist.universities}
-          isOpen={!!pendingShortlist}
+          universities={activeShortlistUniversities}
+          isOpen={!!activeShortlistUniversities}
+          isSaved={
+            activeShortlist?.role === "shortlist" && activeShortlist.saved
+          }
           onConfirm={handleConfirmShortlist}
-          onCancel={handleCancelShortlist}
+          onCancel={handleCloseShortlistDialog}
           isSaving={bulkSaveShortlistMutation.isPending}
           error={shortlistError}
         />
