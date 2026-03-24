@@ -13,8 +13,9 @@ When you use the search tool, let the student know you're looking something up (
 
 const advisors: Record<string, { voice: string; instructions: string }> = {
   shortlister: {
-    voice: "ash",
-    instructions: `You are the University Shortlisting Advisor — a warm, encouraging, and deeply knowledgeable university admissions strategist. Your name is Zara.
+    voice: "marin",
+    instructions:
+      `You are the University Shortlisting Advisor — a warm, encouraging, and deeply knowledgeable university admissions strategist. Your name is Zara.
 
 ROLE & PERSONALITY:
 - You are an expert in global university admissions with deep knowledge of UK, US, and international institutions.
@@ -56,11 +57,13 @@ INTERACTIVE FEATURES TO SUPPORT:
 - If the student's SAT score or grades change, proactively reassess the list.
 - Always be ready to compare two universities side by side when asked.
 
-Keep responses concise and conversational. When presenting a shortlist, use a clear structure but keep it natural for voice conversation.` + SEARCH_TOOL_INSTRUCTIONS,
+Keep responses concise and conversational. When presenting a shortlist, use a clear structure but keep it natural for voice conversation.` +
+      SEARCH_TOOL_INSTRUCTIONS,
   },
   essaycoach: {
     voice: "cedar",
-    instructions: `You are the Application Essay Coach — a sharp, supportive, and experienced writing mentor. Your name is Marcus.
+    instructions:
+      `You are the Application Essay Coach — a sharp, supportive, and experienced writing mentor. Your name is Marcus.
 
 ROLE & PERSONALITY:
 - You are an expert in university application essays with experience across Common App, UCAS personal statements, UC PIQs, supplemental essays, and scholarship applications.
@@ -98,11 +101,13 @@ WHEN USING WEB SEARCH:
 - Research essay prompt requirements and word limits for specific institutions.
 - Find examples of what admissions officers have said publicly about what they look for.
 
-Keep responses concise and conversational. When giving feedback, be specific and actionable. Read back revised sentences or paragraphs to show the student what stronger writing sounds like.` + SEARCH_TOOL_INSTRUCTIONS,
+Keep responses concise and conversational. When giving feedback, be specific and actionable. Read back revised sentences or paragraphs to show the student what stronger writing sounds like.` +
+      SEARCH_TOOL_INSTRUCTIONS,
   },
   sattutor: {
     voice: "echo",
-    instructions: `You are the SAT Tutor — an energetic, patient, and methodical test prep expert. Your name is Kai.
+    instructions:
+      `You are the SAT Tutor — an energetic, patient, and methodical test prep expert. Your name is Kai.
 
 ROLE & PERSONALITY:
 - You are a top-tier SAT tutor with deep expertise in both the Reading & Writing and Math sections of the digital SAT.
@@ -176,7 +181,8 @@ IMPORTANT RULES:
 - Be encouraging but honest. If they need a 200-point improvement in 2 weeks, be realistic about expectations while still being motivating.
 - When the student gets something right, briefly acknowledge it and move on. Don't over-praise.
 
-Keep responses concise and conversational. When presenting math, speak through each step clearly since this is a voice conversation.` + SEARCH_TOOL_INSTRUCTIONS,
+Keep responses concise and conversational. When presenting math, speak through each step clearly since this is a voice conversation.` +
+      SEARCH_TOOL_INSTRUCTIONS,
   },
 };
 
@@ -199,7 +205,9 @@ export const ServerRoute = createServerFileRoute(
       JSON.stringify({
         type: "realtime",
         model: "gpt-realtime-1.5",
-        instructions: `Today's date is ${new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}.\n\n` + advisor.instructions,
+        instructions:
+          `Today's date is ${new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}.\n\n` +
+          advisor.instructions,
         audio: {
           output: { voice: advisor.voice },
           input: {
@@ -221,8 +229,7 @@ export const ServerRoute = createServerFileRoute(
               properties: {
                 query: {
                   type: "string",
-                  description:
-                    "The search query to look up on the web",
+                  description: "The search query to look up on the web",
                 },
               },
               required: ["query"],
