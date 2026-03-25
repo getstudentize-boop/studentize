@@ -3,10 +3,10 @@ import { CollapsibleSection, StatCard } from "../components";
 
 export function FinancesTab({ college }: { college: College }) {
   const pellGrantRate = college.pellGrantRate
-    ? college.pellGrantRate.toFixed(1)
+    ? Number(college.pellGrantRate).toFixed(1)
     : null;
   const federalLoanRate = college.federalLoanRate
-    ? college.federalLoanRate.toFixed(1)
+    ? Number(college.federalLoanRate).toFixed(1)
     : null;
 
   return (

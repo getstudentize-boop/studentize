@@ -58,10 +58,10 @@ export function OverviewTab({ college }: { college: College }) {
 
   // Gender percentages are already stored as percentages (e.g., 62.48 = 62.48%)
   const malePercentage = college.maleShare
-    ? college.maleShare.toFixed(1)
+    ? Number(college.maleShare).toFixed(1)
     : null;
   const femalePercentage = college.femaleShare
-    ? college.femaleShare.toFixed(1)
+    ? Number(college.femaleShare).toFixed(1)
     : null;
 
   // Get the about text from real data
@@ -103,7 +103,7 @@ export function OverviewTab({ college }: { college: College }) {
           {college.graduationRate && (
             <StatCard
               label="Graduation Rate"
-              value={`${college.graduationRate.toFixed(1)}%`}
+              value={`${Number(college.graduationRate).toFixed(1)}%`}
             />
           )}
         </div>

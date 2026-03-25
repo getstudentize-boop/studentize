@@ -9,12 +9,15 @@ import {
   MapPin,
   Star,
   Trash,
-  ArrowRight,
   BookmarkSimple,
   ListChecks,
   ChatCircle,
 } from "@phosphor-icons/react";
 import { cn } from "@/utils/cn";
+import { CollegeCard } from "@/features/college/college-card";
+import { CollegeModal } from "@/features/college/college-modal";
+import { UKCollegeModal } from "@/features/college/uk-college-modal";
+import type { College, UKCollegeData } from "@/features/college/types";
 
 export const Route = createFileRoute(
   "/_authenticated/student/universities/shortlist",
@@ -36,10 +39,16 @@ interface ShortlistedUniversity {
   source: string;
   notes?: string | null;
   virtualAdvisorSessionId?: string | null;
+  country: "us" | "uk";
+  rawCollege?: unknown;
 }
 
 function ShortlistPage() {
   const [activeTab, setActiveTab] = useState<"all" | "ai" | "manual">("all");
+  const [selectedCollege, setSelectedCollege] = useState<{
+    college: College | UKCollegeData;
+    country: "us" | "uk";
+  } | null>(null);
   const queryClient = useQueryClient();
 
   const { data: rawShortlist, isLoading } = useQuery(
@@ -71,6 +80,8 @@ function ShortlistPage() {
       source: item.source,
       notes: item.notes,
       virtualAdvisorSessionId: item.virtualAdvisorSessionId,
+      country: item.country as "us" | "uk",
+      rawCollege: item.rawCollege,
     }),
   );
 
@@ -190,6 +201,7 @@ function ShortlistPage() {
             color="purple"
             universities={reach}
             onRemove={(id) => removeMutation.mutate({ id })}
+            onCollegeClick={setSelectedCollege}
           />
           <CategorySection
             title="Target Schools"
@@ -197,6 +209,7 @@ function ShortlistPage() {
             color="blue"
             universities={target}
             onRemove={(id) => removeMutation.mutate({ id })}
+            onCollegeClick={setSelectedCollege}
           />
           <CategorySection
             title="Safety Schools"
@@ -204,6 +217,7 @@ function ShortlistPage() {
             color="green"
             universities={safety}
             onRemove={(id) => removeMutation.mutate({ id })}
+            onCollegeClick={setSelectedCollege}
           />
           {uncategorized.length > 0 && (
             <CategorySection
@@ -212,10 +226,27 @@ function ShortlistPage() {
               color="blue"
               universities={uncategorized}
               onRemove={(id) => removeMutation.mutate({ id })}
+              onCollegeClick={setSelectedCollege}
             />
           )}
         </div>
       </div>
+
+      {selectedCollege && selectedCollege.country === "us" && (
+        <CollegeModal
+          college={selectedCollege.college as College}
+          onClose={() => setSelectedCollege(null)}
+        />
+      )}
+      {selectedCollege && selectedCollege.country === "uk" && (
+        <UKCollegeModal
+          collegeId={selectedCollege.college.id}
+          collegeName={
+            (selectedCollege.college as UKCollegeData).universityName
+          }
+          onClose={() => setSelectedCollege(null)}
+        />
+      )}
     </div>
   );
 }
@@ -329,6 +360,10 @@ interface CategorySectionProps {
   color: "purple" | "blue" | "green";
   universities: ShortlistedUniversity[];
   onRemove: (id: string) => void;
+  onCollegeClick: (selection: {
+    college: College | UKCollegeData;
+    country: "us" | "uk";
+  }) => void;
 }
 
 function CategorySection({
@@ -337,6 +372,7 @@ function CategorySection({
   color,
   universities,
   onRemove,
+  onCollegeClick,
 }: CategorySectionProps) {
   if (universities.length === 0) {
     return null;
@@ -367,13 +403,27 @@ function CategorySection({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {universities.map((university) => (
-          <UniversityCard
-            key={university.id}
-            university={university}
-            onRemove={onRemove}
-          />
-        ))}
+        {universities.map((university) =>
+          university.source === "manual" && university.rawCollege ? (
+            <CollegeCard
+              key={university.id}
+              country={university.country}
+              college={university.rawCollege as any}
+              onClick={() =>
+                onCollegeClick({
+                  college: university.rawCollege as College | UKCollegeData,
+                  country: university.country,
+                })
+              }
+            />
+          ) : (
+            <UniversityCard
+              key={university.id}
+              university={university}
+              onRemove={onRemove}
+            />
+          ),
+        )}
       </div>
     </div>
   );
@@ -463,7 +513,7 @@ function UniversityCard({
 
         {/* Actions */}
         <div className="flex gap-2 pt-3 border-t border-zinc-100">
-          {university.source === "ai" && university.virtualAdvisorSessionId ? (
+          {university.source === "ai" && university.virtualAdvisorSessionId && (
             <Link
               to="/student/virtual-advisors/$advisor"
               params={{ advisor: "shortlister" }}
@@ -475,15 +525,10 @@ function UniversityCard({
               <ChatCircle size={14} weight="fill" />
               View Chat
             </Link>
-          ) : (
-            <button className="flex-1 text-sm px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium flex items-center justify-center gap-2">
-              View Details
-              <ArrowRight size={14} />
-            </button>
           )}
           <button
             onClick={() => onRemove(university.id)}
-            className="p-2 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            className="p-2 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors ml-auto"
           >
             <Trash size={18} />
           </button>

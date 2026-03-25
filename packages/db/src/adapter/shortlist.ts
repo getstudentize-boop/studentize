@@ -113,6 +113,7 @@ export const getStudentShortlistWithDetails = async (studentUserId: string) => {
               country: "us" as const,
             }
           : null,
+        rawCollege: college ?? null,
       };
     } else {
       const college = ukColleges.find((c) => c.id === item.collegeId);
@@ -130,6 +131,7 @@ export const getStudentShortlistWithDetails = async (studentUserId: string) => {
               country: "uk" as const,
             }
           : null,
+        rawCollege: college ?? null,
       };
     }
   });
