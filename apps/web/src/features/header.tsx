@@ -13,11 +13,15 @@ import {
   PencilIcon,
   GraduationCapIcon,
   GlobeIcon,
+  LockIcon,
+  GearSixIcon,
 } from "@phosphor-icons/react";
 import { Link, useMatchRoute, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@workos-inc/authkit-react";
-import { RouterOutputs } from "orpc/client";
-import { ReactNode, useTransition } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { orpc, RouterOutputs } from "orpc/client";
+import { ReactNode, useTransition, useState } from "react";
+import { UpgradeModal } from "@/components/upgrade-modal";
 
 type UserRole = RouterOutputs["user"]["current"]["organization"]["role"];
 
@@ -29,11 +33,19 @@ export const Header = ({
   userRole: UserRole;
 }) => {
   const [isLoading, startTransition] = useTransition();
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const route = useMatchRoute();
   const navigate = useNavigate();
 
   const { signOut } = useAuth();
+
+  // Fetch student profile to check tier (only for students)
+  const profileQuery = useQuery({
+    ...orpc.student.getMyProfile.queryOptions({ input: {} }),
+    enabled: userRole === "STUDENT",
+  });
+  const isFreeUser = userRole === "STUDENT" && (!profileQuery.data?.tier || profileQuery.data.tier === "FREE");
 
   const isGuru = route({ to: "/guru" });
 
@@ -71,6 +83,7 @@ export const Header = ({
             isActive:
               route({ to: "/student/sessions" }) ||
               route({ to: "/student/sessions/$sessionId" }),
+            isLocked: isFreeUser,
           },
           {
             to: "/student/aptitude",
@@ -164,7 +177,10 @@ export const Header = ({
       })}
     >
       <div className="border-r border-zinc-200 px-3 py-5 gap-2 flex flex-col items-start bg-white transition-all duration-300 ease-out overflow-hidden group hover:w-46 w-[60px]">
-        <div className="mb-4 flex items-center gap-3 w-full translate-x-[2.8px]">
+        <Link
+          to={userRole === "STUDENT" ? "/student/dashboard" : "/home"}
+          className="mb-4 flex items-center gap-3 w-full translate-x-[2.8px] hover:opacity-80 transition-opacity"
+        >
           <img
             src="/logo.png"
             alt="Studentize Logo"
@@ -173,26 +189,64 @@ export const Header = ({
           <span className="text-sm font-semibold text-zinc-900 whitespace-nowrap transition-opacity duration-300 group-hover:opacity-100 opacity-0">
             Studentize
           </span>
-        </div>
+        </Link>
 
-        {icons.map(({ to, icon, label, isActive }: any) => (
-          <Link
-            to={to}
-            key={to}
-            className={cn(
-              "px-2.5 py-2 rounded-xl transition-all duration-200 ease-out",
-              "flex items-center gap-3 w-full",
-              isActive
-                ? "bg-zinc-900 text-white shadow-sm"
-                : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
-            )}
-          >
-            <span className="flex-shrink-0">{icon}</span>
-            <span className="text-sm font-medium whitespace-nowrap transition-opacity duration-300 group-hover:opacity-100 opacity-0">
-              {label}
-            </span>
-          </Link>
-        ))}
+        {icons.map(({ to, icon, label, isActive, isLocked }: any) =>
+          isLocked ? (
+            <button
+              key={to}
+              onClick={() => setShowUpgradeModal(true)}
+              className={cn(
+                "px-2.5 py-2 rounded-xl transition-all duration-200 ease-out",
+                "flex items-center gap-3 w-full relative",
+                "text-zinc-400 hover:bg-zinc-100 hover:text-zinc-500"
+              )}
+            >
+              <span className="flex-shrink-0 relative">
+                {icon}
+                <LockIcon className="size-2.5 absolute -bottom-0.5 -right-0.5 text-zinc-400" weight="fill" />
+              </span>
+              <span className="text-sm font-medium whitespace-nowrap transition-opacity duration-300 group-hover:opacity-100 opacity-0">
+                {label}
+              </span>
+            </button>
+          ) : (
+            <Link
+              to={to}
+              key={to}
+              className={cn(
+                "px-2.5 py-2 rounded-xl transition-all duration-200 ease-out",
+                "flex items-center gap-3 w-full",
+                isActive
+                  ? "bg-zinc-900 text-white shadow-sm"
+                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+              )}
+            >
+              <span className="flex-shrink-0">{icon}</span>
+              <span className="text-sm font-medium whitespace-nowrap transition-opacity duration-300 group-hover:opacity-100 opacity-0">
+                {label}
+              </span>
+            </Link>
+          )
+        )}
+
+        <Link
+          to={userRole === "STUDENT" ? "/student/profile" : "/home"}
+          className={cn(
+            "px-2.5 py-2 rounded-xl transition-all duration-200 ease-out mt-auto",
+            "flex items-center gap-3 w-full",
+            route({ to: "/student/profile" })
+              ? "bg-zinc-900 text-white shadow-sm"
+              : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+          )}
+        >
+          <span className="flex-shrink-0">
+            <GearSixIcon className="size-4" />
+          </span>
+          <span className="text-sm font-medium whitespace-nowrap transition-opacity duration-300 group-hover:opacity-100 opacity-0">
+            Profile & Settings
+          </span>
+        </Link>
 
         <button
           onClick={async () => {
@@ -202,7 +256,7 @@ export const Header = ({
             });
           }}
           className={cn(
-            "rounded-lg bg-zinc-100 p-2.5 text-zinc-700 hover:bg-zinc-200 hover:text-zinc-900 transition-all duration-200 ease-out mt-auto disabled:opacity-50",
+            "rounded-lg bg-zinc-100 p-2.5 text-zinc-700 hover:bg-zinc-200 hover:text-zinc-900 transition-all duration-200 ease-out disabled:opacity-50",
             "flex items-center gap-3 w-full"
           )}
           disabled={isLoading}
@@ -220,6 +274,13 @@ export const Header = ({
         </button>
       </div>
       {children}
+      {userRole === "STUDENT" && showUpgradeModal && (
+        <UpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+          featureName="session recordings"
+        />
+      )}
     </div>
   );
 };

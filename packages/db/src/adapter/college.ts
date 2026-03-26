@@ -108,7 +108,18 @@ export const searchUSColleges = async (filters: USCollegeFilters = {}) => {
       orderByClauses = [direction(schema.usCollege.admissionRate), asc(schema.usCollege.schoolName)];
       break;
     case "sat_score":
-      orderByClauses = [direction(schema.usCollege.satScoreAverage), asc(schema.usCollege.schoolName)];
+      // Put NULL SAT scores last regardless of sort order
+      orderByClauses = sortOrder === "asc"
+        ? [
+            sql`${schema.usCollege.satScoreAverage} IS NULL`,
+            asc(schema.usCollege.satScoreAverage),
+            asc(schema.usCollege.schoolName)
+          ]
+        : [
+            sql`${schema.usCollege.satScoreAverage} IS NULL`,
+            desc(schema.usCollege.satScoreAverage),
+            asc(schema.usCollege.schoolName)
+          ];
       break;
     case "tuition":
       orderByClauses = [direction(schema.usCollege.tuitionOutOfState), asc(schema.usCollege.schoolName)];
