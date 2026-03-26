@@ -288,6 +288,55 @@
       "when": 1773597686363,
       "tag": "0040_left_the_renegades",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1774218624189,
+      "tag": "0041_red_vindicator",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1774272706123,
+      "tag": "0042_mushy_krista_starr",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1774275884140,
+      "tag": "0043_yielding_blue_marvel",
+      "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1774276224762,
+      "tag": "0044_easy_young_avengers",
+      "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1774278513677,
+      "tag": "0045_foamy_ozymandias",
+      "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1774280094947,
+      "tag": "0046_next_maestro",
+      "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1774383431755,
+      "tag": "0047_busy_changeling",
+      "breakpoints": true
     }
   ]
 }

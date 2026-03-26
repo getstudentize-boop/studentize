@@ -227,7 +227,7 @@ export const UserProfileTab = withStudentForm({
 
     return (
       <div className="p-6">
-        <div className="mb-4">
+        <div className="grid grid-cols-2 gap-4 mb-4">
           <form.Field
             name="status"
             children={(field) => (
@@ -241,6 +241,23 @@ export const UserProfileTab = withStudentForm({
                 options={[
                   { value: "active", label: "Active" },
                   { value: "inactive", label: "Inactive" },
+                ]}
+              />
+            )}
+          />
+          <form.Field
+            name="tier"
+            children={(field) => (
+              <Select
+                label="Student Tier"
+                value={(field.state.value ?? "FREE").toLowerCase()}
+                onValueChange={(val) =>
+                  !isDisabled &&
+                  field.handleChange(val.toUpperCase() as "FREE" | "PAID")
+                }
+                options={[
+                  { value: "free", label: "Free" },
+                  { value: "paid", label: "Paid" },
                 ]}
               />
             )}

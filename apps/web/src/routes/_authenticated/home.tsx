@@ -1,4 +1,5 @@
 import { Loader } from "@/components/loader";
+import { PageLoader } from "@/components/page-loader";
 import { AdvisorOverviewPanel } from "@/features/overview-panel/advisor";
 import {
   ArrowRightIcon,
@@ -227,6 +228,10 @@ function RouteComponent() {
   const students = studentListQuery.data ?? [];
 
   const currentTab = search.tab ?? "profile";
+
+  if (studentListQuery.isLoading) {
+    return <PageLoader message="Loading..." />;
+  }
 
   return (
     <div className="py-10 px-5 pr-10 flex-1 flex gap-4 text-left">

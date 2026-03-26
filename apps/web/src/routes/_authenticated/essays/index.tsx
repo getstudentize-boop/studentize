@@ -9,6 +9,7 @@ import {
   BookOpenIcon,
   StarIcon,
 } from "@phosphor-icons/react";
+import { PageLoader } from "@/components/page-loader";
 import { Button } from "@/components/button";
 import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
@@ -98,6 +99,10 @@ function EssaysPage() {
   });
 
   const essays = essaysQuery.data || [];
+
+  if (essaysQuery.isLoading) {
+    return <PageLoader message="Loading essays..." />;
+  }
 
   // Categorize essays
   const commonAppEssay = essays.find((e: any) =>

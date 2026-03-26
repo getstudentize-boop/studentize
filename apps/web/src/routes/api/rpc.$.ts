@@ -10,7 +10,7 @@ const handler = new RPCHandler(router);
  */
 const organizationToHostMap = {
   localhost:
-    process.env.LOCALHOST_ORGANIZATION_ID ?? "dn8br0q0b8wed8b3wni4u1yf",
+    process.env.LOCALHOST_ORGANIZATION_ID ?? "ujx3v67lc1tis9i32t3mea7b",
   "app.studentize.com": "ujx3v67lc1tis9i32t3mea7b",
 };
 
