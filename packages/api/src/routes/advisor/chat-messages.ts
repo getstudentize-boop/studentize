@@ -9,7 +9,7 @@ export const ChatMessagesInputSchema = z.object({
 
 export const chatMessages = async (
   ctx: AuthContext,
-  input: z.infer<typeof ChatMessagesInputSchema>
+  input: z.infer<typeof ChatMessagesInputSchema>,
 ) => {
   const userId = ctx.user.id;
 
@@ -20,7 +20,7 @@ export const chatMessages = async (
   });
 
   if (!chat) {
-    throw new ORPCError("NOT_FOUND", { message: "Chat not found" });
+    return { title: null, messages: [] };
   }
 
   const messages = await getAdvisorChatMessages({

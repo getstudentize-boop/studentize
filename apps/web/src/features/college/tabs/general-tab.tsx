@@ -65,7 +65,7 @@ export function GeneralTab({ college }: { college: College }) {
               <span className="text-xs">Acceptance</span>
             </div>
             <div className="text-base font-semibold text-blue-600">
-              {(college.admissionRate * 100).toFixed(1)}%
+              {(Number(college.admissionRate) * 100).toFixed(1)}%
             </div>
           </div>
         )}
@@ -87,7 +87,7 @@ export function GeneralTab({ college }: { college: College }) {
               <span className="text-xs">Graduation</span>
             </div>
             <div className="text-base font-semibold text-zinc-900">
-              {college.graduationRate.toFixed(1)}%
+              {Number(college.graduationRate).toFixed(1)}%
             </div>
           </div>
         )}
@@ -114,7 +114,7 @@ export function GeneralTab({ college }: { college: College }) {
               <div>
                 <div className="text-xs text-zinc-500 mb-0.5">Retention</div>
                 <div className="text-lg font-semibold text-zinc-900">
-                  {college.retentionRate.toFixed(1)}%
+                  {Number(college.retentionRate).toFixed(1)}%
                 </div>
               </div>
             )}

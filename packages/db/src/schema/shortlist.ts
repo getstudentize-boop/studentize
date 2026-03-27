@@ -19,6 +19,7 @@ export const universityShortlist = pgTable("university_shortlist", {
   category: shortlistCategory("category"),
   source: shortlistSource("source").notNull().default("manual"),
   notes: text("notes"),
+  virtualAdvisorSessionId: text("virtual_advisor_session_id"),
 });
 
 export type UniversityShortlist = typeof universityShortlist.$inferSelect;

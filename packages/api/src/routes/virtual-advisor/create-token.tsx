@@ -3,7 +3,7 @@ import { createRouteHelper } from "../../utils/middleware";
 const sessionConfig = JSON.stringify({
   session: {
     type: "realtime",
-    model: "gpt-realtime",
+    model: "gpt-realtime-1.5",
   },
 });
 
@@ -19,7 +19,7 @@ export const createTokenRoute = createRouteHelper({
             "Content-Type": "application/json",
           },
           body: sessionConfig,
-        }
+        },
       );
 
       if (!response.ok) {

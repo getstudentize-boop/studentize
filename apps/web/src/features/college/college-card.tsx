@@ -1,6 +1,9 @@
-import { MapPin, Buildings } from "@phosphor-icons/react";
-import { College, UKCollegeData } from "./types";
+import { MapPinIcon, BuildingsIcon } from "@phosphor-icons/react";
 import { useState, useMemo } from "react";
+import { College, UKCollegeData } from "./types";
+import { BookmarkSimpleIcon, SpinnerIcon } from "@phosphor-icons/react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { orpc } from "orpc/client";
 
 // Determine selectivity color based on admission rate
 const getSelectivityColor = (rate: number) => {
@@ -73,7 +76,7 @@ function CollegeImage({ src, alt }: { src: string | null; alt: string }) {
           <div className="absolute bottom-6 right-6 w-20 h-20 rounded-full bg-white/50 blur-xl" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-white/30 blur-2xl" />
         </div>
-        <Buildings
+        <BuildingsIcon
           size={48}
           className={`${placeholder.iconColor} relative`}
           weight="duotone"
@@ -89,6 +92,85 @@ function CollegeImage({ src, alt }: { src: string | null; alt: string }) {
       onError={() => setHasError(true)}
       className="w-full h-40 mb-2 rounded-lg object-cover bg-zinc-50"
     />
+  );
+}
+
+function BookmarkButton({
+  collegeId,
+  country,
+}: {
+  collegeId: string;
+  country: "us" | "uk";
+}) {
+  const queryClient = useQueryClient();
+
+  const { data: shortlistCheck } = useQuery(
+    orpc.shortlist.checkIfShortlisted.queryOptions({
+      input: { collegeId, country },
+    }),
+  );
+
+  const { data: shortlistData } = useQuery(
+    orpc.shortlist.getMyShortlist.queryOptions({ input: {} }),
+  );
+
+  const shortlistItemId = shortlistData?.find(
+    (item) => item.collegeId === collegeId && item.country === country,
+  )?.id;
+
+  const invalidateQueries = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: orpc.shortlist.checkIfShortlisted.queryOptions({
+          input: { collegeId, country },
+        }).queryKey,
+      }),
+      queryClient.invalidateQueries({
+        queryKey: orpc.shortlist.getMyShortlist.queryOptions({ input: {} })
+          .queryKey,
+      }),
+    ]);
+  };
+
+  const addMutation = useMutation(
+    orpc.shortlist.add.mutationOptions({ onSuccess: invalidateQueries }),
+  );
+
+  const removeMutation = useMutation(
+    orpc.shortlist.remove.mutationOptions({ onSuccess: invalidateQueries }),
+  );
+
+  const isShortlisted = shortlistCheck?.isShortlisted ?? false;
+  const isPending = addMutation.isPending || removeMutation.isPending;
+
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        if (isPending) return;
+        if (isShortlisted && shortlistItemId) {
+          removeMutation.mutate({ id: shortlistItemId });
+        } else if (!isShortlisted) {
+          addMutation.mutate({ collegeId, country, source: "manual" });
+        }
+      }}
+      className={`absolute top-2 right-2 z-10 p-1.5 rounded-full backdrop-blur-sm transition-all ${
+        isShortlisted
+          ? "bg-blue-500 text-white hover:bg-blue-600"
+          : "bg-white/80 text-zinc-500 hover:bg-white hover:text-blue-500"
+      }`}
+      title={isShortlisted ? "Remove from shortlist" : "Add to shortlist"}
+    >
+      {isPending ? (
+        <SpinnerIcon size={18} className="animate-spin" />
+      ) : (
+        <BookmarkSimpleIcon
+          size={18}
+          weight={isShortlisted ? "fill" : "regular"}
+        />
+      )}
+    </button>
   );
 }
 
@@ -120,7 +202,10 @@ export function CollegeCard(props: CollegeCardProps) {
         onClick={onClick}
         className="w-full text-left bg-white rounded-lg border border-zinc-200 p-4 hover:border-blue-200 hover:shadow-md transition-all group"
       >
-        <CollegeImage src={usCollege.imageUrl} alt={name} />
+        <div className="relative">
+          <CollegeImage src={usCollege.imageUrl} alt={name} />
+          <BookmarkButton collegeId={usCollege.id} country="us" />
+        </div>
         <div className="flex items-start gap-3">
           {usCollege.admissionRate && (
             <div
@@ -132,7 +217,7 @@ export function CollegeCard(props: CollegeCardProps) {
               {name}
             </h3>
             <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-              <MapPin size={12} className="flex-shrink-0" />
+              <MapPinIcon size={12} className="flex-shrink-0" />
               <span className="line-clamp-1">{location}</span>
             </div>
           </div>
@@ -151,7 +236,7 @@ export function CollegeCard(props: CollegeCardProps) {
             <div className="flex justify-between">
               <span className="text-zinc-500">Acceptance</span>
               <span className="font-medium text-blue-600">
-                {(usCollege.admissionRate * 100).toFixed(0)}%
+                {(Number(usCollege.admissionRate) * 100).toFixed(0)}%
               </span>
             </div>
           )}
@@ -176,14 +261,17 @@ export function CollegeCard(props: CollegeCardProps) {
         onClick={onClick}
         className="w-full text-left bg-white rounded-lg border border-zinc-200 p-4 hover:border-blue-200 hover:shadow-md transition-all group"
       >
-        <CollegeImage src={ukCollege.imageUrl} alt={name} />
+        <div className="relative">
+          <CollegeImage src={ukCollege.imageUrl} alt={name} />
+          <BookmarkButton collegeId={ukCollege.id} country="uk" />
+        </div>
         <div className="flex items-start gap-3">
           <div className="flex-1 min-w-0">
             <h3 className="font-medium text-zinc-900 text-sm mb-1 line-clamp-2 group-hover:text-blue-600 transition-colors">
               {name}
             </h3>
             <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-              <MapPin size={12} className="flex-shrink-0" />
+              <MapPinIcon size={12} className="flex-shrink-0" />
               <span className="line-clamp-1">{location}</span>
             </div>
           </div>

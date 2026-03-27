@@ -104,13 +104,13 @@ function parseAdmissionsFactors(factors: Record<string, string> | null) {
 
 export function AcademicsTab({ college }: { college: College }) {
   const graduationRate = college.graduationRate
-    ? college.graduationRate.toFixed(1)
+    ? Number(college.graduationRate).toFixed(1)
     : null;
   const retentionRate = college.retentionRate
-    ? college.retentionRate.toFixed(1)
+    ? Number(college.retentionRate).toFixed(1)
     : null;
   const firstGenStudents = college.shareFirstGeneration
-    ? college.shareFirstGeneration.toFixed(1)
+    ? Number(college.shareFirstGeneration).toFixed(1)
     : null;
 
   const parsedFactors = parseAdmissionsFactors(college.admissionsFactors);
