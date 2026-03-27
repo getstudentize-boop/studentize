@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router";
 
 import { ArrowsLeftRightIcon, PlusIcon } from "@phosphor-icons/react";
+import { PageLoader } from "@/components/page-loader";
 
 import Avvatar from "avvvatars-react";
 
@@ -48,8 +49,14 @@ function RouteComponent() {
   const sessions = listSessionsQuery.data ?? [];
   const autoSyncSessions = listAutoSyncSessionsQuery.data ?? [];
 
+  const isLoading = listSessionsQuery.isLoading || listAutoSyncSessionsQuery.isLoading;
+
   if (isUserSession) {
     return <Outlet />;
+  }
+
+  if (isLoading) {
+    return <PageLoader message="Loading sessions..." />;
   }
 
   return (

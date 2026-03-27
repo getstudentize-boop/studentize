@@ -16,6 +16,7 @@ import {
   AdvisorChatHistoryInputSchema,
 } from "./chat-history";
 import { chatMessages, ChatMessagesInputSchema } from "./chat-messages";
+import { searchChatsRoute, SearchChatsInputSchema } from "./search-chats";
 
 import { getOverviewRoute } from "./get-overview";
 import { getStudentListRoute } from "./student-list";
@@ -88,4 +89,7 @@ export const advisor = {
   chatHistory: privateRoute
     .input(AdvisorChatHistoryInputSchema)
     .handler(advisorChatHistoryRoute),
+  searchChats: privateRoute
+    .input(SearchChatsInputSchema)
+    .handler(searchChatsRoute),
 };

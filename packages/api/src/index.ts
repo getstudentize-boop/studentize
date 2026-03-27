@@ -12,7 +12,6 @@ import {
 } from "./routes/session";
 
 import { student } from "./routes/student";
-import { grades } from "./routes/grades";
 import { college } from "./routes/college";
 import { shortlist } from "./routes/shortlist";
 import { essay } from "./routes/essay";
@@ -71,7 +70,6 @@ export const router = {
   scheduledSession,
   student,
   essay,
-  grades,
   college,
   shortlist,
   task,

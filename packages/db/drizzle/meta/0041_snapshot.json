@@ -393,6 +393,14 @@
           "notNull": false,
           "default": "'ACTIVE'"
         },
+        "tier": {
+          "name": "tier",
+          "type": "tier_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'FREE'"
+        },
         "extracurricular": {
           "name": "extracurricular",
           "type": "jsonb",
@@ -653,9 +661,7 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -1684,13 +1690,7 @@
           "name": "text",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
-        },
-        "metadata": {
-          "name": "metadata",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -1699,12 +1699,8 @@
           "name": "virtual_advisor_message_session_id_virtual_advisor_session_id_fk",
           "tableFrom": "virtual_advisor_message",
           "tableTo": "virtual_advisor_session",
-          "columnsFrom": [
-            "session_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["session_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1901,12 +1897,8 @@
           "name": "visitor_chat_message_chat_id_visitor_chat_id_fk",
           "tableFrom": "visitor_chat_message",
           "tableTo": "visitor_chat",
-          "columnsFrom": [
-            "chat_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["chat_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1922,55 +1914,37 @@
     "public.membership_role": {
       "name": "membership_role",
       "schema": "public",
-      "values": [
-        "OWNER",
-        "ADMIN",
-        "ADVISOR",
-        "STUDENT"
-      ]
+      "values": ["OWNER", "ADMIN", "ADVISOR", "STUDENT"]
     },
     "public.organization_status": {
       "name": "organization_status",
       "schema": "public",
-      "values": [
-        "ACTIVE",
-        "INACTIVE",
-        "PENDING"
-      ]
+      "values": ["ACTIVE", "INACTIVE", "PENDING"]
     },
     "public.status_type": {
       "name": "status_type",
       "schema": "public",
-      "values": [
-        "ACTIVE",
-        "INACTIVE"
-      ]
+      "values": ["ACTIVE", "INACTIVE"]
+    },
+    "public.tier_type": {
+      "name": "tier_type",
+      "schema": "public",
+      "values": ["FREE", "PAID"]
     },
     "public.user_status": {
       "name": "user_status",
       "schema": "public",
-      "values": [
-        "ACTIVE",
-        "INACTIVE",
-        "PENDING"
-      ]
+      "values": ["ACTIVE", "INACTIVE", "PENDING"]
     },
     "public.shortlist_category": {
       "name": "shortlist_category",
       "schema": "public",
-      "values": [
-        "reach",
-        "target",
-        "safety"
-      ]
+      "values": ["reach", "target", "safety"]
     },
     "public.shortlist_source": {
       "name": "shortlist_source",
       "schema": "public",
-      "values": [
-        "ai",
-        "manual"
-      ]
+      "values": ["ai", "manual"]
     },
     "public.task_category": {
       "name": "task_category",
@@ -1987,29 +1961,17 @@
     "public.task_priority": {
       "name": "task_priority",
       "schema": "public",
-      "values": [
-        "low",
-        "medium",
-        "high"
-      ]
+      "values": ["low", "medium", "high"]
     },
     "public.task_status": {
       "name": "task_status",
       "schema": "public",
-      "values": [
-        "pending",
-        "in_progress",
-        "completed"
-      ]
+      "values": ["pending", "in_progress", "completed"]
     },
     "public.aptitude_test_status": {
       "name": "aptitude_test_status",
       "schema": "public",
-      "values": [
-        "not_started",
-        "in_progress",
-        "completed"
-      ]
+      "values": ["not_started", "in_progress", "completed"]
     }
   },
   "schemas": {},

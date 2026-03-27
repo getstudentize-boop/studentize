@@ -1,4 +1,4 @@
-import { pgEnum, pgTable, text } from "drizzle-orm/pg-core";
+import { index, pgEnum, pgTable, text } from "drizzle-orm/pg-core";
 
 import { createdAt, id } from "./utils";
 
@@ -28,4 +28,8 @@ export const membership = pgTable("membership", {
   userId: text("user_id").notNull(),
   organizationId: text("organization_id").notNull(),
   role: membershipRole().default("STUDENT").notNull(),
-});
+}, (table) => [
+  index("membership_user_id_idx").on(table.userId),
+  index("membership_org_id_idx").on(table.organizationId),
+  index("membership_user_org_idx").on(table.userId, table.organizationId),
+]);

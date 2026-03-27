@@ -1,0 +1,1 @@
+ALTER TABLE "academic_year" ADD COLUMN "curriculums" jsonb DEFAULT '[]'::jsonb;
