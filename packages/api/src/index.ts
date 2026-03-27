@@ -40,6 +40,7 @@ import {
   userGetNameHandler,
   userListPendingHandler,
   userApproveHandler,
+  userSwitchToStudentHandler,
 } from "./routes/user";
 import { scheduledSession } from "./routes/scheduled-session";
 import { admin } from "./routes/admin";
@@ -96,6 +97,7 @@ export const router = {
     getName: userGetNameHandler,
     listPending: userListPendingHandler,
     approve: userApproveHandler,
+    switchToStudent: userSwitchToStudentHandler,
   },
   organization,
   chat: {

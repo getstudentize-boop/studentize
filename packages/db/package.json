@@ -16,7 +16,8 @@
     "export:us-colleges-json": "tsx scripts/export-us-colleges-json.ts",
     "create:organization": "tsx scripts/create-organization.ts",
     "merge:student-profiles": "tsx scripts/merge-student-profiles.ts",
-    "create:auto-sync-session": "tsx scripts/create-auto-sync-session.ts"
+    "create:auto-sync-session": "tsx scripts/create-auto-sync-session.ts",
+    "delete:user": "tsx scripts/delete-user.ts"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.8",
