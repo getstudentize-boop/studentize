@@ -442,14 +442,9 @@ function RouteComponent() {
             </div>
 
             {isFreeUser ? (
-              <div
-                onClick={() => {
-                  setUpgradeFeature("your session history");
-                  setShowUpgradeModal(true);
-                }}
-                className="bg-white rounded-xl border border-zinc-200 p-8 text-center relative cursor-pointer hover:border-zinc-300 transition-colors"
-              >
-                <div className="filter blur-sm pointer-events-none">
+              <div className="bg-white rounded-xl border border-zinc-200 relative overflow-hidden">
+                {/* Blurred placeholder sessions */}
+                <div className="filter blur-sm pointer-events-none select-none p-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {[1, 2, 3].map((i) => (
                       <div
@@ -465,12 +460,27 @@ function RouteComponent() {
                     ))}
                   </div>
                 </div>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="p-3 bg-zinc-100 rounded-full mb-2">
-                    <HeadsetIcon className="size-6 text-zinc-500" weight="fill" />
+
+                {/* Consultation placard overlay */}
+                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center px-6 text-center">
+                  <div className="p-3 bg-blue-50 rounded-full mb-3">
+                    <CalendarIcon className="size-7 text-blue-600" weight="duotone" />
                   </div>
-                  <span className="text-sm font-medium text-zinc-700">Session History Locked</span>
-                  <span className="text-xs text-blue-600 mt-1">Book a free consultation to unlock</span>
+                  <h3 className="text-lg font-semibold text-zinc-900 mb-1">
+                    Book Your Free 1-on-1 Consultation
+                  </h3>
+                  <p className="text-sm text-zinc-500 max-w-sm mb-4">
+                    Get personalized guidance from the Studentize team to kickstart your college application journey.
+                  </p>
+                  <a
+                    href="https://calendly.com/team-studentize/new-meeting"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    <CalendarIcon className="size-4" weight="bold" />
+                    Schedule Free Consultation
+                  </a>
                 </div>
               </div>
             ) : recentSessions.length > 0 ? (
