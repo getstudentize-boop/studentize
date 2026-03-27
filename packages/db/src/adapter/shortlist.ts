@@ -113,6 +113,7 @@ export const getStudentShortlistWithDetails = async (studentUserId: string) => {
               country: "us" as const,
             }
           : null,
+        rawCollege: college ?? null,
       };
     } else {
       const college = ukColleges.find((c) => c.id === item.collegeId);
@@ -130,6 +131,7 @@ export const getStudentShortlistWithDetails = async (studentUserId: string) => {
               country: "uk" as const,
             }
           : null,
+        rawCollege: college ?? null,
       };
     }
   });
@@ -155,4 +157,31 @@ export const checkIfInShortlist = async (input: {
     .limit(1);
 
   return !!item;
+};
+
+export const bulkReplaceShortlist = async (input: {
+  studentUserId: string;
+  items: ShortlistInsert[];
+}) => {
+  // Delete all existing AI-sourced shortlist items, then insert the new ones
+  // This is a replace operation — confirming again replaces the previous shortlist
+  return await db.transaction(async (tx) => {
+    await tx
+      .delete(schema.universityShortlist)
+      .where(
+        and(
+          eq(schema.universityShortlist.studentUserId, input.studentUserId),
+          eq(schema.universityShortlist.source, "ai")
+        )
+      );
+
+    if (input.items.length === 0) return [];
+
+    const inserted = await tx
+      .insert(schema.universityShortlist)
+      .values(input.items)
+      .returning();
+
+    return inserted;
+  });
 };

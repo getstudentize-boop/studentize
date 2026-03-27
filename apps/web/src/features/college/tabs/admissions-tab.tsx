@@ -3,7 +3,7 @@ import { CollapsibleSection, StatCard } from "../components";
 
 export function AdmissionsTab({ college }: { college: College }) {
   const admissionRate = college.admissionRate
-    ? (college.admissionRate * 100).toFixed(1)
+    ? (Number(college.admissionRate) * 100).toFixed(1)
     : null;
 
   return (

@@ -1,0 +1,1 @@
+ALTER TABLE "university_shortlist" ADD COLUMN "virtual_advisor_session_id" text;

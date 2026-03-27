@@ -1,9 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export type TranscriptEntry = {
-  role: "user" | "assistant";
-  text: string;
+export type ShortlistUniversity = {
+  name: string;
+  country: string;
+  category: "reach" | "target" | "safety";
+  notes?: string;
 };
+
+export type TranscriptEntry =
+  | { role: "user" | "assistant"; text: string }
+  | {
+      role: "shortlist";
+      universities: ShortlistUniversity[];
+      saved: boolean;
+    };
 
 export const useWebRTC = () => {
   const pcRef = useRef<RTCPeerConnection | null>(null);
@@ -67,9 +77,13 @@ export const useWebRTC = () => {
     };
   }, []);
 
-  // Initialize the connection
+  // Initialize the connection, optionally seeding prior conversation context
   const initializeConnection = useCallback(
-    async (token: string, advisor: string) => {
+    async (
+      token: string,
+      advisor: string,
+      priorMessages?: Array<{ role: string; text: string | null }>,
+    ) => {
       if (!pcRef.current) {
         setError(new Error("Peer connection not initialized"));
         return;
@@ -89,15 +103,119 @@ export const useWebRTC = () => {
         dataChannelRef.current = dc;
 
         dc.addEventListener("open", () => {
+          // Seed prior conversation context so the model can pick up where we left off
+          if (priorMessages && priorMessages.length > 0) {
+            for (const msg of priorMessages) {
+              if (!msg.text) continue;
+              dc.send(
+                JSON.stringify({
+                  type: "conversation.item.create",
+                  item: {
+                    type: "message",
+                    role: msg.role === "assistant" ? "assistant" : "user",
+                    content: [
+                      {
+                        type: "input_text",
+                        text: msg.text,
+                      },
+                    ],
+                  },
+                }),
+              );
+            }
+          }
           dc.send(JSON.stringify({ type: "response.create" }));
         });
 
-        dc.addEventListener("message", (e) => {
+        dc.addEventListener("message", async (e) => {
           try {
             const data = JSON.parse(e.data);
 
             if (data.type === "response.output_item.done") {
-              const text = data.item?.content?.[0]?.transcript;
+              const item = data.item;
+
+              // Handle function calls
+              if (item?.type === "function_call" && item.name === "search_web") {
+                const args = JSON.parse(item.arguments);
+                try {
+                  const res = await fetch("/api/virtual-advisor/search", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ query: args.query }),
+                  });
+                  const { result } = await res.json();
+
+                  // Send function call output back to the model
+                  dc.send(
+                    JSON.stringify({
+                      type: "conversation.item.create",
+                      item: {
+                        type: "function_call_output",
+                        call_id: item.call_id,
+                        output: JSON.stringify({ result }),
+                      },
+                    })
+                  );
+
+                  // Trigger the model to respond with the search results
+                  dc.send(JSON.stringify({ type: "response.create" }));
+                } catch (err) {
+                  console.error("Search function call failed:", err);
+                  dc.send(
+                    JSON.stringify({
+                      type: "conversation.item.create",
+                      item: {
+                        type: "function_call_output",
+                        call_id: item.call_id,
+                        output: JSON.stringify({
+                          error: "Search failed, please try answering from your own knowledge.",
+                        }),
+                      },
+                    })
+                  );
+                  dc.send(JSON.stringify({ type: "response.create" }));
+                }
+                return;
+              }
+
+              // Handle save_shortlist — insert into transcript for inline confirmation
+              if (
+                item?.type === "function_call" &&
+                item.name === "save_shortlist"
+              ) {
+                try {
+                  const args = JSON.parse(item.arguments);
+                  setTranscript((prev) => [
+                    ...prev,
+                    {
+                      role: "shortlist" as const,
+                      universities: args.universities,
+                      saved: false,
+                    },
+                  ]);
+                  // Send acknowledgement back to the model so it can continue talking
+                  dc.send(
+                    JSON.stringify({
+                      type: "conversation.item.create",
+                      item: {
+                        type: "function_call_output",
+                        call_id: item.call_id,
+                        output: JSON.stringify({
+                          status: "pending_confirmation",
+                          message:
+                            "The shortlist has been sent to the student for review. They will see a confirmation dialog.",
+                        }),
+                      },
+                    })
+                  );
+                  dc.send(JSON.stringify({ type: "response.create" }));
+                } catch (err) {
+                  console.error("Failed to parse shortlist:", err);
+                }
+                return;
+              }
+
+              const text = item?.content?.[0]?.transcript;
               if (text) {
                 setTranscript((prev) => [...prev, { role: "assistant", text }]);
               }
@@ -108,10 +226,17 @@ export const useWebRTC = () => {
               "conversation.item.input_audio_transcription.completed"
             ) {
               if (data.transcript) {
-                setTranscript((prev) => [
-                  ...prev,
-                  { role: "user", text: data.transcript },
-                ]);
+                setTranscript((prev) => {
+                  const last = prev[prev.length - 1];
+                  if (last && last.role === "user") {
+                    // Merge consecutive user fragments into one bubble
+                    return [
+                      ...prev.slice(0, -1),
+                      { role: "user" as const, text: last.text + "\n" + data.transcript },
+                    ];
+                  }
+                  return [...prev, { role: "user", text: data.transcript }];
+                });
               }
             }
           } catch (e) {
@@ -153,9 +278,22 @@ export const useWebRTC = () => {
   );
 
   const disconnect = () => {
-    if (dataChannelRef.current) {
+    // Cancel any in-progress response before closing
+    if (
+      dataChannelRef.current &&
+      dataChannelRef.current.readyState === "open"
+    ) {
+      dataChannelRef.current.send(
+        JSON.stringify({ type: "response.cancel" })
+      );
       dataChannelRef.current.close();
       dataChannelRef.current = null;
+    }
+
+    // Stop audio playback immediately
+    if (audioElementRef.current) {
+      audioElementRef.current.pause();
+      audioElementRef.current.srcObject = null;
     }
 
     const pc = pcRef.current;
@@ -164,10 +302,6 @@ export const useWebRTC = () => {
         if (sender.track) sender.track.stop();
       });
       pc.close();
-    }
-
-    if (audioElementRef.current) {
-      audioElementRef.current.srcObject = null;
     }
 
     // Reset to a fresh peer connection
@@ -218,11 +352,24 @@ export const useWebRTC = () => {
     }
   };
 
+  // Mark a shortlist entry as saved (by transcript index)
+  const markShortlistSaved = useCallback((index: number) => {
+    setTranscript((prev) =>
+      prev.map((entry, i) =>
+        i === index && entry.role === "shortlist"
+          ? { ...entry, saved: true }
+          : entry
+      )
+    );
+  }, []);
+
   return {
     isConnected,
     isMuted,
     error,
     transcript,
+    setTranscript,
+    markShortlistSaved,
     sendEvent,
     disconnect,
     toggleMute,
