@@ -147,6 +147,7 @@ export const UserOverviewTab = ({
       areasOfInterest: student?.areasOfInterest ?? [],
       expectedGraduationYear: student?.expectedGraduationYear ?? "",
       status: (student?.status ?? "ACTIVE") as "ACTIVE" | "INACTIVE",
+      tier: (student?.tier ?? "FREE") as "FREE" | "PAID",
       extracurricular: student?.extracurricular ?? [],
     },
     onSubmit: async (vals) => {
@@ -154,6 +155,7 @@ export const UserOverviewTab = ({
         ...vals.value,
         studyCurriculum: vals.value.curriculum,
         status: vals.value.status,
+        tier: vals.value.tier,
         studentUserId,
       });
 
@@ -186,7 +188,7 @@ export const UserOverviewTab = ({
           {!isSettingsDisabled ? (
             <div className="flex gap-4 items-center">
               <StudentSettingsDialog
-                email=""
+                email={student?.email ?? ""}
                 location={student?.location ?? ""}
                 userId={studentUserId}
                 isOpen={isUserSettingsOpen}

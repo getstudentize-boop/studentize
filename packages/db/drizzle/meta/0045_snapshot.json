@@ -1,6 +1,6 @@
 {
-  "id": "2867d589-4198-4ca7-8666-3af3840ae127",
-  "prevId": "59953ce4-e2ac-4c9d-9f5d-2c6988aa16d3",
+  "id": "d69be051-1850-46b3-992a-bc48e5f1f6eb",
+  "prevId": "3130cfbc-3ccf-40da-a2aa-bc9029b8d53b",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -42,7 +42,59 @@
           "default": "'STUDENT'"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "membership_user_id_idx": {
+          "name": "membership_user_id_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "membership_org_id_idx": {
+          "name": "membership_org_id_idx",
+          "columns": [
+            {
+              "expression": "organization_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "membership_user_org_idx": {
+          "name": "membership_user_org_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "organization_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -435,7 +487,23 @@
           "default": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "student_user_id_idx": {
+          "name": "student_user_id_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -661,7 +729,9 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": [
+            "email"
+          ]
         }
       },
       "policies": {},
@@ -1699,8 +1769,12 @@
           "name": "virtual_advisor_message_session_id_virtual_advisor_session_id_fk",
           "tableFrom": "virtual_advisor_message",
           "tableTo": "virtual_advisor_session",
-          "columnsFrom": ["session_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "session_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1897,8 +1971,12 @@
           "name": "visitor_chat_message_chat_id_visitor_chat_id_fk",
           "tableFrom": "visitor_chat_message",
           "tableTo": "visitor_chat",
-          "columnsFrom": ["chat_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "chat_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1971,7 +2049,23 @@
           "default": "'false'"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "academic_year_student_id_idx": {
+          "name": "academic_year_student_id_idx",
+          "columns": [
+            {
+              "expression": "student_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -2058,7 +2152,38 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "course_student_id_idx": {
+          "name": "course_student_id_idx",
+          "columns": [
+            {
+              "expression": "student_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_academic_year_id_idx": {
+          "name": "course_academic_year_id_idx",
+          "columns": [
+            {
+              "expression": "academic_year_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -2158,7 +2283,23 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "grade_course_id_idx": {
+          "name": "grade_course_id_idx",
+          "columns": [
+            {
+              "expression": "course_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -2240,7 +2381,23 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "standardized_test_student_id_idx": {
+          "name": "standardized_test_student_id_idx",
+          "columns": [
+            {
+              "expression": "student_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -2310,7 +2467,23 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "term_grade_course_id_idx": {
+          "name": "term_grade_course_id_idx",
+          "columns": [
+            {
+              "expression": "course_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -2323,37 +2496,63 @@
     "public.membership_role": {
       "name": "membership_role",
       "schema": "public",
-      "values": ["OWNER", "ADMIN", "ADVISOR", "STUDENT"]
+      "values": [
+        "OWNER",
+        "ADMIN",
+        "ADVISOR",
+        "STUDENT"
+      ]
     },
     "public.organization_status": {
       "name": "organization_status",
       "schema": "public",
-      "values": ["ACTIVE", "INACTIVE", "PENDING"]
+      "values": [
+        "ACTIVE",
+        "INACTIVE",
+        "PENDING"
+      ]
     },
     "public.status_type": {
       "name": "status_type",
       "schema": "public",
-      "values": ["ACTIVE", "INACTIVE"]
+      "values": [
+        "ACTIVE",
+        "INACTIVE"
+      ]
     },
     "public.tier_type": {
       "name": "tier_type",
       "schema": "public",
-      "values": ["FREE", "PAID"]
+      "values": [
+        "FREE",
+        "PAID"
+      ]
     },
     "public.user_status": {
       "name": "user_status",
       "schema": "public",
-      "values": ["ACTIVE", "INACTIVE", "PENDING"]
+      "values": [
+        "ACTIVE",
+        "INACTIVE",
+        "PENDING"
+      ]
     },
     "public.shortlist_category": {
       "name": "shortlist_category",
       "schema": "public",
-      "values": ["reach", "target", "safety"]
+      "values": [
+        "reach",
+        "target",
+        "safety"
+      ]
     },
     "public.shortlist_source": {
       "name": "shortlist_source",
       "schema": "public",
-      "values": ["ai", "manual"]
+      "values": [
+        "ai",
+        "manual"
+      ]
     },
     "public.task_category": {
       "name": "task_category",
@@ -2370,17 +2569,29 @@
     "public.task_priority": {
       "name": "task_priority",
       "schema": "public",
-      "values": ["low", "medium", "high"]
+      "values": [
+        "low",
+        "medium",
+        "high"
+      ]
     },
     "public.task_status": {
       "name": "task_status",
       "schema": "public",
-      "values": ["pending", "in_progress", "completed"]
+      "values": [
+        "pending",
+        "in_progress",
+        "completed"
+      ]
     },
     "public.aptitude_test_status": {
       "name": "aptitude_test_status",
       "schema": "public",
-      "values": ["not_started", "in_progress", "completed"]
+      "values": [
+        "not_started",
+        "in_progress",
+        "completed"
+      ]
     },
     "public.course_category_type": {
       "name": "course_category_type",

@@ -10,6 +10,7 @@ export const UpdateStudentInputSchema = z.object({
   targetCountries: z.array(z.string()),
   areasOfInterest: z.array(z.string()),
   status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
+  tier: z.enum(["FREE", "PAID"]).optional(),
   extracurricular: z.array(
     z.object({
       type: z.string(),

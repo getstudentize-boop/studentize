@@ -14,6 +14,10 @@ import {
   completeStudentOnboarding,
   CompleteStudentOnboardingInputSchema,
 } from "./complete-onboarding";
+import {
+  updateMyProfile,
+  UpdateMyProfileInputSchema,
+} from "./update-my-profile";
 
 import { privateRoute } from "../../utils/middleware";
 
@@ -92,6 +96,13 @@ const studentCompleteOnboardingHandler = privateRoute
     return result;
   });
 
+const updateMyProfileHandler = privateRoute
+  .input(UpdateMyProfileInputSchema)
+  .handler(async ({ context, input }) => {
+    const result = await updateMyProfile(context, input);
+    return result;
+  });
+
 export const student = {
   create: studentCreateHandler,
   list: studentListHandler,
@@ -103,4 +114,5 @@ export const student = {
   getMyAdvisor: getMyAdvisorHandler,
   getMySessions: getMySessionsHandler,
   completeOnboarding: studentCompleteOnboardingHandler,
+  updateMyProfile: updateMyProfileHandler,
 };
