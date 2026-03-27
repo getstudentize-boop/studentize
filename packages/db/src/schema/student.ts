@@ -1,8 +1,9 @@
-import { boolean, jsonb, pgEnum, pgTable, text } from "drizzle-orm/pg-core";
+import { boolean, index, jsonb, pgEnum, pgTable, text } from "drizzle-orm/pg-core";
 
 import { createdAt, id } from "./utils";
 
 export const statusType = pgEnum("status_type", ["ACTIVE", "INACTIVE"]);
+export const tierType = pgEnum("tier_type", ["FREE", "PAID"]);
 
 export const student = pgTable("student", {
   id,
@@ -15,6 +16,7 @@ export const student = pgTable("student", {
   targetCountries: jsonb("target_countries").$type<string[]>().default([]),
   areasOfInterest: jsonb("areas_of_interest").$type<string[]>().default([]),
   status: statusType().default("ACTIVE"),
+  tier: tierType().default("FREE").notNull(),
   extracurricular: jsonb("extracurricular")
     .$type<
       Array<{
@@ -30,4 +32,6 @@ export const student = pgTable("student", {
   referralSource: text("referral_source"),
   supportAreas: jsonb("support_areas").$type<string[]>().default([]),
   onboardingCompleted: boolean("onboarding_completed").default(false).notNull(),
-});
+}, (table) => [
+  index("student_user_id_idx").on(table.userId),
+]);

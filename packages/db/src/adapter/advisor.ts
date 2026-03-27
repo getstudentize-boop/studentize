@@ -7,6 +7,8 @@ import {
   and,
   count,
   asc,
+  ilike,
+  or,
 } from "..";
 
 import * as schema from "../schema";
@@ -386,6 +388,74 @@ export const getOverviewStats = async (input: {
   }
 
   return { totalStudents: studentCount, totalSessions: sessionCount };
+};
+
+export const searchChatHistory = async (input: {
+  userId: string;
+  studentUserId?: string;
+  query: string;
+  isStudent: boolean;
+}) => {
+  const searchPattern = `%${input.query}%`;
+
+  if (input.isStudent) {
+    // Student searching their own chats
+    const chats = await db
+      .selectDistinct({
+        id: schema.advisorChat.id,
+        title: schema.advisorChat.title,
+        createdAt: schema.advisorChat.createdAt,
+        studentUserId: schema.advisorChat.studentId,
+      })
+      .from(schema.advisorChat)
+      .leftJoin(
+        schema.advisorChatMessage,
+        eq(schema.advisorChat.id, schema.advisorChatMessage.chatId)
+      )
+      .where(
+        and(
+          eq(schema.advisorChat.userId, input.userId),
+          or(
+            ilike(schema.advisorChat.title, searchPattern),
+            ilike(schema.advisorChatMessage.content, searchPattern)
+          )
+        )
+      )
+      .orderBy(desc(schema.advisorChat.createdAt));
+
+    return chats;
+  } else {
+    // Advisor searching chats for a specific student
+    const chats = await db
+      .selectDistinct({
+        id: schema.advisorChat.id,
+        title: schema.advisorChat.title,
+        createdAt: schema.advisorChat.createdAt,
+        studentUserId: schema.advisorChat.studentId,
+      })
+      .from(schema.advisorChat)
+      .innerJoin(
+        schema.student,
+        eq(schema.advisorChat.studentId, schema.student.userId)
+      )
+      .leftJoin(
+        schema.advisorChatMessage,
+        eq(schema.advisorChat.id, schema.advisorChatMessage.chatId)
+      )
+      .where(
+        and(
+          eq(schema.advisorChat.userId, input.userId),
+          eq(schema.student.userId, input.studentUserId!),
+          or(
+            ilike(schema.advisorChat.title, searchPattern),
+            ilike(schema.advisorChatMessage.content, searchPattern)
+          )
+        )
+      )
+      .orderBy(desc(schema.advisorChat.createdAt));
+
+    return chats;
+  }
 };
 
 export const getStudentList = async (input: {

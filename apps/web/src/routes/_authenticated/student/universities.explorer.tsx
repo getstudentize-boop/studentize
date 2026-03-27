@@ -10,6 +10,7 @@ import {
 } from "@phosphor-icons/react";
 
 import { orpc } from "orpc/client";
+import { PageLoader } from "@/components/page-loader";
 import { type College, type UKCollegeData } from "@/features/college/types";
 import { CollegeCard } from "@/features/college/college-card";
 import { CollegeModal } from "@/features/college/college-modal";
@@ -52,10 +53,20 @@ function CollegesPage() {
     orpc.college.getFilterOptions.queryOptions({ input: {} }),
   );
 
-  const availableStates = filterOptionsQuery.data?.usStates ?? [];
-  const availableLocations = filterOptionsQuery.data?.ukLocations ?? [];
-  const availableCampusSettings = filterOptionsQuery.data?.campusSettings ?? [];
-  const availableCitySizes = filterOptionsQuery.data?.citySizes ?? [];
+  const availableStates = Array.isArray(filterOptionsQuery.data?.usStates)
+    ? filterOptionsQuery.data.usStates
+    : [];
+  const availableLocations = Array.isArray(filterOptionsQuery.data?.ukLocations)
+    ? filterOptionsQuery.data.ukLocations
+    : [];
+  const availableCampusSettings = Array.isArray(
+    filterOptionsQuery.data?.campusSettings,
+  )
+    ? filterOptionsQuery.data.campusSettings
+    : [];
+  const availableCitySizes = Array.isArray(filterOptionsQuery.data?.citySizes)
+    ? filterOptionsQuery.data.citySizes
+    : [];
 
   // Reset pagination when filters, search, or country change
   useEffect(() => {
@@ -89,6 +100,8 @@ function CollegesPage() {
         maxTuition: filters.maxTuition,
         minAdmissionRate: filters.minAdmissionRate,
         maxAdmissionRate: filters.maxAdmissionRate,
+        sortBy: "sat_score",
+        sortOrder: "desc",
         limit: 50,
         offset: offset,
       },
@@ -112,14 +125,19 @@ function CollegesPage() {
   );
 
   const activeQuery = country === "us" ? usCollegesQuery : ukCollegesQuery;
-  const newColleges = activeQuery.data?.colleges ?? [];
+  const newColleges = Array.isArray(activeQuery.data?.colleges)
+    ? activeQuery.data.colleges
+    : undefined;
   const total = activeQuery.data?.total ?? 0;
-  const isLoading = activeQuery.isLoading;
-  const isError = activeQuery.isError;
+  // Show loading if query is loading/pending OR if we have no data for current country yet
+  const hasDataForCurrentCountry = newColleges !== undefined;
+  const isLoading =
+    activeQuery.isLoading || activeQuery.isPending || !hasDataForCurrentCountry;
+  const isError = activeQuery.isError && hasDataForCurrentCountry;
 
   // Accumulate colleges when new data arrives
   useEffect(() => {
-    if (newColleges.length > 0) {
+    if (newColleges && newColleges.length > 0) {
       if (offset === 0) {
         // Reset if starting fresh
         setAllColleges(newColleges);
@@ -134,7 +152,7 @@ function CollegesPage() {
     }
   }, [newColleges, offset]);
 
-  const colleges = allColleges;
+  const colleges = allColleges ?? [];
   const hasMore = colleges.length < total && total > 0;
 
   const handleClearFilters = () => {
@@ -156,9 +174,9 @@ function CollegesPage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-zinc-50">
+    <div className="flex-1 flex flex-col bg-zinc-50 overflow-hidden">
       {/* Search and Filters */}
-      <div className="px-6 py-4 bg-white border-b border-zinc-200">
+      <div className="px-6 py-4 bg-white border-b border-zinc-200 relative z-10">
         <div className="max-w-6xl mx-auto">
           {/* Country Toggle */}
           <div className="mb-4 flex gap-2">
@@ -395,13 +413,10 @@ function CollegesPage() {
       </div>
 
       {/* Results */}
-      <div className="flex-1 px-6 py-6 overflow-auto">
+      <div className="flex-1 px-6 py-6 overflow-auto relative z-0">
         <div className="max-w-6xl mx-auto">
           {isLoading && offset === 0 ? (
-            <div className="flex flex-col items-center justify-center h-80">
-              <Spinner size={40} className="mb-3 text-blue-500 animate-spin" />
-              <p className="text-zinc-500">Loading universities...</p>
-            </div>
+            <PageLoader message="Loading universities..." className="h-80 bg-transparent" />
           ) : isError ? (
             <div className="flex flex-col items-center justify-center h-80 text-center">
               <p className="text-red-600 font-medium mb-1">

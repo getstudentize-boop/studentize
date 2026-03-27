@@ -44,6 +44,8 @@ export const UserSearch = ({
     <PopoverFilter
       items={data}
       isDisabled={isTriggerDisabled}
+      isLoading={isLoading}
+      onSearch={onSearch}
       renderItem={({ name }, idx) => (
         <div
           className={cn("p-2 border-t border-bzinc text-left", {

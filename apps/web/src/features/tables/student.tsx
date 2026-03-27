@@ -29,6 +29,46 @@ const columns = [
     header: "Students",
     cell: (info) => <StudentCell name={info.getValue() ?? "n/a"} />,
   }),
+  columnHelper.accessor("email", {
+    header: "Email",
+    cell: (info) => (
+      <span className="text-zinc-600 text-sm">{info.getValue() ?? "n/a"}</span>
+    ),
+  }),
+  columnHelper.accessor("tier", {
+    header: "Tier",
+    cell: (info) => {
+      const tier = info.getValue();
+      return (
+        <span
+          className={`py-1 px-2 rounded-md text-xs font-medium ${
+            tier === "PAID"
+              ? "bg-green-100 text-green-700"
+              : "bg-zinc-100 text-zinc-600"
+          }`}
+        >
+          {tier ?? "FREE"}
+        </span>
+      );
+    },
+  }),
+  columnHelper.accessor("status", {
+    header: "Status",
+    cell: (info) => {
+      const status = info.getValue();
+      return (
+        <span
+          className={`py-1 px-2 rounded-md text-xs font-medium ${
+            status === "ACTIVE"
+              ? "bg-blue-100 text-blue-700"
+              : "bg-orange-100 text-orange-700"
+          }`}
+        >
+          {status ?? "ACTIVE"}
+        </span>
+      );
+    },
+  }),
   columnHelper.accessor("studyCurriculum", {
     header: "Curriculum",
     cell: (info) => {

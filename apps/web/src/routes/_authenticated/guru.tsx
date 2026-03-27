@@ -5,7 +5,6 @@ import {
   CaretDownIcon,
   SparkleIcon,
   CaretCircleRightIcon,
-  ExportIcon,
   BrainIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
@@ -27,6 +26,7 @@ import { Loader } from "@/components/loader";
 import { Tool } from "@/features/tools";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { useAuthUser } from "../_authenticated";
+import { GuruWelcomeModal, useGuruWelcome } from "@/components/guru-welcome-modal";
 
 export const Route = createFileRoute("/_authenticated/guru")({
   component: App,
@@ -117,6 +117,7 @@ function App() {
   const [input, setInput] = useState("");
 
   const { user } = useAuthUser();
+  const { showWelcome, closeWelcome } = useGuruWelcome();
 
   // For students, automatically set userId to their own ID
   const userId = user.organization?.role === "STUDENT" ? user.id : searchParams.userId;
@@ -227,6 +228,7 @@ function App() {
 
   return (
     <div className="flex flex-1 h-screen overflow-hidden">
+      {showWelcome && <GuruWelcomeModal onClose={closeWelcome} />}
       <ChatHistory studentUserId={userId} userRole={user.organization?.role ?? "STUDENT"} />
       <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
         <div className="justify-between items-center flex px-6 py-4 border-b border-zinc-200 bg-white flex-shrink-0">
@@ -246,18 +248,12 @@ function App() {
             )}
           </div>
 
-          <div className="flex gap-2">
-            <Button variant="neutral" className="text-xs">
-              Share
-              <ExportIcon className="size-3.5" />
+          <Link to="/guru">
+            <Button variant="primary" className="text-xs">
+              New Chat
+              <SparkleIcon weight="fill" className="size-3.5" />
             </Button>
-            <Link to="/guru">
-              <Button variant="primary" className="text-xs">
-                New Chat
-                <SparkleIcon weight="fill" className="size-3.5" />
-              </Button>
-            </Link>
-          </div>
+          </Link>
         </div>
         <div className="flex-1 flex flex-col min-h-0 bg-gradient-to-b from-zinc-50 to-white overflow-hidden">
           <div className="max-w-3xl mx-auto w-full flex flex-col h-full px-6 py-6 overflow-hidden">

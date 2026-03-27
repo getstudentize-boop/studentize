@@ -1,12 +1,7 @@
-import {
-  BookmarkSimpleIcon,
-  GraduationCap,
-  MapPin,
-  CircleNotchIcon,
-  SpinnerIcon,
-} from "@phosphor-icons/react";
+import { MapPinIcon, BuildingsIcon } from "@phosphor-icons/react";
+import { useState, useMemo } from "react";
 import { College, UKCollegeData } from "./types";
-import { useState } from "react";
+import { BookmarkSimpleIcon, SpinnerIcon } from "@phosphor-icons/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 
@@ -18,14 +13,74 @@ const getSelectivityColor = (rate: number) => {
   return "bg-blue-200";
 };
 
+// Placeholder gradient combinations for variety
+const placeholderStyles = [
+  {
+    gradient: "from-blue-100 via-blue-50 to-indigo-100",
+    iconColor: "text-blue-300",
+  },
+  {
+    gradient: "from-purple-100 via-violet-50 to-blue-100",
+    iconColor: "text-purple-300",
+  },
+  {
+    gradient: "from-emerald-100 via-teal-50 to-cyan-100",
+    iconColor: "text-emerald-300",
+  },
+  {
+    gradient: "from-amber-100 via-orange-50 to-yellow-100",
+    iconColor: "text-amber-300",
+  },
+  {
+    gradient: "from-rose-100 via-pink-50 to-fuchsia-100",
+    iconColor: "text-rose-300",
+  },
+  {
+    gradient: "from-slate-100 via-gray-50 to-zinc-100",
+    iconColor: "text-slate-300",
+  },
+  {
+    gradient: "from-cyan-100 via-sky-50 to-blue-100",
+    iconColor: "text-cyan-300",
+  },
+  {
+    gradient: "from-indigo-100 via-purple-50 to-violet-100",
+    iconColor: "text-indigo-300",
+  },
+];
+
+// Get a consistent placeholder based on the name
+const getPlaceholderStyle = (name: string) => {
+  const safeName = name || "University";
+  let hash = 0;
+  for (let i = 0; i < safeName.length; i++) {
+    hash = safeName.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % placeholderStyles.length;
+  return placeholderStyles[index];
+};
+
 // Component to handle image loading with fallback
 function CollegeImage({ src, alt }: { src: string | null; alt: string }) {
   const [hasError, setHasError] = useState(false);
+  const placeholder = useMemo(() => getPlaceholderStyle(alt), [alt]);
 
   if (!src || hasError) {
     return (
-      <div className="w-full h-40 mb-2 rounded-lg bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
-        <GraduationCap size={48} className="text-blue-300" weight="duotone" />
+      <div
+        className={`w-full h-40 mb-2 rounded-lg bg-gradient-to-br ${placeholder.gradient} flex items-center justify-center relative overflow-hidden`}
+      >
+        {/* Decorative blurred shapes */}
+        <div className="absolute inset-0 opacity-40">
+          <div className="absolute top-4 left-4 w-16 h-16 rounded-full bg-white/60 blur-xl" />
+          <div className="absolute bottom-6 right-6 w-20 h-20 rounded-full bg-white/50 blur-xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-white/30 blur-2xl" />
+        </div>
+        <BuildingsIcon
+          size={48}
+          className={`${placeholder.iconColor} relative`}
+          weight="duotone"
+        />
       </div>
     );
   }
@@ -162,7 +217,7 @@ export function CollegeCard(props: CollegeCardProps) {
               {name}
             </h3>
             <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-              <MapPin size={12} className="flex-shrink-0" />
+              <MapPinIcon size={12} className="flex-shrink-0" />
               <span className="line-clamp-1">{location}</span>
             </div>
           </div>
@@ -216,7 +271,7 @@ export function CollegeCard(props: CollegeCardProps) {
               {name}
             </h3>
             <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-              <MapPin size={12} className="flex-shrink-0" />
+              <MapPinIcon size={12} className="flex-shrink-0" />
               <span className="line-clamp-1">{location}</span>
             </div>
           </div>

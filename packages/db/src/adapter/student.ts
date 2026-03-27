@@ -42,6 +42,7 @@ export const getStudentByUserId = async (userId: string) => {
     .select({
       ...getTableColumns(schema.student),
       name: schema.user.name,
+      email: schema.user.email,
     })
     .from(schema.student)
     .innerJoin(schema.user, eq(schema.student.userId, schema.user.id))
@@ -72,6 +73,8 @@ export const getFullStudentList = async (organizationId: string) => {
       name: schema.user.name,
       studyCurriculum: schema.student.studyCurriculum,
       targetCountries: schema.student.targetCountries,
+      tier: schema.student.tier,
+      status: schema.student.status,
     })
     .from(schema.user)
     .innerJoin(schema.student, eq(schema.student.userId, schema.user.id))
@@ -93,9 +96,12 @@ export const getAdvisorStudentList = async (input: {
   const students = await db
     .select({
       userId: schema.user.id,
+      email: schema.user.email,
       name: schema.user.name,
       studyCurriculum: schema.student.studyCurriculum,
       targetCountries: schema.student.targetCountries,
+      tier: schema.student.tier,
+      status: schema.student.status,
     })
     .from(schema.advisorStudentAccess)
     .innerJoin(

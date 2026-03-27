@@ -2,6 +2,7 @@ import { AdvisorTable } from "@/features/tables/advisor";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Outlet, useParams } from "@tanstack/react-router";
 import { orpc } from "orpc/client";
+import { PageLoader } from "@/components/page-loader";
 
 export const Route = createFileRoute("/_authenticated/advisors")({
   component: RouteComponent,
@@ -16,6 +17,10 @@ function RouteComponent() {
   const advisorsQuery = useQuery(orpc.advisor.list.queryOptions());
 
   const advisors = advisorsQuery.data ?? [];
+
+  if (advisorsQuery.isLoading) {
+    return <PageLoader message="Loading advisors..." />;
+  }
 
   return (
     <>

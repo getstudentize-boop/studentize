@@ -11,7 +11,9 @@ export type PopoverFilterProps<I = unknown> = {
   placeholder?: string;
   className?: string;
   onSelect: (item: I) => void;
+  onSearch?: (query: string) => void;
   isDisabled?: boolean;
+  isLoading?: boolean;
 };
 
 export const PopoverFilter = <T,>({
@@ -23,15 +25,24 @@ export const PopoverFilter = <T,>({
   className,
   placeholder = "Search...",
   onSelect,
+  onSearch,
   isDisabled,
+  isLoading,
 }: PopoverFilterProps<T>) => {
   const [search, setSearch] = useState("");
 
-  const filteredItems = search
-    ? items.filter((item) =>
-        valueAccessor(item).toLowerCase().includes(search.toLowerCase())
-      )
-    : items;
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    onSearch?.(value);
+  };
+
+  const filteredItems = onSearch
+    ? items
+    : search
+      ? items.filter((item) =>
+          valueAccessor(item).toLowerCase().includes(search.toLowerCase())
+        )
+      : items;
 
   return (
     <Ariakit.ComboboxProvider>
@@ -46,13 +57,16 @@ export const PopoverFilter = <T,>({
             className
           )}
         >
-          <div className="px-3 py-2 border-b border-bzinc">
+          <div className="px-3 py-2 border-b border-bzinc flex items-center gap-2">
             <Ariakit.Combobox
-              className="outline-none bg-transparent"
+              className="outline-none bg-transparent flex-1"
               placeholder={placeholder}
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
             />
+            {isLoading && (
+              <div className="size-4 border-2 border-zinc-300 border-t-zinc-600 rounded-full animate-spin" />
+            )}
           </div>
           <Ariakit.ComboboxList className="p-1 max-h-48 overflow-y-auto custom-scrollbar">
             {filteredItems.map((item, idx) => {
