@@ -1,14 +1,19 @@
 import { Button } from "@/components/button";
-import { ArrowsCounterClockwiseIcon, SignOutIcon } from "@phosphor-icons/react";
+import {
+  ArrowsCounterClockwiseIcon,
+  SignOutIcon,
+  StudentIcon,
+} from "@phosphor-icons/react";
 import { useTransition } from "react";
 import { useAuth } from "@workos-inc/authkit-react";
 import { useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import { Loader } from "@/components/loader";
 import { StudentOnboarding } from "./student";
 import { OwnerOnboarding } from "./owner";
 import { useAuthUser } from "@/routes/_authenticated";
+import { setLocalStorage } from "@/utils/local-storage";
 
 export const OnboardingPending = ({
   organizationRole,
@@ -19,6 +24,35 @@ export const OnboardingPending = ({
   const { signOut } = useAuth();
   const navigate = useNavigate();
   const { user } = useAuthUser();
+
+  const utils = useQueryClient();
+
+  const switchToStudentMutation = useMutation(
+    orpc.user.switchToStudent.mutationOptions({
+      onSuccess: async () => {
+        // Clear the advisor signup flag so middleware treats them as student
+        setLocalStorage("signupAsAdvisor", false);
+        await Promise.all([
+          utils.invalidateQueries({
+            queryKey: orpc.user.current.queryKey(),
+          }),
+          utils.invalidateQueries({
+            queryKey: orpc.organization.current.queryKey(),
+          }),
+          utils.invalidateQueries({
+            queryKey: orpc.user.getOne.queryKey({
+              input: { userId: user?.id },
+            }),
+          }),
+          utils.invalidateQueries({
+            queryKey: orpc.user.listPending.queryKey(),
+          }),
+        ]);
+
+        window.location.reload();
+      },
+    }),
+  );
 
   const organizationQuery = useQuery(
     orpc.organization.current.queryOptions({}),
@@ -50,9 +84,7 @@ export const OnboardingPending = ({
   return (
     <div className="flex h-screen items-center justify-center">
       <div className="max-w-sm text-center flex flex-col gap-4 items-center">
-        <div className="font-semibold">
-          Signed in as {organizationRole === "STUDENT" ? "Student" : "Advisor"}
-        </div>
+        <div className="font-semibold">Signed in as Advisor</div>
         Your account is pending approval by an admin. Please reach out to
         support if you believe this is an error.
         <div className="flex flex-col justify-center gap-10">
@@ -61,19 +93,30 @@ export const OnboardingPending = ({
             <ArrowsCounterClockwiseIcon />
           </Button>
 
-          <Button
-            variant="neutral"
-            isLoading={isPending}
-            onClick={() => {
-              startTransition(async () => {
-                await signOut({ navigate: false });
-                navigate({ to: "/" });
-              });
-            }}
-          >
-            Sign Out
-            <SignOutIcon />
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Button
+              variant="primary"
+              isLoading={switchToStudentMutation.isPending}
+              onClick={() => switchToStudentMutation.mutate({})}
+            >
+              Sign in as Student instead
+              <StudentIcon />
+            </Button>
+
+            <Button
+              variant="neutral"
+              isLoading={isPending}
+              onClick={() => {
+                startTransition(async () => {
+                  await signOut({ navigate: false });
+                  navigate({ to: "/" });
+                });
+              }}
+            >
+              Sign Out
+              <SignOutIcon />
+            </Button>
+          </div>
         </div>
       </div>
     </div>

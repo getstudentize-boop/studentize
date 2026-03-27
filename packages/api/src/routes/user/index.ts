@@ -6,6 +6,7 @@ import { getOneUser, GetOneUserInputSchema } from "./get-one";
 import { getUserNameData, GetUserNameInputSchema } from "./get-name";
 import { listPendingUsers } from "./list-pending";
 import { approvePendingUser, ApprovePendingUserInputSchema } from "./approve";
+import { switchToStudent } from "./switch-to-student";
 
 export const userDisplayHandler = privateRoute
   .input(UserDisplayInputSchema)
@@ -45,3 +46,9 @@ export const userApproveHandler = privateRoute
     const result = await approvePendingUser(context, input);
     return result;
   });
+
+export const userSwitchToStudentHandler = privateRoute.handler(
+  async ({ context }) => {
+    return switchToStudent(context);
+  }
+);
