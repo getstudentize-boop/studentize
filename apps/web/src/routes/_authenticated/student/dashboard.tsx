@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { orpc, client } from "orpc/client";
 import { useAuthUser } from "@/routes/_authenticated";
+import { UpgradeModal, LockedOverlay } from "@/components/upgrade-modal";
+import { PageLoader } from "@/components/page-loader";
 import {
   BrainIcon,
   ChalkboardTeacherIcon,
@@ -47,6 +49,14 @@ function RouteComponent() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingTask, setEditingTask] = useState<any>(null);
   const [taskFilter, setTaskFilter] = useState<"all" | "pending" | "completed">("all");
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeFeature, setUpgradeFeature] = useState("");
+
+  // Fetch student profile to check tier
+  const profileQuery = useQuery(
+    orpc.student.getMyProfile.queryOptions({ input: {} })
+  );
+  const isFreeUser = !profileQuery.data?.tier || profileQuery.data.tier === "FREE";
 
   // Fetch assigned advisor info
   const advisorQuery = useQuery(
@@ -177,6 +187,9 @@ function RouteComponent() {
   const recentSessions = sessions.slice(0, 3);
   const tasks = tasksQuery.data ?? [];
 
+  // Check if all essential data is loading
+  const isPageLoading = profileQuery.isLoading || advisorQuery.isLoading || sessionsQuery.isLoading || tasksQuery.isLoading;
+
   // Filter tasks
   const filteredTasks = tasks.filter((task) => {
     if (taskFilter === "pending") return task.status !== "completed";
@@ -198,6 +211,11 @@ function RouteComponent() {
 
   const pendingCount = tasks.filter((t) => t.status !== "completed").length;
   const completedCount = tasks.filter((t) => t.status === "completed").length;
+
+  // Show loading state until all data is ready
+  if (isPageLoading) {
+    return <PageLoader message="Loading your dashboard..." />;
+  }
 
   return (
     <div className="flex flex-1 h-screen text-left bg-zinc-50">
@@ -290,11 +308,7 @@ function RouteComponent() {
                 </button>
               </div>
 
-              {tasksQuery.isLoading ? (
-                <div className="bg-white rounded-xl border border-zinc-200 p-8 text-center text-zinc-400 flex-1 flex items-center justify-center">
-                  Loading tasks...
-                </div>
-              ) : sortedTasks.length > 0 ? (
+              {sortedTasks.length > 0 ? (
                 <div className="bg-white rounded-xl border border-zinc-200 flex-1 overflow-hidden flex flex-col">
                   {/* Table Header */}
                   <div className="grid grid-cols-[24px_1fr_100px_80px_70px_70px_28px] gap-3 px-4 py-2.5 bg-zinc-50 border-b border-zinc-200 text-xs font-medium text-zinc-500 uppercase tracking-wide">
@@ -361,16 +375,23 @@ function RouteComponent() {
           {/* Info Cards Row - Full Width */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             {/* Advisor Card */}
-            <div className="bg-white rounded-xl border border-zinc-200 p-5">
+            <div className="bg-white rounded-xl border border-zinc-200 p-5 relative">
+              {isFreeUser && (
+                <LockedOverlay
+                  onClick={() => {
+                    setUpgradeFeature("your personal advisor");
+                    setShowUpgradeModal(true);
+                  }}
+                  message="Advisor Access"
+                />
+              )}
               <div className="flex items-center gap-2 mb-2">
                 <ChalkboardTeacherIcon className="size-5 text-zinc-400" />
                 <span className="text-sm font-medium text-zinc-500 uppercase tracking-wide">
                   Your Advisor
                 </span>
               </div>
-              {advisorQuery.isLoading ? (
-                <div className="text-sm text-zinc-400">Loading...</div>
-              ) : advisor ? (
+              {advisor ? (
                 <div className="text-lg font-semibold text-zinc-900">
                   {advisor.advisorName}
                 </div>
@@ -409,7 +430,7 @@ function RouteComponent() {
               <h2 className="text-lg font-semibold text-zinc-900">
                 Recent Sessions
               </h2>
-              {sessions.length > 3 && (
+              {sessions.length > 3 && !isFreeUser && (
                 <Link
                   to="/student/sessions"
                   className="text-sm text-zinc-500 hover:text-zinc-900 font-medium flex items-center gap-1 group"
@@ -420,9 +441,37 @@ function RouteComponent() {
               )}
             </div>
 
-            {sessionsQuery.isLoading ? (
-              <div className="bg-white rounded-xl border border-zinc-200 p-8 text-center text-zinc-400">
-                Loading sessions...
+            {isFreeUser ? (
+              <div
+                onClick={() => {
+                  setUpgradeFeature("your session history");
+                  setShowUpgradeModal(true);
+                }}
+                className="bg-white rounded-xl border border-zinc-200 p-8 text-center relative cursor-pointer hover:border-zinc-300 transition-colors"
+              >
+                <div className="filter blur-sm pointer-events-none">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {[1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className="bg-zinc-50 rounded-xl p-5"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <HeadsetIcon className="size-6 text-zinc-300" weight="duotone" />
+                        </div>
+                        <div className="h-4 bg-zinc-200 rounded mb-2 w-3/4" />
+                        <div className="h-3 bg-zinc-100 rounded w-1/2" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <div className="p-3 bg-zinc-100 rounded-full mb-2">
+                    <HeadsetIcon className="size-6 text-zinc-500" weight="fill" />
+                  </div>
+                  <span className="text-sm font-medium text-zinc-700">Session History Locked</span>
+                  <span className="text-xs text-blue-600 mt-1">Book a free consultation to unlock</span>
+                </div>
               </div>
             ) : recentSessions.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -481,6 +530,13 @@ function RouteComponent() {
               isLoading={createTaskMutation.isPending || updateTaskMutation.isPending}
             />
           )}
+
+          {/* Upgrade Modal */}
+          <UpgradeModal
+            isOpen={showUpgradeModal}
+            onClose={() => setShowUpgradeModal(false)}
+            featureName={upgradeFeature}
+          />
 
           {/* All Tools */}
           <div>

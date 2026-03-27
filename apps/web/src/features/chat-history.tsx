@@ -7,38 +7,51 @@ import {
 } from "@phosphor-icons/react";
 
 import { Button } from "@/components/button";
+import { InlineLoader } from "@/components/page-loader";
 import { useQuery } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 
 import { format, isSameDay, subDays } from "date-fns";
 import { Link, useSearch } from "@tanstack/react-router";
 import { cn } from "@/utils/cn";
-
-const ChatLoader = () => {
-  return (
-    <div>
-      <div className="h-5 bg-zinc-200 animate-pulse rounded-sm w-14 mb-4" />
-      {Array.from({ length: 5 }).map((_, idx) => (
-        <div className="h-5 bg-zinc-200 animate-pulse w-full rounded-sm mb-2" />
-      ))}
-    </div>
-  );
-};
+import { useEffect, useMemo, useState } from "react";
 
 const ChatList = ({
   studentUserId,
   isStudent,
+  searchQuery,
 }: {
   studentUserId: string;
   isStudent: boolean;
+  searchQuery: string;
 }) => {
+  const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   const chatsQuery = useQuery(
     orpc.advisor.chatHistory.queryOptions({ input: { studentUserId } })
   );
 
+  const searchChatsQuery = useQuery(
+    orpc.advisor.searchChats.queryOptions({
+      input: { studentUserId, query: debouncedQuery },
+      enabled: !!debouncedQuery.trim(),
+    })
+  );
+
   const searchParams = useSearch({ from: "/_authenticated/guru" });
 
-  const chats = chatsQuery.data ?? [];
+  const allChats = chatsQuery.data ?? [];
+  const searchResults = searchChatsQuery.data ?? [];
+
+  const chats = debouncedQuery.trim() ? searchResults : allChats;
+  const isSearchPending = searchQuery.trim() && (searchChatsQuery.isPending || searchQuery !== debouncedQuery);
 
   return (
     <>
@@ -55,12 +68,15 @@ const ChatList = ({
           <hr className="mb-0 mt-3 border-zinc-200" />
         </div>
       ) : null}
-      {chatsQuery.isPending ? (
-        <div className="mt-2">
-          <ChatLoader />
-        </div>
+      {(chatsQuery.isPending || isSearchPending) ? (
+        <InlineLoader />
       ) : null}
       <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
+        {searchQuery.trim() && chats.length === 0 && !isSearchPending ? (
+          <div className="text-sm text-zinc-400 text-center py-4">
+            No chats found
+          </div>
+        ) : null}
         {chats.map((c, idx) => {
           const prevChat = chats[idx - 1];
           const isDifferentDay = prevChat
@@ -123,22 +139,47 @@ const ChatList = ({
 };
 
 export const StudentList = () => {
+  const [showAllStudents, setShowAllStudents] = useState(false);
+
   const studentListQuery = useQuery(
     orpc.advisor.getStudentList.queryOptions({})
   );
 
-  const studentList = studentListQuery.data ?? [];
+  const allStudents = studentListQuery.data ?? [];
+
+  const studentList = useMemo(() => {
+    if (showAllStudents) {
+      return allStudents;
+    }
+    return allStudents.filter((s) => s.status === "ACTIVE" || !s.status);
+  }, [allStudents, showAllStudents]);
+
+  const inactiveCount = allStudents.filter((s) => s.status === "INACTIVE").length;
 
   return (
     <>
-      {studentListQuery.isPending ? <ChatLoader /> : null}
+      {studentListQuery.isPending ? <InlineLoader /> : null}
       <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
         {!studentListQuery.isPending ? (
-          <div className="text-zinc-400 mb-2.5">Select a student</div>
+          <div className="flex items-center justify-between mb-2.5">
+            <span className="text-zinc-400">Select a student</span>
+            {inactiveCount > 0 && (
+              <button
+                onClick={() => setShowAllStudents(!showAllStudents)}
+                className={`text-xs px-2 py-0.5 rounded-md border transition-colors ${
+                  showAllStudents
+                    ? "bg-zinc-100 border-zinc-300 text-zinc-700"
+                    : "bg-white border-zinc-200 text-zinc-500 hover:bg-zinc-50"
+                }`}
+              >
+                {showAllStudents ? "Active only" : `+${inactiveCount}`}
+              </button>
+            )}
+          </div>
         ) : null}
         {studentList?.map((student) => {
           return (
-            <>
+            <div key={student.studentUserId}>
               <Link
                 to="/guru"
                 search={{ userId: student.studentUserId }}
@@ -149,8 +190,7 @@ export const StudentList = () => {
                 </div>
                 <ArrowRightIcon className="size-4 text-zinc-400 group-hover:text-zinc-600 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
               </Link>
-              <div className="mb-2.5" />
-            </>
+            </div>
           );
         })}
       </div>
@@ -166,12 +206,55 @@ export const ChatHistory = ({
   userRole: "OWNER" | "ADMIN" | "ADVISOR" | "STUDENT";
 }) => {
   const isStudent = userRole === "STUDENT";
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const showSearch = studentUserId || userRole === "STUDENT";
 
   return (
     <div className="border-r border-zinc-200 w-72 flex flex-col px-4 py-5 text-left bg-white flex-shrink-0 h-full overflow-hidden">
       <div className="flex justify-between items-center mb-3">
-        <div className="text-sm font-semibold text-zinc-900">Chat</div>
-        <MagnifyingGlassIcon className="size-4 text-zinc-400" weight="bold" />
+        {isSearching ? (
+          <input
+            type="text"
+            placeholder="Search chats..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            autoFocus
+            className="flex-1 text-sm outline-none bg-transparent placeholder:text-zinc-400"
+            onBlur={() => {
+              if (!searchQuery) setIsSearching(false);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setSearchQuery("");
+                setIsSearching(false);
+              }
+            }}
+          />
+        ) : (
+          <div className="text-sm font-semibold text-zinc-900">Chat</div>
+        )}
+        {showSearch && (
+          <button
+            onClick={() => {
+              if (isSearching) {
+                setSearchQuery("");
+                setIsSearching(false);
+              } else {
+                setIsSearching(true);
+              }
+            }}
+            className={cn(
+              "p-1 rounded transition-colors",
+              isSearching
+                ? "text-zinc-900 hover:bg-zinc-100"
+                : "text-zinc-400 hover:text-zinc-600"
+            )}
+          >
+            <MagnifyingGlassIcon className="size-4" weight="bold" />
+          </button>
+        )}
       </div>
       <Link to="/guru" className="w-full">
         <Button variant="primary" className="w-full text-xs justify-center">
@@ -184,7 +267,7 @@ export const ChatHistory = ({
       <hr className="border-zinc-200 border-b border-t-0 my-4" />
 
       {studentUserId || userRole === "STUDENT" ? (
-        <ChatList studentUserId={studentUserId ?? ""} isStudent={isStudent} />
+        <ChatList studentUserId={studentUserId ?? ""} isStudent={isStudent} searchQuery={searchQuery} />
       ) : (
         <StudentList />
       )}

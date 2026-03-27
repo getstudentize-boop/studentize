@@ -133,11 +133,19 @@ export const searchStudentsByAdvisor = async (input: {
   ];
 
   const students = await db
-    .select({ userId: schema.user.id, name: schema.user.name })
+    .select({
+      userId: schema.user.id,
+      name: schema.user.name,
+      status: schema.student.status,
+    })
     .from(schema.advisorStudentAccess)
     .innerJoin(
       schema.user,
       eq(schema.advisorStudentAccess.studentUserId, schema.user.id)
+    )
+    .innerJoin(
+      schema.student,
+      eq(schema.advisorStudentAccess.studentUserId, schema.student.userId)
     )
     .where(and(...andStatements));
 
@@ -149,7 +157,11 @@ export const searchStudentsByAdmin = async (input: {
   organizationId: string;
 }) => {
   const students = await db
-    .select({ userId: schema.user.id, name: schema.user.name })
+    .select({
+      userId: schema.user.id,
+      name: schema.user.name,
+      status: schema.student.status,
+    })
     .from(schema.user)
     .innerJoin(
       schema.membership,
@@ -158,6 +170,7 @@ export const searchStudentsByAdmin = async (input: {
         eq(schema.membership.organizationId, input.organizationId)
       )
     )
+    .innerJoin(schema.student, eq(schema.student.userId, schema.user.id))
     .where(
       and(
         eq(schema.membership.role, "STUDENT"),
@@ -221,6 +234,16 @@ export const updateUserEmail = async (
     .set({ email: data.email })
     .where(eq(schema.user.id, userId))
     .returning({ id: schema.user.id, email: schema.user.email });
+
+  return user;
+};
+
+export const updateUserName = async (userId: string, name: string) => {
+  const [user] = await db
+    .update(schema.user)
+    .set({ name })
+    .where(eq(schema.user.id, userId))
+    .returning({ id: schema.user.id, name: schema.user.name });
 
   return user;
 };
