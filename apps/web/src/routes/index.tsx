@@ -59,6 +59,16 @@ function App() {
             Sign In as Advisor
           </Button>
         </div>
+        <button className="mt-10">
+          New User?{" "}
+          <button
+            type="button"
+            className="underline hover:text-zinc-600 cursor-pointer"
+            onClick={() => signIn()}
+          >
+            Sign up here &raquo;
+          </button>
+        </button>
       </div>
       <div className="flex-1 p-6 flex bg-zinc-50">
         <div className="w-full h-full border overflow-hidden border-zinc-200 rounded-xl bg-gradient-to-b from-zinc-50 to-white relative shadow-sm">
