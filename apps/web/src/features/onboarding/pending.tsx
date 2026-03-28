@@ -84,7 +84,9 @@ export const OnboardingPending = ({
   return (
     <div className="flex h-screen items-center justify-center">
       <div className="max-w-sm text-center flex flex-col gap-4 items-center">
-        <div className="font-semibold">Signed in as Advisor</div>
+        <div className="font-semibold">
+          Signed in as {organizationRole === "STUDENT" ? "Student" : "Advisor"}
+        </div>
         Your account is pending approval by an admin. Please reach out to
         support if you believe this is an error.
         <div className="flex flex-col justify-center gap-10">
@@ -94,14 +96,16 @@ export const OnboardingPending = ({
           </Button>
 
           <div className="flex flex-col gap-2">
-            <Button
-              variant="primary"
-              isLoading={switchToStudentMutation.isPending}
-              onClick={() => switchToStudentMutation.mutate({})}
-            >
-              Sign in as Student instead
-              <StudentIcon />
-            </Button>
+            {organizationRole === "ADVISOR" && (
+              <Button
+                variant="primary"
+                isLoading={switchToStudentMutation.isPending}
+                onClick={() => switchToStudentMutation.mutate({})}
+              >
+                Sign in as Student instead
+                <StudentIcon />
+              </Button>
+            )}
 
             <Button
               variant="neutral"
