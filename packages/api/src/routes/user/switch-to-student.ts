@@ -8,6 +8,11 @@ export const switchToStudent = async (ctx: AuthContext) => {
   // Update membership role to STUDENT
   await updateMembershipRole(user.id, organizationId, "STUDENT");
 
+  // Delete the advisor record if one exists
+  await db
+    .delete(schema.advisor)
+    .where(eq(schema.advisor.userId, user.id));
+
   // Ensure a student record exists for this user
   const existingStudent = await db.query.student.findFirst({
     where: (student, { eq }) => eq(student.userId, user.id),
