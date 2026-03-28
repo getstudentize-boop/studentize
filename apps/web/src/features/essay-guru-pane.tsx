@@ -44,7 +44,13 @@ function SidebarMessage({ message }: { message: UIMessage }) {
           : "ml-auto bg-[#BCFAF9] text-zinc-900 max-w-[85%]",
       )}
     >
-      {content ? <Markdown>{content}</Markdown> : <LoadingIndicator />}
+      {content ? (
+        <Markdown>{content}</Markdown>
+      ) : (
+        <div className="flex items-center justify-center gap-2">
+          <LoadingIndicator />
+        </div>
+      )}
     </div>
   );
 }
