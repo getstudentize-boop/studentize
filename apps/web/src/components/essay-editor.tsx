@@ -1,16 +1,21 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import TextAlign from "@tiptap/extension-text-align";
 import { useEffect } from "react";
 import { cn } from "@/utils/cn";
 import {
-  TextB,
-  TextItalic,
-  TextStrikethrough,
-  ListBullets,
-  ListNumbers,
-  Quotes,
-  ArrowUUpLeft,
-  ArrowUUpRight,
+  TextBolderIcon,
+  TextItalicIcon,
+  TextStrikethroughIcon,
+  ListBulletsIcon,
+  ListNumbersIcon,
+  QuotesIcon,
+  ArrowUUpLeftIcon,
+  ArrowUUpRightIcon,
+  TextAlignLeftIcon,
+  TextAlignCenterIcon,
+  TextAlignRightIcon,
+  TextAlignJustifyIcon,
 } from "@phosphor-icons/react";
 
 interface EssayEditorProps {
@@ -33,10 +38,10 @@ const MenuBar = ({ editor }: { editor: any }) => {
         disabled={!editor.can().chain().focus().toggleBold().run()}
         className={cn(
           "p-2 rounded hover:bg-zinc-200 disabled:opacity-30",
-          editor.isActive("bold") && "bg-zinc-200"
+          editor.isActive("bold") && "bg-zinc-200",
         )}
       >
-        <TextB className="size-4" weight="bold" />
+        <TextBolderIcon className="size-4" weight="bold" />
       </button>
       <button
         type="button"
@@ -44,10 +49,10 @@ const MenuBar = ({ editor }: { editor: any }) => {
         disabled={!editor.can().chain().focus().toggleItalic().run()}
         className={cn(
           "p-2 rounded hover:bg-zinc-200 disabled:opacity-30",
-          editor.isActive("italic") && "bg-zinc-200"
+          editor.isActive("italic") && "bg-zinc-200",
         )}
       >
-        <TextItalic className="size-4" weight="bold" />
+        <TextItalicIcon className="size-4" weight="bold" />
       </button>
       <button
         type="button"
@@ -55,10 +60,10 @@ const MenuBar = ({ editor }: { editor: any }) => {
         disabled={!editor.can().chain().focus().toggleStrike().run()}
         className={cn(
           "p-2 rounded hover:bg-zinc-200 disabled:opacity-30",
-          editor.isActive("strike") && "bg-zinc-200"
+          editor.isActive("strike") && "bg-zinc-200",
         )}
       >
-        <TextStrikethrough className="size-4" weight="bold" />
+        <TextStrikethroughIcon className="size-4" weight="bold" />
       </button>
       <div className="w-px h-8 bg-zinc-300 mx-1" />
       <button
@@ -66,30 +71,30 @@ const MenuBar = ({ editor }: { editor: any }) => {
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         className={cn(
           "p-2 rounded hover:bg-zinc-200",
-          editor.isActive("bulletList") && "bg-zinc-200"
+          editor.isActive("bulletList") && "bg-zinc-200",
         )}
       >
-        <ListBullets className="size-4" weight="bold" />
+        <ListBulletsIcon className="size-4" weight="bold" />
       </button>
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
         className={cn(
           "p-2 rounded hover:bg-zinc-200",
-          editor.isActive("orderedList") && "bg-zinc-200"
+          editor.isActive("orderedList") && "bg-zinc-200",
         )}
       >
-        <ListNumbers className="size-4" weight="bold" />
+        <ListNumbersIcon className="size-4" weight="bold" />
       </button>
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
         className={cn(
           "p-2 rounded hover:bg-zinc-200",
-          editor.isActive("blockquote") && "bg-zinc-200"
+          editor.isActive("blockquote") && "bg-zinc-200",
         )}
       >
-        <Quotes className="size-4" weight="bold" />
+        <QuotesIcon className="size-4" weight="bold" />
       </button>
       <div className="w-px h-8 bg-zinc-300 mx-1" />
       <button
@@ -98,7 +103,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
         disabled={!editor.can().chain().focus().undo().run()}
         className="p-2 rounded hover:bg-zinc-200 disabled:opacity-30"
       >
-        <ArrowUUpLeft className="size-4" weight="bold" />
+        <ArrowUUpLeftIcon className="size-4" weight="bold" />
       </button>
       <button
         type="button"
@@ -106,7 +111,49 @@ const MenuBar = ({ editor }: { editor: any }) => {
         disabled={!editor.can().chain().focus().redo().run()}
         className="p-2 rounded hover:bg-zinc-200 disabled:opacity-30"
       >
-        <ArrowUUpRight className="size-4" weight="bold" />
+        <ArrowUUpRightIcon className="size-4" weight="bold" />
+      </button>
+      <div className="w-px h-8 bg-zinc-300 mx-1" />
+
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().setTextAlign("left").run()}
+        className={cn(
+          "p-2 rounded hover:bg-zinc-200",
+          editor.isActive({ textAlign: "left" }) && "bg-zinc-200",
+        )}
+      >
+        <TextAlignLeftIcon className="size-4" weight="bold" />
+      </button>
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().setTextAlign("center").run()}
+        className={cn(
+          "p-2 rounded hover:bg-zinc-200",
+          editor.isActive({ textAlign: "center" }) && "bg-zinc-200",
+        )}
+      >
+        <TextAlignCenterIcon className="size-4" weight="bold" />
+      </button>
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().setTextAlign("right").run()}
+        className={cn(
+          "p-2 rounded hover:bg-zinc-200",
+          editor.isActive({ textAlign: "right" }) && "bg-zinc-200",
+        )}
+      >
+        <TextAlignRightIcon className="size-4" weight="bold" />
+      </button>
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().setTextAlign("justify").run()}
+        className={cn(
+          "p-2 rounded hover:bg-zinc-200",
+          editor.isActive({ textAlign: "justify" }) && "bg-zinc-200",
+        )}
+      >
+        <TextAlignJustifyIcon className="size-4" weight="bold" />
       </button>
     </div>
   );
@@ -119,7 +166,13 @@ export const EssayEditor = ({
   className,
 }: EssayEditorProps) => {
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [
+      StarterKit,
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+        defaultAlignment: "left",
+      }),
+    ],
     content,
     editable,
     onUpdate: ({ editor }) => {
@@ -129,7 +182,7 @@ export const EssayEditor = ({
       attributes: {
         class: cn(
           "prose prose-sm max-w-none focus:outline-none min-h-[400px] p-6",
-          className
+          className,
         ),
       },
     },

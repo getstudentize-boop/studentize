@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
-import { ArrowLeftIcon } from "@phosphor-icons/react";
+import { ArrowLeftIcon, BrainIcon } from "@phosphor-icons/react";
+import { EssayGuruPane } from "@/features/essay-guru-pane";
 import { Button } from "@/components/button";
 import { EssayEditor } from "@/components/essay-editor";
 import { useState, useEffect, useMemo } from "react";
@@ -24,6 +25,7 @@ function EssayEditorPage() {
   const [content, setContent] = useState<any>(null);
   const [title, setTitle] = useState("");
   const [prompt, setPrompt] = useState("");
+  const [showGuru, setShowGuru] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
@@ -160,43 +162,65 @@ function EssayEditorPage() {
             <div className="w-px h-3 bg-zinc-300" />
             <div className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
           </div>
+          <button
+            onClick={() => setShowGuru(!showGuru)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+              showGuru
+                ? "bg-[#BCFAF9]/20 text-zinc-900 border border-[#BCFAF9]"
+                : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
+            }`}
+          >
+            <BrainIcon className="size-4" weight="fill" />
+            Guru
+          </button>
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto bg-zinc-50">
-        <div className="max-w-4xl mx-auto py-8 px-6">
-          <div className="mb-4 space-y-2">
-            <input
-              type="text"
-              value={title}
-              disabled={isUsOrUkEssay}
-              onChange={(e) => {
-                setTitle(e.target.value);
-                debouncedMetaUpdate({ title: e.target.value });
-              }}
-              placeholder="Essay title"
-              className={`w-full px-4 py-2.5 border border-zinc-200 rounded-lg text-base font-medium text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${isUsOrUkEssay ? "bg-zinc-50 text-zinc-500 cursor-not-allowed" : "bg-white"}`}
-            />
-            <textarea
-              value={prompt}
-              disabled={isUsOrUkEssay}
-              onChange={(e) => {
-                setPrompt(e.target.value);
-                debouncedMetaUpdate({ prompt: e.target.value });
-              }}
-              placeholder="Essay prompt or question (optional)"
-              rows={2}
-              className={`w-full px-4 py-2.5 border border-zinc-200 rounded-lg text-sm text-zinc-600 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${isUsOrUkEssay ? "bg-zinc-50 text-zinc-500 cursor-not-allowed" : "bg-white"}`}
-            />
+      <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 overflow-auto bg-zinc-50">
+          <div className="max-w-4xl mx-auto py-8 px-6">
+            <div className="mb-4 space-y-2">
+              <input
+                type="text"
+                value={title}
+                disabled={isUsOrUkEssay}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  debouncedMetaUpdate({ title: e.target.value });
+                }}
+                placeholder="Essay title"
+                className={`w-full px-4 py-2.5 border border-zinc-200 rounded-lg text-base font-medium text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${isUsOrUkEssay ? "bg-zinc-50 text-zinc-500 cursor-not-allowed" : "bg-white"}`}
+              />
+              <textarea
+                value={prompt}
+                disabled={isUsOrUkEssay}
+                onChange={(e) => {
+                  setPrompt(e.target.value);
+                  debouncedMetaUpdate({ prompt: e.target.value });
+                }}
+                placeholder="Essay prompt or question (optional)"
+                rows={2}
+                className={`w-full px-4 py-2.5 border border-zinc-200 rounded-lg text-sm text-zinc-600 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${isUsOrUkEssay ? "bg-zinc-50 text-zinc-500 cursor-not-allowed" : "bg-white"}`}
+              />
+            </div>
+            {content && (
+              <EssayEditor
+                content={content}
+                onUpdate={handleContentUpdate}
+                className="bg-white"
+              />
+            )}
           </div>
-          {content && (
-            <EssayEditor
-              content={content}
-              onUpdate={handleContentUpdate}
-              className="bg-white"
-            />
-          )}
         </div>
+
+        {showGuru && (
+          <EssayGuruPane
+            essayTitle={title || essay.title}
+            essayPrompt={prompt || essay.prompt || ""}
+            essayContent={extractTextFromTiptap(content)}
+            onClose={() => setShowGuru(false)}
+          />
+        )}
       </div>
     </div>
   );
