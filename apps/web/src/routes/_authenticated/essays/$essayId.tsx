@@ -1,11 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
-import { ArrowLeftIcon, BrainIcon } from "@phosphor-icons/react";
+import {
+  ArrowLeftIcon,
+  BrainIcon,
+  ShieldCheckIcon,
+  CircleNotchIcon,
+} from "@phosphor-icons/react";
 import { EssayGuruPane } from "@/features/essay-guru-pane";
 import { Button } from "@/components/button";
 import { EssayEditor } from "@/components/essay-editor";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useDebounceCallback } from "usehooks-ts";
 import { countWordsInTiptap, extractTextFromTiptap } from "@/utils/essay";
 
@@ -28,6 +33,12 @@ function EssayEditorPage() {
   const [showGuru, setShowGuru] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const aiCheckRef = useRef<HTMLDivElement>(null);
+  const [aiCheckResult, setAiCheckResult] = useState<{
+    score: number;
+    summary: string;
+    indicators: { label: string; detail: string; signal: "human" | "ai" | "neutral" }[];
+  } | null>(null);
 
   const updateEssayMutation = useMutation(
     orpc.essay.update.mutationOptions({
@@ -81,6 +92,24 @@ function EssayEditorPage() {
     if (!content) return 0;
     return extractTextFromTiptap(content).length;
   }, [content]);
+
+  const aiCheckMutation = useMutation(
+    orpc.essay.aiCheck.mutationOptions({
+      onSuccess: (data) => {
+        setAiCheckResult(data);
+        setTimeout(() => {
+          aiCheckRef.current?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      },
+    }),
+  );
+
+  const handleAiCheck = () => {
+    if (!content) return;
+    const text = extractTextFromTiptap(content);
+    if (!text.trim()) return;
+    aiCheckMutation.mutate({ essayId, essayText: text });
+  };
 
   const handleContentUpdate = (newContent: any) => {
     setContent(newContent);
@@ -163,6 +192,18 @@ function EssayEditorPage() {
             <div className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
           </div>
           <button
+            onClick={handleAiCheck}
+            disabled={aiCheckMutation.isPending || !content || wordCount === 0}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors bg-zinc-100 text-zinc-600 hover:bg-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {aiCheckMutation.isPending ? (
+              <CircleNotchIcon className="size-4 animate-spin" />
+            ) : (
+              <ShieldCheckIcon className="size-4" weight="fill" />
+            )}
+            AI Check
+          </button>
+          <button
             onClick={() => setShowGuru(!showGuru)}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
               showGuru
@@ -209,6 +250,96 @@ function EssayEditorPage() {
                 onUpdate={handleContentUpdate}
                 className="bg-white"
               />
+            )}
+
+            {aiCheckResult && (
+              <div ref={aiCheckRef} className="mt-6 border border-zinc-200 rounded-lg bg-white overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 bg-zinc-50">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheckIcon className="size-5" weight="fill" />
+                    <span className="text-sm font-semibold text-zinc-900">
+                      AI Detection Score
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setAiCheckResult(null)}
+                    className="text-xs text-zinc-400 hover:text-zinc-600"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+                <div className="p-4">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div
+                      className={`text-4xl font-bold ${
+                        aiCheckResult.score <= 25
+                          ? "text-green-600"
+                          : aiCheckResult.score <= 50
+                            ? "text-yellow-600"
+                            : aiCheckResult.score <= 75
+                              ? "text-orange-600"
+                              : "text-red-600"
+                      }`}
+                    >
+                      {aiCheckResult.score}
+                      <span className="text-lg font-normal text-zinc-400">
+                        /100
+                      </span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="w-full h-2 bg-zinc-100 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all ${
+                            aiCheckResult.score <= 25
+                              ? "bg-green-500"
+                              : aiCheckResult.score <= 50
+                                ? "bg-yellow-500"
+                                : aiCheckResult.score <= 75
+                                  ? "bg-orange-500"
+                                  : "bg-red-500"
+                          }`}
+                          style={{ width: `${aiCheckResult.score}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between mt-1 text-[10px] text-zinc-400">
+                        <span>Human</span>
+                        <span>AI</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-zinc-600 mb-4">
+                    {aiCheckResult.summary}
+                  </p>
+
+                  <div className="space-y-2">
+                    {aiCheckResult.indicators.map((indicator) => (
+                      <div
+                        key={indicator.label}
+                        className="flex items-start gap-2 text-sm"
+                      >
+                        <span
+                          className={`mt-1 size-2 rounded-full flex-shrink-0 ${
+                            indicator.signal === "human"
+                              ? "bg-green-500"
+                              : indicator.signal === "ai"
+                                ? "bg-red-500"
+                                : "bg-zinc-400"
+                          }`}
+                        />
+                        <div>
+                          <span className="font-medium text-zinc-900">
+                            {indicator.label}:
+                          </span>{" "}
+                          <span className="text-zinc-600">
+                            {indicator.detail}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </div>
