@@ -3,6 +3,7 @@ import { getEssayHandler, GetEssayInputSchema } from "./get";
 import { listEssaysHandler, ListEssaysInputSchema } from "./list";
 import { updateEssayHandler, UpdateEssayInputSchema } from "./update";
 import { deleteEssayHandler, DeleteEssayInputSchema } from "./delete";
+import { aiCheckHandler, AiCheckInputSchema } from "./ai-check";
 
 import { privateRoute } from "../../utils/middleware";
 
@@ -41,10 +42,18 @@ const deleteHandler = privateRoute
     return result;
   });
 
+const aiCheckRoute = privateRoute
+  .input(AiCheckInputSchema)
+  .handler(async ({ context, input }) => {
+    const result = await aiCheckHandler(context, input);
+    return result;
+  });
+
 export const essay = {
   create: createHandler,
   get: getHandler,
   list: listHandler,
   update: updateHandler,
   delete: deleteHandler,
+  aiCheck: aiCheckRoute,
 };
