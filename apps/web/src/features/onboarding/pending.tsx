@@ -122,6 +122,9 @@ export const OnboardingPending = ({
             </Button>
           </div>
         </div>
+        <div className="absolute bottom-10">
+          Sign in as <span className="font-semibold">{user.email}</span>
+        </div>
       </div>
     </div>
   );
