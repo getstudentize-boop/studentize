@@ -12,3 +12,4 @@ export * from "./calendar";
 export * from "./virtual-advisor";
 export * from "./advisor-inquiry";
 export * from "./visitor-chat";
+export * from "./score";

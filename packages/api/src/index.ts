@@ -47,6 +47,7 @@ import { session } from "./routes/session";
 import { organization } from "./routes/organization";
 import { virtualAdvisor } from "./routes/virtual-advisor";
 import { consultationRequest } from "./routes/consultation-request";
+import { score } from "./routes/score";
 import {
   visitorChatHandler,
   visitorChatListHandler,
@@ -103,6 +104,7 @@ export const router = {
     newId: chatNewIdHandler,
   },
   virtualAdvisor,
+  score,
   consultationRequest,
   visitorChat: {
     chat: visitorChatHandler,
