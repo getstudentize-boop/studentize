@@ -1,4 +1,8 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  useNavigate,
+} from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import {
@@ -8,6 +12,7 @@ import {
   GraduationCapIcon,
   BookOpenIcon,
   StarIcon,
+  CaretDownIcon,
 } from "@phosphor-icons/react";
 import { PageLoader } from "@/components/page-loader";
 import { Button } from "@/components/button";
@@ -16,9 +21,16 @@ import { useForm } from "@tanstack/react-form";
 import { Input } from "@/components/input";
 import { format } from "date-fns";
 import { countWordsInTiptap } from "@/utils/essay";
+import { z } from "zod";
+
+const essayRegions = ["USA", "UK", "Other"] as const;
+type EssayRegion = (typeof essayRegions)[number];
 
 export const Route = createFileRoute("/_authenticated/essays/")({
   component: EssaysPage,
+  validateSearch: z.object({
+    region: z.enum(essayRegions).optional().default("USA"),
+  }),
 });
 
 const ESSAY_TYPES = {
@@ -42,6 +54,11 @@ function EssaysPage() {
   const [newEssayType, setNewEssayType] = useState<string | null>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { region } = Route.useSearch();
+
+  const setRegion = (r: EssayRegion) => {
+    navigate({ to: "/essays", search: { region: r } });
+  };
 
   const essaysQuery = useQuery(orpc.essay.list.queryOptions({ input: {} }));
 
@@ -116,12 +133,29 @@ function EssaysPage() {
       (e.title.includes(" - ") || e.title.toLowerCase().includes("supplement"))
   );
 
-  const otherEssays = essays.filter(
+  const isUkEssay = (e: any) => {
+    const t = e.title.toLowerCase();
+    return (
+      t.includes("ucas") ||
+      t.includes("personal statement") ||
+      t.includes("uk ") ||
+      t.includes("uk-") ||
+      t.includes("united kingdom") ||
+      t.includes("oxbridge") ||
+      t.includes("oxford") ||
+      t.includes("cambridge")
+    );
+  };
+
+  const remainingEssays = essays.filter(
     (e: any) =>
       !e.title.toLowerCase().includes("common app") &&
       !e.title.includes(" - ") &&
       !e.title.toLowerCase().includes("supplement")
   );
+
+  const ukEssays = remainingEssays.filter(isUkEssay);
+  const otherEssays = remainingEssays.filter((e: any) => !isUkEssay(e));
 
   // Group supplemental essays by university
   const groupedSupplementals = supplementalEssays.reduce(
@@ -195,11 +229,25 @@ function EssaysPage() {
     <div className="flex flex-1 h-screen text-left">
       <div className="flex-1 flex flex-col p-6 overflow-auto bg-zinc-50">
         <div className="max-w-5xl mx-auto w-full">
-          <div className="mb-6">
-            <h1 className="text-2xl font-semibold text-zinc-900">My Essays</h1>
-            <p className="text-zinc-600 text-sm mt-1">
-              Organize and write your college application essays
-            </p>
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-zinc-900">My Essays</h1>
+              <p className="text-zinc-600 text-sm mt-1">
+                Organize and write your college application essays
+              </p>
+            </div>
+            <div className="relative">
+              <select
+                value={region}
+                onChange={(e) => setRegion(e.target.value as EssayRegion)}
+                className="appearance-none bg-white border border-zinc-300 rounded-lg pl-3 pr-8 py-2 text-sm font-medium text-zinc-700 hover:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+              >
+                {essayRegions.map((r) => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
+              </select>
+              <CaretDownIcon className="size-4 text-zinc-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
           </div>
 
           {showNewEssayDialog && (
@@ -332,168 +380,226 @@ function EssaysPage() {
           )}
 
           <div className="space-y-6">
-            {/* Common App Section */}
-            <div className="bg-white rounded-lg border border-zinc-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-50 rounded-lg">
-                    <StarIcon className="size-5 text-blue-600" weight="fill" />
+            {region === "USA" && (
+              <>
+                {/* Common App Section */}
+                <div className="bg-white rounded-lg border border-zinc-200 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-blue-50 rounded-lg">
+                        <StarIcon className="size-5 text-blue-600" weight="fill" />
+                      </div>
+                      <div>
+                        <h2 className="font-semibold text-zinc-900">
+                          Common App Personal Statement
+                        </h2>
+                        <p className="text-xs text-zinc-500">
+                          650 words • Required for most schools
+                        </p>
+                      </div>
+                    </div>
+                    {!commonAppEssay && (
+                      <Button
+                        variant="primary"
+                        onClick={() => {
+                          setNewEssayType(ESSAY_TYPES.COMMON_APP);
+                          setShowNewEssayDialog(true);
+                          form.reset();
+                          form.setFieldValue(
+                            "title",
+                            "Common App Personal Statement"
+                          );
+                        }}
+                        className="text-sm"
+                      >
+                        <PlusIcon className="size-4" weight="bold" />
+                        Start Writing
+                      </Button>
+                    )}
                   </div>
-                  <div>
-                    <h2 className="font-semibold text-zinc-900">
-                      Common App Personal Statement
-                    </h2>
-                    <p className="text-xs text-zinc-500">
-                      650 words • Required for most schools
-                    </p>
-                  </div>
+
+                  {commonAppEssay ? (
+                    <EssayCard essay={commonAppEssay} />
+                  ) : (
+                    <div className="text-center py-8 border-2 border-dashed border-zinc-200 rounded-lg">
+                      <BookOpenIcon className="size-8 text-zinc-300 mx-auto mb-2" />
+                      <p className="text-sm text-zinc-500">
+                        Start your Common App personal statement
+                      </p>
+                    </div>
+                  )}
                 </div>
-                {!commonAppEssay && (
+
+                {/* Supplemental Essays Section */}
+                <div className="bg-white rounded-lg border border-zinc-200 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-purple-50 rounded-lg">
+                        <GraduationCapIcon
+                          className="size-5 text-purple-600"
+                          weight="fill"
+                        />
+                      </div>
+                      <div>
+                        <h2 className="font-semibold text-zinc-900">
+                          Supplemental Essays
+                        </h2>
+                        <p className="text-xs text-zinc-500">
+                          School-specific essays
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="neutral"
+                      onClick={() => {
+                        setNewEssayType(ESSAY_TYPES.SUPPLEMENTAL);
+                        setShowNewEssayDialog(true);
+                        form.reset();
+                      }}
+                      className="text-sm"
+                    >
+                      <PlusIcon className="size-4" weight="bold" />
+                      Add Essay
+                    </Button>
+                  </div>
+
+                  {Object.keys(groupedSupplementals).length > 0 ? (
+                    <div className="space-y-4">
+                      {Object.entries(groupedSupplementals).map(
+                        ([university, universityEssays]: [string, any]) => (
+                          <div key={university}>
+                            <h3 className="font-medium text-zinc-700 text-sm mb-2">
+                              {university}
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              {universityEssays.map((essay: any) => (
+                                <EssayCard key={essay.id} essay={essay} />
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 border-2 border-dashed border-zinc-200 rounded-lg">
+                      <GraduationCapIcon className="size-8 text-zinc-300 mx-auto mb-2" />
+                      <p className="text-sm text-zinc-500 mb-3">
+                        No supplemental essays yet
+                      </p>
+                      <p className="text-xs text-zinc-400">
+                        Add essays for specific universities you're applying to
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
+            {region === "UK" && (
+              <div className="bg-white rounded-lg border border-zinc-200 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-50 rounded-lg">
+                      <GraduationCapIcon
+                        className="size-5 text-green-600"
+                        weight="fill"
+                      />
+                    </div>
+                    <div>
+                      <h2 className="font-semibold text-zinc-900">
+                        UK Personal Statements
+                      </h2>
+                      <p className="text-xs text-zinc-500">
+                        UCAS personal statements & university-specific essays
+                      </p>
+                    </div>
+                  </div>
                   <Button
-                    variant="primary"
+                    variant="neutral"
                     onClick={() => {
-                      setNewEssayType(ESSAY_TYPES.COMMON_APP);
+                      setNewEssayType(ESSAY_TYPES.OTHER);
                       setShowNewEssayDialog(true);
                       form.reset();
-                      form.setFieldValue(
-                        "title",
-                        "Common App Personal Statement"
-                      );
                     }}
                     className="text-sm"
                   >
                     <PlusIcon className="size-4" weight="bold" />
-                    Start Writing
+                    Add Essay
                   </Button>
+                </div>
+
+                {ukEssays.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {ukEssays.map((essay: any) => (
+                      <EssayCard key={essay.id} essay={essay} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 border-2 border-dashed border-zinc-200 rounded-lg">
+                    <GraduationCapIcon className="size-8 text-zinc-300 mx-auto mb-2" />
+                    <p className="text-sm text-zinc-500 mb-3">
+                      No UK essays yet
+                    </p>
+                    <p className="text-xs text-zinc-400">
+                      Add your UCAS personal statement or university-specific essays
+                    </p>
+                  </div>
                 )}
               </div>
+            )}
 
-              {commonAppEssay ? (
-                <EssayCard essay={commonAppEssay} />
-              ) : (
-                <div className="text-center py-8 border-2 border-dashed border-zinc-200 rounded-lg">
-                  <BookOpenIcon className="size-8 text-zinc-300 mx-auto mb-2" />
-                  <p className="text-sm text-zinc-500">
-                    Start your Common App personal statement
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Supplemental Essays Section */}
-            <div className="bg-white rounded-lg border border-zinc-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-50 rounded-lg">
-                    <GraduationCapIcon
-                      className="size-5 text-purple-600"
-                      weight="fill"
-                    />
+            {region === "Other" && (
+              <div className="bg-white rounded-lg border border-zinc-200 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-amber-50 rounded-lg">
+                      <BookOpenIcon
+                        className="size-5 text-amber-600"
+                        weight="fill"
+                      />
+                    </div>
+                    <div>
+                      <h2 className="font-semibold text-zinc-900">
+                        Other Essays
+                      </h2>
+                      <p className="text-xs text-zinc-500">
+                        Scholarships, honors programs & other applications
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="font-semibold text-zinc-900">
-                      Supplemental Essays
-                    </h2>
-                    <p className="text-xs text-zinc-500">
-                      School-specific essays
+                  <Button
+                    variant="neutral"
+                    onClick={() => {
+                      setNewEssayType(ESSAY_TYPES.OTHER);
+                      setShowNewEssayDialog(true);
+                      form.reset();
+                    }}
+                    className="text-sm"
+                  >
+                    <PlusIcon className="size-4" weight="bold" />
+                    Add Essay
+                  </Button>
+                </div>
+
+                {otherEssays.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {otherEssays.map((essay: any) => (
+                      <EssayCard key={essay.id} essay={essay} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 border-2 border-dashed border-zinc-200 rounded-lg">
+                    <BookOpenIcon className="size-8 text-zinc-300 mx-auto mb-2" />
+                    <p className="text-sm text-zinc-500 mb-3">
+                      No other essays yet
+                    </p>
+                    <p className="text-xs text-zinc-400">
+                      Add essays for scholarships, Canada applications, or other programs
                     </p>
                   </div>
-                </div>
-                <Button
-                  variant="neutral"
-                  onClick={() => {
-                    setNewEssayType(ESSAY_TYPES.SUPPLEMENTAL);
-                    setShowNewEssayDialog(true);
-                    form.reset();
-                  }}
-                  className="text-sm"
-                >
-                  <PlusIcon className="size-4" weight="bold" />
-                  Add Essay
-                </Button>
+                )}
               </div>
-
-              {Object.keys(groupedSupplementals).length > 0 ? (
-                <div className="space-y-4">
-                  {Object.entries(groupedSupplementals).map(
-                    ([university, universityEssays]: [string, any]) => (
-                      <div key={university}>
-                        <h3 className="font-medium text-zinc-700 text-sm mb-2">
-                          {university}
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {universityEssays.map((essay: any) => (
-                            <EssayCard key={essay.id} essay={essay} />
-                          ))}
-                        </div>
-                      </div>
-                    )
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-8 border-2 border-dashed border-zinc-200 rounded-lg">
-                  <GraduationCapIcon className="size-8 text-zinc-300 mx-auto mb-2" />
-                  <p className="text-sm text-zinc-500 mb-3">
-                    No supplemental essays yet
-                  </p>
-                  <p className="text-xs text-zinc-400">
-                    Add essays for specific universities you're applying to
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Other Essays Section */}
-            <div className="bg-white rounded-lg border border-zinc-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-50 rounded-lg">
-                    <BookOpenIcon
-                      className="size-5 text-green-600"
-                      weight="fill"
-                    />
-                  </div>
-                  <div>
-                    <h2 className="font-semibold text-zinc-900">
-                      Other Essays
-                    </h2>
-                    <p className="text-xs text-zinc-500">
-                      Scholarships, UK/Canada applications, honors programs
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  variant="neutral"
-                  onClick={() => {
-                    setNewEssayType(ESSAY_TYPES.OTHER);
-                    setShowNewEssayDialog(true);
-                    form.reset();
-                  }}
-                  className="text-sm"
-                >
-                  <PlusIcon className="size-4" weight="bold" />
-                  Add Essay
-                </Button>
-              </div>
-
-              {otherEssays.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {otherEssays.map((essay: any) => (
-                    <EssayCard key={essay.id} essay={essay} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 border-2 border-dashed border-zinc-200 rounded-lg">
-                  <BookOpenIcon className="size-8 text-zinc-300 mx-auto mb-2" />
-                  <p className="text-sm text-zinc-500 mb-3">
-                    No other essays yet
-                  </p>
-                  <p className="text-xs text-zinc-400">
-                    Add essays for scholarships, UCAS, or other applications
-                  </p>
-                </div>
-              )}
-            </div>
+            )}
           </div>
         </div>
       </div>
