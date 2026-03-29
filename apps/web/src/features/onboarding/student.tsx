@@ -3,7 +3,6 @@ import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
-import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/button";
 import { ArrowRightIcon, ArrowLeftIcon } from "@phosphor-icons/react";
 import { Step1Contact } from "./steps/step1-contact";
@@ -15,6 +14,7 @@ import { Step6Support } from "./steps/step6-support";
 import { Step7Referral } from "./steps/step7-referral";
 import { useAuthUser } from "@/routes/_authenticated";
 import { OrganizationLogo } from "../organization/logo";
+import { useNavigate } from "@tanstack/react-router";
 
 const TOTAL_STEPS = 7;
 
@@ -23,12 +23,14 @@ export const StudentOnboarding = () => {
   const queryClient = useQueryClient();
   const { user } = useAuthUser();
 
+  const navigate = useNavigate();
+
   const completeOnboardingMutation = useMutation(
     orpc.student.completeOnboarding.mutationOptions({
       onSuccess: async () => {
         // Invalidate all queries to ensure the entire app refreshes with updated state
         await queryClient.invalidateQueries();
-        window.location.reload();
+        navigate({ to: "/student/dashboard" });
       },
     }),
   );
