@@ -16,6 +16,10 @@ import {
   bulkSaveShortlist,
   BulkSaveShortlistInputSchema,
 } from "./bulk-save";
+import {
+  generateShortlist,
+  GenerateShortlistInputSchema,
+} from "./generate";
 
 import { privateRoute } from "../../utils/middleware";
 
@@ -61,6 +65,13 @@ const bulkSaveShortlistHandler = privateRoute
     return result;
   });
 
+const generateShortlistHandler = privateRoute
+  .input(GenerateShortlistInputSchema)
+  .handler(async ({ context }) => {
+    const result = await generateShortlist(context);
+    return result;
+  });
+
 export const shortlist = {
   add: addToShortlistHandler,
   remove: removeFromShortlistHandler,
@@ -68,4 +79,5 @@ export const shortlist = {
   getMyShortlist: getMyShortlistHandler,
   checkIfShortlisted: checkIfShortlistedHandler,
   bulkSave: bulkSaveShortlistHandler,
+  generate: generateShortlistHandler,
 };
