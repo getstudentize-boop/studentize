@@ -18,6 +18,7 @@ import { CollegeCard } from "@/features/college/college-card";
 import { CollegeModal } from "@/features/college/college-modal";
 import { UKCollegeModal } from "@/features/college/uk-college-modal";
 import type { College, UKCollegeData } from "@/features/college/types";
+import { ShortlistGeneratorModal } from "@/features/shortlist-generator-modal";
 
 export const Route = createFileRoute(
   "/_authenticated/student/universities/shortlist",
@@ -49,6 +50,7 @@ function ShortlistPage() {
     college: College | UKCollegeData;
     country: "us" | "uk";
   } | null>(null);
+  const [showGenerator, setShowGenerator] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: rawShortlist, isLoading } = useQuery(
@@ -109,7 +111,23 @@ function ShortlistPage() {
   }
 
   if (shortlist.length === 0) {
-    return <EmptyState />;
+    return (
+      <>
+        <EmptyState onGenerate={() => setShowGenerator(true)} />
+        {showGenerator && (
+          <ShortlistGeneratorModal
+            onClose={() => {
+              setShowGenerator(false);
+              queryClient.invalidateQueries({
+                queryKey: orpc.shortlist.getMyShortlist.queryOptions({
+                  input: {},
+                }).queryKey,
+              });
+            }}
+          />
+        )}
+      </>
+    );
   }
 
   return (
@@ -134,14 +152,13 @@ function ShortlistPage() {
               <PlusIcon size={18} weight="bold" />
               Add Universities
             </Link>
-            <Link
-              to="/student/virtual-advisors/$advisor"
-              params={{ advisor: "shortlister" }}
+            <button
+              onClick={() => setShowGenerator(true)}
               className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all font-medium shadow-sm"
             >
               <SparkleIcon size={18} weight="fill" />
               Generate AI Shortlist
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -247,11 +264,23 @@ function ShortlistPage() {
           onClose={() => setSelectedCollege(null)}
         />
       )}
+
+      {showGenerator && (
+        <ShortlistGeneratorModal
+          onClose={() => {
+            setShowGenerator(false);
+            queryClient.invalidateQueries({
+              queryKey: orpc.shortlist.getMyShortlist.queryOptions({ input: {} })
+                .queryKey,
+            });
+          }}
+        />
+      )}
     </div>
   );
 }
 
-function EmptyState() {
+function EmptyState({ onGenerate }: { onGenerate: () => void }) {
   return (
     <div className="flex-1 px-6 py-8 bg-zinc-50">
       <div className="max-w-7xl mx-auto">
@@ -273,14 +302,13 @@ function EmptyState() {
               goals.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link
-                to="/student/virtual-advisors/$advisor"
-                params={{ advisor: "shortlister" }}
+              <button
+                onClick={onGenerate}
                 className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all font-medium shadow-sm"
               >
                 <SparkleIcon size={18} weight="fill" />
                 Generate AI Recommendations
-              </Link>
+              </button>
               <Link
                 to="/student/universities/explorer"
                 className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-zinc-700 border border-zinc-300 rounded-lg hover:bg-zinc-50 transition-all font-medium"

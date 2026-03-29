@@ -1,4 +1,9 @@
-import { createFileRoute, Link, Outlet, useMatchRoute } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  Outlet,
+  useMatchRoute,
+} from "@tanstack/react-router";
 import { cn } from "@/utils/cn";
 
 export const Route = createFileRoute("/_authenticated/student/universities")({
@@ -14,7 +19,7 @@ function UniversitiesLayout() {
   return (
     <div className="w-full h-screen overflow-auto flex flex-col bg-zinc-50">
       {/* Header with Tabs */}
-      <div className="sticky top-0 z-10 bg-white border-b border-zinc-200 shadow-sm">
+      <div className="sticky top-0 bg-white border-b border-zinc-200 shadow-sm">
         <div className="px-6 py-6">
           <h1 className="text-3xl font-semibold text-zinc-900 tracking-tight mb-2">
             Universities
@@ -33,7 +38,7 @@ function UniversitiesLayout() {
                 "px-4 py-3 font-medium text-sm transition-colors relative",
                 isExplorer
                   ? "text-blue-600"
-                  : "text-zinc-600 hover:text-zinc-900"
+                  : "text-zinc-600 hover:text-zinc-900",
               )}
             >
               Explore Universities
@@ -47,7 +52,7 @@ function UniversitiesLayout() {
                 "px-4 py-3 font-medium text-sm transition-colors relative",
                 isShortlist
                   ? "text-blue-600"
-                  : "text-zinc-600 hover:text-zinc-900"
+                  : "text-zinc-600 hover:text-zinc-900",
               )}
             >
               My Shortlist
