@@ -3,15 +3,15 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import {
-  GraduationCap,
-  Sparkle,
-  Plus,
-  MapPin,
-  Star,
-  Trash,
-  BookmarkSimple,
-  ListChecks,
-  ChatCircle,
+  GraduationCapIcon,
+  SparkleIcon,
+  PlusIcon,
+  MapPinIcon,
+  StarIcon,
+  TrashIcon,
+  BookmarkSimpleIcon,
+  ListChecksIcon,
+  ChatCircleIcon,
 } from "@phosphor-icons/react";
 import { cn } from "@/utils/cn";
 import { CollegeCard } from "@/features/college/college-card";
@@ -131,7 +131,7 @@ function ShortlistPage() {
               to="/student/universities/explorer"
               className="inline-flex items-center gap-2 px-4 py-2 bg-white text-zinc-700 border border-zinc-300 rounded-lg hover:bg-zinc-50 transition-all font-medium"
             >
-              <Plus size={18} weight="bold" />
+              <PlusIcon size={18} weight="bold" />
               Add Universities
             </Link>
             <Link
@@ -139,7 +139,7 @@ function ShortlistPage() {
               params={{ advisor: "shortlister" }}
               className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all font-medium shadow-sm"
             >
-              <Sparkle size={18} weight="fill" />
+              <SparkleIcon size={18} weight="fill" />
               Generate AI Shortlist
             </Link>
           </div>
@@ -170,7 +170,7 @@ function ShortlistPage() {
                 : "text-zinc-600 hover:text-zinc-900",
             )}
           >
-            <Sparkle size={16} weight="fill" />
+            <SparkleIcon size={16} weight="fill" />
             AI Recommendations ({aiCount})
             {activeTab === "ai" && (
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
@@ -185,7 +185,7 @@ function ShortlistPage() {
                 : "text-zinc-600 hover:text-zinc-900",
             )}
           >
-            <BookmarkSimple size={16} weight="fill" />
+            <BookmarkSimpleIcon size={16} weight="fill" />
             My Picks ({manualCount})
             {activeTab === "manual" && (
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
@@ -258,7 +258,7 @@ function EmptyState() {
         <div className="bg-white rounded-2xl border border-zinc-200 p-12 text-center">
           <div className="max-w-md mx-auto">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-50 rounded-full mb-4">
-              <GraduationCap
+              <GraduationCapIcon
                 size={32}
                 className="text-blue-600"
                 weight="duotone"
@@ -278,14 +278,14 @@ function EmptyState() {
                 params={{ advisor: "shortlister" }}
                 className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all font-medium shadow-sm"
               >
-                <Sparkle size={18} weight="fill" />
+                <SparkleIcon size={18} weight="fill" />
                 Generate AI Recommendations
               </Link>
               <Link
                 to="/student/universities/explorer"
                 className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-zinc-700 border border-zinc-300 rounded-lg hover:bg-zinc-50 transition-all font-medium"
               >
-                <Plus size={18} weight="bold" />
+                <PlusIcon size={18} weight="bold" />
                 Browse Universities
               </Link>
             </div>
@@ -297,7 +297,11 @@ function EmptyState() {
           <div className="bg-white rounded-xl border border-zinc-200 p-5">
             <div className="flex items-start gap-3">
               <div className="p-2 bg-blue-50 rounded-lg">
-                <Sparkle size={20} className="text-blue-600" weight="fill" />
+                <SparkleIcon
+                  size={20}
+                  className="text-blue-600"
+                  weight="fill"
+                />
               </div>
               <div>
                 <h4 className="font-semibold text-zinc-900 mb-1">
@@ -314,7 +318,7 @@ function EmptyState() {
           <div className="bg-white rounded-xl border border-zinc-200 p-5">
             <div className="flex items-start gap-3">
               <div className="p-2 bg-green-50 rounded-lg">
-                <ListChecks
+                <ListChecksIcon
                   size={20}
                   className="text-green-600"
                   weight="duotone"
@@ -335,7 +339,7 @@ function EmptyState() {
           <div className="bg-white rounded-xl border border-zinc-200 p-5">
             <div className="flex items-start gap-3">
               <div className="p-2 bg-purple-50 rounded-lg">
-                <Plus size={20} className="text-purple-600" weight="bold" />
+                <PlusIcon size={20} className="text-purple-600" weight="bold" />
               </div>
               <div>
                 <h4 className="font-semibold text-zinc-900 mb-1">
@@ -460,14 +464,14 @@ function UniversityCard({
 
         {university.source === "ai" && (
           <div className="absolute top-2 left-2 bg-purple-600 text-white px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1">
-            <Sparkle size={12} weight="fill" />
+            <SparkleIcon size={12} weight="fill" />
             AI Pick
           </div>
         )}
 
         {university.ranking && (
           <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
-            <Star size={14} weight="fill" className="text-amber-500" />
+            <StarIcon size={14} weight="fill" className="text-amber-500" />
             <span className="text-xs font-bold text-zinc-900">
               #{university.ranking}
             </span>
@@ -481,7 +485,7 @@ function UniversityCard({
           {university.name}
         </h3>
         <div className="flex items-center gap-1 text-sm text-zinc-600 mb-3">
-          <MapPin size={14} />
+          <MapPinIcon size={14} />
           {university.location}
         </div>
 
@@ -522,7 +526,7 @@ function UniversityCard({
               }}
               className="flex-1 text-sm px-3 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors font-medium flex items-center justify-center gap-2"
             >
-              <ChatCircle size={14} weight="fill" />
+              <ChatCircleIcon size={14} weight="fill" />
               View Chat
             </Link>
           )}
@@ -530,7 +534,7 @@ function UniversityCard({
             onClick={() => onRemove(university.id)}
             className="p-2 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors ml-auto"
           >
-            <Trash size={18} />
+            <TrashIcon size={18} />
           </button>
         </div>
       </div>
