@@ -35,6 +35,7 @@ export const Route = createFileRoute("/_authenticated/essays/")({
 
 const ESSAY_TYPES = {
   COMMON_APP: "Common App",
+  UK_PERSONAL_STATEMENT: "UK Personal Statement",
   SUPPLEMENTAL: "Supplemental",
   OTHER: "Other",
 };
@@ -47,6 +48,12 @@ const COMMON_APP_PROMPTS = [
   "Discuss an accomplishment, event, or realization that sparked a period of personal growth and a new understanding of yourself or others.",
   "Describe a topic, idea, or concept you find so engaging that it makes you lose all track of time. Why does it captivate you? What or who do you turn to when you want to learn more?",
   "Share an essay on any topic of your choice. It can be one you've already written, one that responds to a different prompt, or one of your own design.",
+];
+
+const UK_PERSONAL_STATEMENT_PROMPTS = [
+  "Why do you want to study this course or subject?",
+  "How have your qualifications and studies helped you to prepare for this course or subject?",
+  "What else have you done to prepare outside of education, and why are these experiences useful?",
 ];
 
 function EssaysPage() {
@@ -93,12 +100,12 @@ function EssaysPage() {
       selectedPromptIndex: "",
     },
     onSubmit: async ({ value }) => {
-      const title =
+      let title =
         newEssayType === ESSAY_TYPES.SUPPLEMENTAL && value.university
           ? `${value.university} - ${value.title}`
           : value.title;
 
-      // For Common App, use selected prompt or custom prompt
+      // For Common App, use selected prompt
       let prompt = value.prompt;
       if (
         newEssayType === ESSAY_TYPES.COMMON_APP &&
@@ -106,6 +113,16 @@ function EssaysPage() {
       ) {
         const index = parseInt(value.selectedPromptIndex);
         prompt = COMMON_APP_PROMPTS[index];
+      }
+
+      // For UK Personal Statement, use selected prompt
+      if (
+        newEssayType === ESSAY_TYPES.UK_PERSONAL_STATEMENT &&
+        value.selectedPromptIndex
+      ) {
+        const index = parseInt(value.selectedPromptIndex);
+        prompt = UK_PERSONAL_STATEMENT_PROMPTS[index];
+        title = `UCAS Personal Statement - Question ${index + 1}`;
       }
 
       await createEssayMutation.mutateAsync({
@@ -122,7 +139,7 @@ function EssaysPage() {
   }
 
   // Categorize essays
-  const commonAppEssay = essays.find((e: any) =>
+  const commonAppEssays = essays.filter((e: any) =>
     e.title.toLowerCase().includes("common app")
   );
 
@@ -281,7 +298,8 @@ function EssaysPage() {
                       )}
                     </form.Field>
                   )}
-                  {newEssayType !== ESSAY_TYPES.COMMON_APP && (
+                  {newEssayType !== ESSAY_TYPES.COMMON_APP &&
+                    newEssayType !== ESSAY_TYPES.UK_PERSONAL_STATEMENT && (
                     <form.Field name="title">
                       {(field) => (
                         <div>
@@ -302,20 +320,30 @@ function EssaysPage() {
                       )}
                     </form.Field>
                   )}
-                  {newEssayType === ESSAY_TYPES.COMMON_APP ? (
+                  {newEssayType === ESSAY_TYPES.COMMON_APP ||
+                  newEssayType === ESSAY_TYPES.UK_PERSONAL_STATEMENT ? (
                     <form.Field name="selectedPromptIndex">
-                      {(field) => (
+                      {(field) => {
+                        const prompts =
+                          newEssayType === ESSAY_TYPES.COMMON_APP
+                            ? COMMON_APP_PROMPTS
+                            : UK_PERSONAL_STATEMENT_PROMPTS;
+                        const selectedClass =
+                          newEssayType === ESSAY_TYPES.COMMON_APP
+                            ? "border-blue-500 bg-blue-50"
+                            : "border-green-500 bg-green-50";
+                        return (
                         <div>
                           <label className="text-sm font-medium text-zinc-700 mb-2 block">
                             Choose Your Prompt
                           </label>
                           <div className="space-y-2 max-h-96 overflow-y-auto">
-                            {COMMON_APP_PROMPTS.map((prompt, index) => (
+                            {prompts.map((prompt, index) => (
                               <label
                                 key={index}
                                 className={`flex gap-3 p-3 border rounded-lg cursor-pointer transition-all ${
                                   field.state.value === String(index)
-                                    ? "border-blue-500 bg-blue-50"
+                                    ? selectedClass
                                     : "border-zinc-300 hover:border-zinc-400"
                                 }`}
                               >
@@ -336,7 +364,8 @@ function EssaysPage() {
                             ))}
                           </div>
                         </div>
-                      )}
+                        );
+                      }}
                     </form.Field>
                   ) : (
                     <form.Field name="prompt">
@@ -398,28 +427,30 @@ function EssaysPage() {
                         </p>
                       </div>
                     </div>
-                    {!commonAppEssay && (
-                      <Button
-                        variant="primary"
-                        onClick={() => {
-                          setNewEssayType(ESSAY_TYPES.COMMON_APP);
-                          setShowNewEssayDialog(true);
-                          form.reset();
-                          form.setFieldValue(
-                            "title",
-                            "Common App Personal Statement"
-                          );
-                        }}
-                        className="text-sm"
-                      >
-                        <PlusIcon className="size-4" weight="bold" />
-                        Start Writing
-                      </Button>
-                    )}
+                    <Button
+                      variant="primary"
+                      onClick={() => {
+                        setNewEssayType(ESSAY_TYPES.COMMON_APP);
+                        setShowNewEssayDialog(true);
+                        form.reset();
+                        form.setFieldValue(
+                          "title",
+                          "Common App Personal Statement"
+                        );
+                      }}
+                      className="text-sm"
+                    >
+                      <PlusIcon className="size-4" weight="bold" />
+                      Add Essay
+                    </Button>
                   </div>
 
-                  {commonAppEssay ? (
-                    <EssayCard essay={commonAppEssay} />
+                  {commonAppEssays.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {commonAppEssays.map((essay: any) => (
+                        <EssayCard key={essay.id} essay={essay} />
+                      ))}
+                    </div>
                   ) : (
                     <div className="text-center py-8 border-2 border-dashed border-zinc-200 rounded-lg">
                       <BookOpenIcon className="size-8 text-zinc-300 mx-auto mb-2" />
@@ -496,56 +527,121 @@ function EssaysPage() {
             )}
 
             {region === "UK" && (
-              <div className="bg-white rounded-lg border border-zinc-200 p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-50 rounded-lg">
-                      <GraduationCapIcon
-                        className="size-5 text-green-600"
-                        weight="fill"
-                      />
+              <>
+                {/* UCAS Personal Statement Section */}
+                <div className="bg-white rounded-lg border border-zinc-200 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-green-50 rounded-lg">
+                        <StarIcon className="size-5 text-green-600" weight="fill" />
+                      </div>
+                      <div>
+                        <h2 className="font-semibold text-zinc-900">
+                          UCAS Personal Statement
+                        </h2>
+                        <p className="text-xs text-zinc-500">
+                          4,000 characters • Answer all three questions
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="font-semibold text-zinc-900">
-                        UK Personal Statements
-                      </h2>
-                      <p className="text-xs text-zinc-500">
-                        UCAS personal statements & university-specific essays
+                    <Button
+                      variant="primary"
+                      onClick={() => {
+                        setNewEssayType(ESSAY_TYPES.UK_PERSONAL_STATEMENT);
+                        setShowNewEssayDialog(true);
+                        form.reset();
+                      }}
+                      className="text-sm"
+                    >
+                      <PlusIcon className="size-4" weight="bold" />
+                      Add Question
+                    </Button>
+                  </div>
+
+                  {ukEssays.filter((e: any) =>
+                    e.title.toLowerCase().includes("ucas personal statement")
+                  ).length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {ukEssays
+                        .filter((e: any) =>
+                          e.title.toLowerCase().includes("ucas personal statement")
+                        )
+                        .map((essay: any) => (
+                          <EssayCard key={essay.id} essay={essay} />
+                        ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 border-2 border-dashed border-zinc-200 rounded-lg">
+                      <BookOpenIcon className="size-8 text-zinc-300 mx-auto mb-2" />
+                      <p className="text-sm text-zinc-500">
+                        Start your UCAS personal statement
                       </p>
                     </div>
-                  </div>
-                  <Button
-                    variant="neutral"
-                    onClick={() => {
-                      setNewEssayType(ESSAY_TYPES.OTHER);
-                      setShowNewEssayDialog(true);
-                      form.reset();
-                    }}
-                    className="text-sm"
-                  >
-                    <PlusIcon className="size-4" weight="bold" />
-                    Add Essay
-                  </Button>
+                  )}
                 </div>
 
-                {ukEssays.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {ukEssays.map((essay: any) => (
-                      <EssayCard key={essay.id} essay={essay} />
-                    ))}
+                {/* Other UK Essays Section */}
+                <div className="bg-white rounded-lg border border-zinc-200 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-green-50 rounded-lg">
+                        <GraduationCapIcon
+                          className="size-5 text-green-600"
+                          weight="fill"
+                        />
+                      </div>
+                      <div>
+                        <h2 className="font-semibold text-zinc-900">
+                          Other UK Essays
+                        </h2>
+                        <p className="text-xs text-zinc-500">
+                          University-specific essays & additional statements
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="neutral"
+                      onClick={() => {
+                        setNewEssayType(ESSAY_TYPES.OTHER);
+                        setShowNewEssayDialog(true);
+                        form.reset();
+                      }}
+                      className="text-sm"
+                    >
+                      <PlusIcon className="size-4" weight="bold" />
+                      Add Essay
+                    </Button>
                   </div>
-                ) : (
-                  <div className="text-center py-8 border-2 border-dashed border-zinc-200 rounded-lg">
-                    <GraduationCapIcon className="size-8 text-zinc-300 mx-auto mb-2" />
-                    <p className="text-sm text-zinc-500 mb-3">
-                      No UK essays yet
-                    </p>
-                    <p className="text-xs text-zinc-400">
-                      Add your UCAS personal statement or university-specific essays
-                    </p>
-                  </div>
-                )}
-              </div>
+
+                  {ukEssays.filter(
+                    (e: any) =>
+                      !e.title.toLowerCase().includes("ucas personal statement")
+                  ).length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {ukEssays
+                        .filter(
+                          (e: any) =>
+                            !e.title
+                              .toLowerCase()
+                              .includes("ucas personal statement")
+                        )
+                        .map((essay: any) => (
+                          <EssayCard key={essay.id} essay={essay} />
+                        ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 border-2 border-dashed border-zinc-200 rounded-lg">
+                      <GraduationCapIcon className="size-8 text-zinc-300 mx-auto mb-2" />
+                      <p className="text-sm text-zinc-500 mb-3">
+                        No other UK essays yet
+                      </p>
+                      <p className="text-xs text-zinc-400">
+                        Add essays for specific universities you're applying to
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </>
             )}
 
             {region === "Other" && (
