@@ -1,5 +1,6 @@
 import { Select } from "@/components/select";
 import { FormApi } from "@tanstack/react-form";
+import isoCountries from "i18n-iso-countries";
 
 type FormData = {
   email: string;
@@ -12,29 +13,22 @@ type FormData = {
   referralSource: string;
 };
 
-const countries = [
-  { value: "United States", label: "United States" },
-  { value: "United Kingdom", label: "United Kingdom" },
-  { value: "Canada", label: "Canada" },
-  { value: "Australia", label: "Australia" },
-  { value: "India", label: "India" },
-  { value: "China", label: "China" },
-  { value: "Germany", label: "Germany" },
-  { value: "France", label: "France" },
-  { value: "Spain", label: "Spain" },
-  { value: "Italy", label: "Italy" },
-  { value: "Netherlands", label: "Netherlands" },
-  { value: "Sweden", label: "Sweden" },
-  { value: "Switzerland", label: "Switzerland" },
-  { value: "Singapore", label: "Singapore" },
-  { value: "Japan", label: "Japan" },
-  { value: "South Korea", label: "South Korea" },
-  { value: "Brazil", label: "Brazil" },
-  { value: "Mexico", label: "Mexico" },
-  { value: "Argentina", label: "Argentina" },
-  { value: "South Africa", label: "South Africa" },
-  { value: "Other", label: "Other" },
-];
+const PINNED_CODES = new Set(["US", "GB"]);
+
+const countries = (() => {
+  const names = isoCountries.getNames("en");
+  const rest = Object.entries(names)
+    .filter(([code]) => !PINNED_CODES.has(code))
+    .map(([, name]) => ({ value: name, label: name }))
+    .sort((a, b) => a.label.localeCompare(b.label, "en"));
+
+  return [
+    { value: "United States", label: "United States" },
+    { value: "United Kingdom", label: "United Kingdom" },
+    ...rest,
+    { value: "Other", label: "Other" },
+  ];
+})();
 
 export const Step2Country = ({
   form,
