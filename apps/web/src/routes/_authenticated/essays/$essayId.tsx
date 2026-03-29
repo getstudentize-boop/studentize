@@ -139,30 +139,6 @@ function EssayEditorPage() {
 
   const essay = essayQuery.data;
 
-  const isUsOrUkEssay = (() => {
-    const t = essay.title.toLowerCase();
-    // USA: Common App or supplemental (has "University - Title" format)
-    if (
-      t.includes("common app") ||
-      essay.title.includes(" - ") ||
-      t.includes("supplement")
-    )
-      return true;
-    // UK: UCAS, personal statement, UK universities
-    if (
-      t.includes("ucas") ||
-      t.includes("personal statement") ||
-      t.includes("uk ") ||
-      t.includes("uk-") ||
-      t.includes("oxford") ||
-      t.includes("cambridge") ||
-      t.includes("oxbridge") ||
-      t.includes("united kingdom")
-    )
-      return true;
-    return false;
-  })();
-
   return (
     <div className="flex flex-1 h-screen flex-col">
       <div className="border-b border-zinc-200 bg-white px-6 py-4 flex items-center justify-between flex-shrink-0">
@@ -224,24 +200,22 @@ function EssayEditorPage() {
               <input
                 type="text"
                 value={title}
-                disabled={isUsOrUkEssay}
                 onChange={(e) => {
                   setTitle(e.target.value);
                   debouncedMetaUpdate({ title: e.target.value });
                 }}
                 placeholder="Essay title"
-                className={`w-full px-4 py-2.5 border border-zinc-200 rounded-lg text-base font-medium text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${isUsOrUkEssay ? "bg-zinc-50 text-zinc-500 cursor-not-allowed" : "bg-white"}`}
+                className="w-full px-4 py-2.5 border border-zinc-200 rounded-lg text-base font-medium text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
               />
               <textarea
                 value={prompt}
-                disabled={isUsOrUkEssay}
                 onChange={(e) => {
                   setPrompt(e.target.value);
                   debouncedMetaUpdate({ prompt: e.target.value });
                 }}
                 placeholder="Essay prompt or question (optional)"
                 rows={2}
-                className={`w-full px-4 py-2.5 border border-zinc-200 rounded-lg text-sm text-zinc-600 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${isUsOrUkEssay ? "bg-zinc-50 text-zinc-500 cursor-not-allowed" : "bg-white"}`}
+                className="w-full px-4 py-2.5 border border-zinc-200 rounded-lg text-sm text-zinc-600 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white"
               />
             </div>
             {content && (
