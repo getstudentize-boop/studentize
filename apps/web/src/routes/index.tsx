@@ -4,7 +4,7 @@ import { Button } from "@/components/button";
 import { useAuth } from "@workos-inc/authkit-react";
 import { getUserAuth } from "@/utils/workos";
 import { orpc } from "orpc/client";
-import { setLocalStorage } from "@/utils/local-storage";
+import { removeLocalStorage, setLocalStorage } from "@/utils/local-storage";
 
 export const Route = createFileRoute("/")({
   component: App,
@@ -45,7 +45,14 @@ function App() {
           Powered by Real Mentors.
         </div>
         <div className="flex flex-col gap-3 mt-2 w-56">
-          <Button variant="neutral" className="w-full" onClick={() => signIn()}>
+          <Button
+            variant="neutral"
+            className="w-full"
+            onClick={() => {
+              removeLocalStorage("signupAsAdvisor");
+              signIn();
+            }}
+          >
             Sign In as Student
           </Button>
           <Button
@@ -64,7 +71,10 @@ function App() {
           <button
             type="button"
             className="underline hover:text-zinc-600 cursor-pointer"
-            onClick={() => signIn()}
+            onClick={() => {
+              removeLocalStorage("signupAsAdvisor");
+              signIn();
+            }}
           >
             Sign up here &raquo;
           </button>

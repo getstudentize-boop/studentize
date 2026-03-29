@@ -25,12 +25,12 @@ export const StudentOnboarding = () => {
 
   const completeOnboardingMutation = useMutation(
     orpc.student.completeOnboarding.mutationOptions({
-      onSuccess: () => {
+      onSuccess: async () => {
         // Invalidate all queries to ensure the entire app refreshes with updated state
-        queryClient.invalidateQueries();
+        await queryClient.invalidateQueries();
         window.location.reload();
       },
-    })
+    }),
   );
 
   const form = useForm({

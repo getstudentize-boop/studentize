@@ -14,3 +14,8 @@ export const setLocalStorage = (name: keyof typeof schema, data: any) => {
   const localStorage = window.localStorage;
   localStorage.setItem(name, JSON.stringify(data));
 };
+
+export const removeLocalStorage = (name: keyof typeof schema) => {
+  const localStorage = window.localStorage;
+  localStorage.removeItem(name);
+};

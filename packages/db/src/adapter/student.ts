@@ -26,7 +26,7 @@ export const createBaseStudent = async (data: { userId: string }) => {
 
 export const updateStudentByUserId = async (
   userId: string,
-  data: Partial<StudentInsert>
+  data: Partial<StudentInsert>,
 ) => {
   const [student] = await db
     .update(schema.student)
@@ -82,8 +82,8 @@ export const getFullStudentList = async (organizationId: string) => {
       schema.membership,
       and(
         eq(schema.membership.userId, schema.user.id),
-        eq(schema.membership.organizationId, organizationId)
-      )
+        eq(schema.membership.organizationId, organizationId),
+      ),
     )
     .where(eq(schema.membership.role, "STUDENT"));
 
@@ -106,11 +106,11 @@ export const getAdvisorStudentList = async (input: {
     .from(schema.advisorStudentAccess)
     .innerJoin(
       schema.student,
-      eq(schema.advisorStudentAccess.studentUserId, schema.student.userId)
+      eq(schema.advisorStudentAccess.studentUserId, schema.student.userId),
     )
     .innerJoin(
       schema.user,
-      eq(schema.advisorStudentAccess.studentUserId, schema.user.id)
+      eq(schema.advisorStudentAccess.studentUserId, schema.user.id),
     )
     .where(eq(schema.advisorStudentAccess.advisorUserId, input.advisorUserId));
 
@@ -164,7 +164,7 @@ export const updateStudentOnboarding = async (
     areasOfInterest?: string[];
     supportAreas?: string[];
     referralSource?: string;
-  }
+  },
 ) => {
   // Check if student exists
   const existingStudent = await db.query.student.findFirst({
@@ -181,6 +181,7 @@ export const updateStudentOnboarding = async (
       .set({
         ...data,
         onboardingCompleted: true,
+        status: "ACTIVE",
       })
       .where(eq(schema.student.userId, userId))
       .returning({
@@ -197,6 +198,7 @@ export const updateStudentOnboarding = async (
         userId,
         ...data,
         onboardingCompleted: true,
+        status: "ACTIVE",
       })
       .returning({
         id: schema.student.id,
