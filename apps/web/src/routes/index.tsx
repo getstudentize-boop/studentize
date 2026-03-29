@@ -71,14 +71,14 @@ function App() {
         </button>
       </div>
       <div className="flex-1 p-6 flex bg-zinc-50">
-        <div className="w-full h-full border overflow-hidden border-zinc-200 rounded-xl bg-gradient-to-b from-zinc-50 to-white relative shadow-sm">
+        <div className="w-full h-full flex items-center justify-center border overflow-hidden border-zinc-200 rounded-xl bg-gradient-to-b from-zinc-50 to-white relative shadow-sm">
           <video
             src="/video.mp4"
             autoPlay
             loop
             muted
             playsInline
-            className="w-full scale-150 absolute bottom-16 left-80 rounded-lg"
+            className="w-full h-full object-cover rounded-lg"
           />
         </div>
       </div>
