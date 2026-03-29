@@ -537,7 +537,7 @@ function RouteComponent() {
             </div>
 
             {isFreeUser ? (
-              <div className="bg-white rounded-xl border border-zinc-200 relative overflow-hidden">
+              <div className="bg-white rounded-xl border border-zinc-200 relative overflow-hidden min-h-64">
                 {/* Blurred placeholder sessions */}
                 <div className="filter blur-sm pointer-events-none select-none p-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
