@@ -33,9 +33,15 @@ export const Route = createFileRoute("/_authenticated/student/dashboard")({
 
 // Task category config
 const TASK_CATEGORIES = {
-  profile_building: { label: "Profile Building", color: "bg-purple-100 text-purple-700" },
+  profile_building: {
+    label: "Profile Building",
+    color: "bg-purple-100 text-purple-700",
+  },
   essay_writing: { label: "Essay Writing", color: "bg-blue-100 text-blue-700" },
-  university_research: { label: "University Research", color: "bg-green-100 text-green-700" },
+  university_research: {
+    label: "University Research",
+    color: "bg-green-100 text-green-700",
+  },
   exams: { label: "Exams", color: "bg-orange-100 text-orange-700" },
   sat_act: { label: "SAT/ACT", color: "bg-amber-100 text-amber-700" },
   other: { label: "Other", color: "bg-zinc-100 text-zinc-700" },
@@ -49,24 +55,27 @@ function RouteComponent() {
   const queryClient = useQueryClient();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingTask, setEditingTask] = useState<any>(null);
-  const [taskFilter, setTaskFilter] = useState<"all" | "pending" | "completed">("all");
+  const [taskFilter, setTaskFilter] = useState<"all" | "pending" | "completed">(
+    "all",
+  );
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeFeature, setUpgradeFeature] = useState("");
 
   // Fetch student profile to check tier
   const profileQuery = useQuery(
-    orpc.student.getMyProfile.queryOptions({ input: {} })
+    orpc.student.getMyProfile.queryOptions({ input: {} }),
   );
-  const isFreeUser = !profileQuery.data?.tier || profileQuery.data.tier === "FREE";
+  const isFreeUser =
+    !profileQuery.data?.tier || profileQuery.data.tier === "FREE";
 
   // Fetch assigned advisor info
   const advisorQuery = useQuery(
-    orpc.student.getMyAdvisor.queryOptions({ input: {} })
+    orpc.student.getMyAdvisor.queryOptions({ input: {} }),
   );
 
   // Fetch recent sessions
   const sessionsQuery = useQuery(
-    orpc.student.getMySessions.queryOptions({ input: {} })
+    orpc.student.getMySessions.queryOptions({ input: {} }),
   );
 
   // Fetch tasks with caching for snappy experience
@@ -94,24 +103,30 @@ function RouteComponent() {
       const previousTasks = queryClient.getQueryData(taskQueryOptions.queryKey);
 
       // Optimistically add the new task
-      queryClient.setQueryData(taskQueryOptions.queryKey, (old: any[] | undefined) => {
-        const optimisticTask = {
-          id: `temp-${Date.now()}`,
-          ...newTask,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          studentUserId: user?.id,
-          assignedByUserId: user?.id,
-          completedAt: null,
-        };
-        return [optimisticTask, ...(old || [])];
-      });
+      queryClient.setQueryData(
+        taskQueryOptions.queryKey,
+        (old: any[] | undefined) => {
+          const optimisticTask = {
+            id: `temp-${Date.now()}`,
+            ...newTask,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            studentUserId: user?.id,
+            assignedByUserId: user?.id,
+            completedAt: null,
+          };
+          return [optimisticTask, ...(old || [])];
+        },
+      );
 
       setShowCreateModal(false);
       return { previousTasks };
     },
     onError: (_err, _newTask, context) => {
-      queryClient.setQueryData(taskQueryOptions.queryKey, context?.previousTasks);
+      queryClient.setQueryData(
+        taskQueryOptions.queryKey,
+        context?.previousTasks,
+      );
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: taskQueryOptions.queryKey });
@@ -136,24 +151,33 @@ function RouteComponent() {
       const previousTasks = queryClient.getQueryData(taskQueryOptions.queryKey);
 
       // Optimistically update the task
-      queryClient.setQueryData(taskQueryOptions.queryKey, (old: any[] | undefined) => {
-        return (old || []).map((task) =>
-          task.id === updatedTask.taskId
-            ? {
-                ...task,
-                ...updatedTask,
-                updatedAt: new Date().toISOString(),
-                completedAt: updatedTask.status === "completed" ? new Date().toISOString() : task.completedAt,
-              }
-            : task
-        );
-      });
+      queryClient.setQueryData(
+        taskQueryOptions.queryKey,
+        (old: any[] | undefined) => {
+          return (old || []).map((task) =>
+            task.id === updatedTask.taskId
+              ? {
+                  ...task,
+                  ...updatedTask,
+                  updatedAt: new Date().toISOString(),
+                  completedAt:
+                    updatedTask.status === "completed"
+                      ? new Date().toISOString()
+                      : task.completedAt,
+                }
+              : task,
+          );
+        },
+      );
 
       setEditingTask(null);
       return { previousTasks };
     },
     onError: (_err, _updatedTask, context) => {
-      queryClient.setQueryData(taskQueryOptions.queryKey, context?.previousTasks);
+      queryClient.setQueryData(
+        taskQueryOptions.queryKey,
+        context?.previousTasks,
+      );
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: taskQueryOptions.queryKey });
@@ -169,14 +193,20 @@ function RouteComponent() {
       const previousTasks = queryClient.getQueryData(taskQueryOptions.queryKey);
 
       // Optimistically remove the task
-      queryClient.setQueryData(taskQueryOptions.queryKey, (old: any[] | undefined) => {
-        return (old || []).filter((task) => task.id !== taskId);
-      });
+      queryClient.setQueryData(
+        taskQueryOptions.queryKey,
+        (old: any[] | undefined) => {
+          return (old || []).filter((task) => task.id !== taskId);
+        },
+      );
 
       return { previousTasks };
     },
     onError: (_err, _variables, context) => {
-      queryClient.setQueryData(taskQueryOptions.queryKey, context?.previousTasks);
+      queryClient.setQueryData(
+        taskQueryOptions.queryKey,
+        context?.previousTasks,
+      );
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: taskQueryOptions.queryKey });
@@ -196,19 +226,25 @@ function RouteComponent() {
   const createScoreMutation = useMutation(
     orpc.score.create.mutationOptions({
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: scoreQueryOptions.queryKey });
         setShowScoreModal(false);
+        return queryClient.invalidateQueries({
+          queryKey: scoreQueryOptions.queryKey,
+        });
       },
-    })
+    }),
   );
 
   const deleteScoreMutation = useMutation(
     orpc.score.delete.mutationOptions({
       onMutate: async ({ scoreId }) => {
-        await queryClient.cancelQueries({ queryKey: scoreQueryOptions.queryKey });
+        await queryClient.cancelQueries({
+          queryKey: scoreQueryOptions.queryKey,
+        });
         const previous = queryClient.getQueryData(scoreQueryOptions.queryKey);
-        queryClient.setQueryData(scoreQueryOptions.queryKey, (old: any[] | undefined) =>
-          (old || []).filter((s) => s.id !== scoreId)
+        queryClient.setQueryData(
+          scoreQueryOptions.queryKey,
+          (old: any[] | undefined) =>
+            (old || []).filter((s) => s.id !== scoreId),
         );
         return { previous };
       },
@@ -218,7 +254,7 @@ function RouteComponent() {
       onSettled: () => {
         queryClient.invalidateQueries({ queryKey: scoreQueryOptions.queryKey });
       },
-    })
+    }),
   );
 
   const advisor = advisorQuery.data;
@@ -228,7 +264,12 @@ function RouteComponent() {
   const scores = scoresQuery.data ?? [];
 
   // Check if all essential data is loading
-  const isPageLoading = profileQuery.isLoading || advisorQuery.isLoading || sessionsQuery.isLoading || tasksQuery.isLoading || scoresQuery.isLoading;
+  const isPageLoading =
+    profileQuery.isLoading ||
+    advisorQuery.isLoading ||
+    sessionsQuery.isLoading ||
+    tasksQuery.isLoading ||
+    scoresQuery.isLoading;
 
   // Filter tasks
   const filteredTasks = tasks.filter((task) => {
@@ -289,7 +330,9 @@ function RouteComponent() {
                   <BrainIcon className="size-8" weight="duotone" />
                   <ArrowRightIcon className="size-5 group-hover:translate-x-1 transition-transform" />
                 </div>
-                <div className="font-semibold text-lg mb-0.5">Chat with Guru</div>
+                <div className="font-semibold text-lg mb-0.5">
+                  Chat with Guru
+                </div>
                 <div className="text-blue-100 text-sm">
                   AI-powered guidance for applications
                 </div>
@@ -301,7 +344,10 @@ function RouteComponent() {
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="p-2 bg-blue-50 rounded-lg">
-                    <GraduationCapIcon className="size-6 text-blue-600" weight="duotone" />
+                    <GraduationCapIcon
+                      className="size-6 text-blue-600"
+                      weight="duotone"
+                    />
                   </div>
                   <ArrowRightIcon className="size-5 text-zinc-400 group-hover:translate-x-1 group-hover:text-blue-600 transition-all" />
                 </div>
@@ -318,25 +364,29 @@ function RouteComponent() {
             <div className="lg:col-span-2 flex flex-col">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-4">
-                  <h2 className="text-lg font-semibold text-zinc-900">My Tasks</h2>
+                  <h2 className="text-lg font-semibold text-zinc-900">
+                    My Tasks
+                  </h2>
                   <div className="flex gap-1 bg-zinc-100 rounded-lg p-1">
-                    {(["all", "pending", "completed"] as const).map((filter) => (
-                      <button
-                        key={filter}
-                        onClick={() => setTaskFilter(filter)}
-                        className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
-                          taskFilter === filter
-                            ? "bg-white text-zinc-900 shadow-sm"
-                            : "text-zinc-600 hover:text-zinc-900"
-                        }`}
-                      >
-                        {filter === "all"
-                          ? `All (${tasks.length})`
-                          : filter === "pending"
-                          ? `Pending (${pendingCount})`
-                          : `Completed (${completedCount})`}
-                      </button>
-                    ))}
+                    {(["all", "pending", "completed"] as const).map(
+                      (filter) => (
+                        <button
+                          key={filter}
+                          onClick={() => setTaskFilter(filter)}
+                          className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                            taskFilter === filter
+                              ? "bg-white text-zinc-900 shadow-sm"
+                              : "text-zinc-600 hover:text-zinc-900"
+                          }`}
+                        >
+                          {filter === "all"
+                            ? `All (${tasks.length})`
+                            : filter === "pending"
+                              ? `Pending (${pendingCount})`
+                              : `Completed (${completedCount})`}
+                        </button>
+                      ),
+                    )}
                   </div>
                 </div>
                 <button
@@ -373,7 +423,9 @@ function RouteComponent() {
                           });
                         }}
                         onEdit={(task) => setEditingTask(task)}
-                        onDelete={(id) => deleteTaskMutation.mutate({ taskId: id })}
+                        onDelete={(id) =>
+                          deleteTaskMutation.mutate({ taskId: id })
+                        }
                       />
                     ))}
                   </div>
@@ -388,15 +440,15 @@ function RouteComponent() {
                     {taskFilter === "completed"
                       ? "No completed tasks yet"
                       : taskFilter === "pending"
-                      ? "All caught up!"
-                      : "No tasks yet"}
+                        ? "All caught up!"
+                        : "No tasks yet"}
                   </p>
                   <p className="text-sm text-zinc-500 mb-3">
                     {taskFilter === "all"
                       ? "Add your first task to start tracking your progress"
                       : taskFilter === "pending"
-                      ? "You've completed all your tasks"
-                      : "Complete some tasks to see them here"}
+                        ? "You've completed all your tasks"
+                        : "Complete some tasks to see them here"}
                   </p>
                   {taskFilter === "all" && (
                     <button
@@ -448,7 +500,10 @@ function RouteComponent() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 bg-zinc-100 rounded-lg">
-                    <UserIcon className="size-5 text-zinc-600" weight="duotone" />
+                    <UserIcon
+                      className="size-5 text-zinc-600"
+                      weight="duotone"
+                    />
                   </div>
                   <div>
                     <div className="text-sm font-medium text-zinc-500 uppercase tracking-wide mb-0.5">
@@ -487,12 +542,12 @@ function RouteComponent() {
                 <div className="filter blur-sm pointer-events-none select-none p-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {[1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className="bg-zinc-50 rounded-xl p-5"
-                      >
+                      <div key={i} className="bg-zinc-50 rounded-xl p-5">
                         <div className="flex items-start justify-between mb-3">
-                          <HeadsetIcon className="size-6 text-zinc-300" weight="duotone" />
+                          <HeadsetIcon
+                            className="size-6 text-zinc-300"
+                            weight="duotone"
+                          />
                         </div>
                         <div className="h-4 bg-zinc-200 rounded mb-2 w-3/4" />
                         <div className="h-3 bg-zinc-100 rounded w-1/2" />
@@ -504,13 +559,17 @@ function RouteComponent() {
                 {/* Consultation placard overlay */}
                 <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center px-6 text-center">
                   <div className="p-3 bg-blue-50 rounded-full mb-3">
-                    <CalendarIcon className="size-7 text-blue-600" weight="duotone" />
+                    <CalendarIcon
+                      className="size-7 text-blue-600"
+                      weight="duotone"
+                    />
                   </div>
                   <h3 className="text-lg font-semibold text-zinc-900 mb-1">
                     Book Your Free 1-on-1 Consultation
                   </h3>
                   <p className="text-sm text-zinc-500 max-w-sm mb-4">
-                    Get personalized guidance from the Studentize team to kickstart your college application journey.
+                    Get personalized guidance from the Studentize team to
+                    kickstart your college application journey.
                   </p>
                   <a
                     href="https://calendly.com/team-studentize/new-meeting"
@@ -533,7 +592,10 @@ function RouteComponent() {
                     className="block bg-white rounded-xl border border-zinc-200 p-5 hover:border-zinc-300 hover:shadow-md transition-all group"
                   >
                     <div className="flex items-start justify-between mb-3">
-                      <HeadsetIcon className="size-6 text-zinc-400" weight="duotone" />
+                      <HeadsetIcon
+                        className="size-6 text-zinc-400"
+                        weight="duotone"
+                      />
                       <ArrowRightIcon className="size-4 text-zinc-400 group-hover:translate-x-1 transition-transform" />
                     </div>
                     <h3 className="font-medium text-zinc-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
@@ -543,7 +605,7 @@ function RouteComponent() {
                       <ClockIcon className="size-3.5" />
                       {format(
                         new Date(session.createdAt ?? new Date()),
-                        "MMM d, yyyy"
+                        "MMM d, yyyy",
                       )}
                     </div>
                   </Link>
@@ -551,7 +613,10 @@ function RouteComponent() {
               </div>
             ) : (
               <div className="bg-white rounded-xl border border-zinc-200 p-8 text-center">
-                <HeadsetIcon className="size-10 text-zinc-300 mx-auto mb-3" weight="duotone" />
+                <HeadsetIcon
+                  className="size-10 text-zinc-300 mx-auto mb-3"
+                  weight="duotone"
+                />
                 <p className="text-zinc-900 font-medium mb-1">
                   No sessions yet
                 </p>
@@ -597,7 +662,9 @@ function RouteComponent() {
                       <ScoreRow
                         key={score.id}
                         score={score}
-                        onDelete={(id) => deleteScoreMutation.mutate({ scoreId: id })}
+                        onDelete={(id) =>
+                          deleteScoreMutation.mutate({ scoreId: id })
+                        }
                       />
                     ))}
                   </div>
@@ -605,8 +672,13 @@ function RouteComponent() {
               </div>
             ) : (
               <div className="bg-white rounded-xl border border-zinc-200 p-8 text-center">
-                <TrophyIcon className="size-10 text-zinc-300 mx-auto mb-3" weight="duotone" />
-                <p className="text-zinc-900 font-medium mb-1">No scores logged yet</p>
+                <TrophyIcon
+                  className="size-10 text-zinc-300 mx-auto mb-3"
+                  weight="duotone"
+                />
+                <p className="text-zinc-900 font-medium mb-1">
+                  No scores logged yet
+                </p>
                 <p className="text-sm text-zinc-500 mb-3">
                   Track your test scores and academic progress over time
                 </p>
@@ -644,12 +716,17 @@ function RouteComponent() {
               }}
               onSubmit={(data) => {
                 if (editingTask) {
-                  updateTaskMutation.mutate({ taskId: editingTask.id, ...data });
+                  updateTaskMutation.mutate({
+                    taskId: editingTask.id,
+                    ...data,
+                  });
                 } else {
                   createTaskMutation.mutate(data);
                 }
               }}
-              isLoading={createTaskMutation.isPending || updateTaskMutation.isPending}
+              isLoading={
+                createTaskMutation.isPending || updateTaskMutation.isPending
+              }
             />
           )}
 
@@ -673,7 +750,10 @@ function RouteComponent() {
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="p-2 bg-blue-50 rounded-lg">
-                    <GraduationCapIcon className="size-5 text-blue-600" weight="duotone" />
+                    <GraduationCapIcon
+                      className="size-5 text-blue-600"
+                      weight="duotone"
+                    />
                   </div>
                   <ArrowRightIcon className="size-4 text-zinc-400 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -692,7 +772,10 @@ function RouteComponent() {
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="p-2 bg-purple-50 rounded-lg">
-                    <PencilIcon className="size-5 text-purple-600" weight="duotone" />
+                    <PencilIcon
+                      className="size-5 text-purple-600"
+                      weight="duotone"
+                    />
                   </div>
                   <ArrowRightIcon className="size-4 text-zinc-400 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -711,7 +794,10 @@ function RouteComponent() {
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="p-2 bg-amber-50 rounded-lg">
-                    <ChartLineIcon className="size-5 text-amber-600" weight="duotone" />
+                    <ChartLineIcon
+                      className="size-5 text-amber-600"
+                      weight="duotone"
+                    />
                   </div>
                   <ArrowRightIcon className="size-4 text-zinc-400 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -745,13 +831,16 @@ function TaskRow({
   const [showMenu, setShowMenu] = useState(false);
   const isCompleted = task.status === "completed";
   const categoryConfig = TASK_CATEGORIES[task.category as TaskCategory];
-  const displayCategory = task.category === "other" && task.customCategory
-    ? task.customCategory
-    : categoryConfig?.label || task.category;
+  const displayCategory =
+    task.category === "other" && task.customCategory
+      ? task.customCategory
+      : categoryConfig?.label || task.category;
 
   // Determine who assigned the task
   const isSelfAssigned = task.studentUserId === task.assignedByUserId;
-  const assignedByLabel = isSelfAssigned ? "You" : task.assignedByName || "Advisor";
+  const assignedByLabel = isSelfAssigned
+    ? "You"
+    : task.assignedByName || "Advisor";
 
   // Due date styling
   const getDueDateStyle = () => {
@@ -839,27 +928,31 @@ function TaskRow({
 
       {/* Assigned By */}
       <div className={`text-xs truncate ${isCompleted ? "text-zinc-400" : ""}`}>
-        <span className={isSelfAssigned ? "text-zinc-500" : "text-indigo-600 font-medium"}>
+        <span
+          className={
+            isSelfAssigned ? "text-zinc-500" : "text-indigo-600 font-medium"
+          }
+        >
           {assignedByLabel}
         </span>
       </div>
 
       {/* Priority */}
       <div>
-        <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${getPriorityBadge()}`}>
+        <span
+          className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${getPriorityBadge()}`}
+        >
           {getPriorityLabel()}
         </span>
       </div>
 
       {/* Due Date */}
       <div className={`text-xs ${getDueDateStyle()}`}>
-        {task.dueDate ? (
-          isToday(new Date(task.dueDate))
+        {task.dueDate
+          ? isToday(new Date(task.dueDate))
             ? "Today"
             : format(new Date(task.dueDate), "MMM d")
-        ) : (
-          "—"
-        )}
+          : "—"}
       </div>
 
       {/* Actions Menu */}
@@ -927,13 +1020,17 @@ function TaskModal({
   const [title, setTitle] = useState(task?.title || "");
   const [description, setDescription] = useState(task?.description || "");
   const [dueDate, setDueDate] = useState(
-    task?.dueDate ? format(new Date(task.dueDate), "yyyy-MM-dd") : ""
+    task?.dueDate ? format(new Date(task.dueDate), "yyyy-MM-dd") : "",
   );
   const [category, setCategory] = useState<TaskCategory>(
-    task?.category || "other"
+    task?.category || "other",
   );
-  const [customCategory, setCustomCategory] = useState(task?.customCategory || "");
-  const [priority, setPriority] = useState<TaskPriority>(task?.priority || "medium");
+  const [customCategory, setCustomCategory] = useState(
+    task?.customCategory || "",
+  );
+  const [priority, setPriority] = useState<TaskPriority>(
+    task?.priority || "medium",
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -944,7 +1041,8 @@ function TaskModal({
       description: description.trim() || undefined,
       dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
       category,
-      customCategory: category === "other" ? customCategory.trim() || undefined : undefined,
+      customCategory:
+        category === "other" ? customCategory.trim() || undefined : undefined,
       priority,
     });
   };
@@ -1063,8 +1161,8 @@ function TaskModal({
                         ? p === "high"
                           ? "bg-red-50 border-red-300 text-red-700"
                           : p === "medium"
-                          ? "bg-blue-50 border-blue-300 text-blue-700"
-                          : "bg-zinc-100 border-zinc-300 text-zinc-700"
+                            ? "bg-blue-50 border-blue-300 text-blue-700"
+                            : "bg-zinc-100 border-zinc-300 text-zinc-700"
                         : "bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50"
                     }`}
                   >
@@ -1144,7 +1242,7 @@ function ScoreChart({ scores }: { scores: any[] }) {
   const subjects = Array.from(subjectMap.entries()).map(([name, entries]) => ({
     name,
     entries: [...entries].sort(
-      (a, b) => new Date(a.examDate).getTime() - new Date(b.examDate).getTime()
+      (a, b) => new Date(a.examDate).getTime() - new Date(b.examDate).getTime(),
     ),
   }));
 
@@ -1165,20 +1263,32 @@ function ScoreChart({ scores }: { scores: any[] }) {
               className="size-2.5 rounded-full"
               style={{ backgroundColor: getSubjectColor(i) }}
             />
-            <span className="text-xs text-zinc-600 font-medium">{subj.name}</span>
+            <span className="text-xs text-zinc-600 font-medium">
+              {subj.name}
+            </span>
           </div>
         ))}
       </div>
 
-      <div ref={containerRef} className="relative" style={{ height: chartHeight }}>
+      <div
+        ref={containerRef}
+        className="relative"
+        style={{ height: chartHeight }}
+      >
         {/* Y-axis grid lines */}
         {[0, 25, 50, 75, 100].map((pct) => (
           <div
             key={pct}
             className="absolute right-0 border-t border-zinc-100"
-            style={{ top: padding.top + plotHeight * (1 - pct / 100), left: padding.left }}
+            style={{
+              top: padding.top + plotHeight * (1 - pct / 100),
+              left: padding.left,
+            }}
           >
-            <span className="absolute -top-2 text-[10px] text-zinc-400" style={{ right: `calc(100% + 4px)` }}>
+            <span
+              className="absolute -top-2 text-[10px] text-zinc-400"
+              style={{ right: `calc(100% + 4px)` }}
+            >
               {pct}%
             </span>
           </div>
@@ -1231,7 +1341,8 @@ function ScoreChart({ scores }: { scores: any[] }) {
                     vectorEffect="non-scaling-stroke"
                   >
                     <title>
-                      {subj.name}: {p.entry.score}/{p.entry.maxScore} ({Math.round(p.pct)}%) —{" "}
+                      {subj.name}: {p.entry.score}/{p.entry.maxScore} (
+                      {Math.round(p.pct)}%) —{" "}
                       {format(new Date(p.entry.examDate), "MMM d, yyyy")}
                     </title>
                   </circle>
@@ -1245,7 +1356,10 @@ function ScoreChart({ scores }: { scores: any[] }) {
         {subjects.length > 0 && (
           <div
             className="absolute right-0 flex justify-between"
-            style={{ top: chartHeight - padding.bottom + 6, left: padding.left }}
+            style={{
+              top: chartHeight - padding.bottom + 6,
+              left: padding.left,
+            }}
           >
             {(() => {
               // Collect all dates, sort, show first and last
@@ -1361,9 +1475,13 @@ function ScoreModal({
 }) {
   const [subject, setSubject] = useState(score?.subject || "");
   const [scoreValue, setScoreValue] = useState(score?.score?.toString() || "");
-  const [maxScore, setMaxScore] = useState(score?.maxScore?.toString() || "100");
+  const [maxScore, setMaxScore] = useState(
+    score?.maxScore?.toString() || "100",
+  );
   const [examDate, setExamDate] = useState(
-    score?.examDate ? format(new Date(score.examDate), "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd")
+    score?.examDate
+      ? format(new Date(score.examDate), "yyyy-MM-dd")
+      : format(new Date(), "yyyy-MM-dd"),
   );
   const [notes, setNotes] = useState(score?.notes || "");
 
@@ -1514,7 +1632,9 @@ function ScoreModal({
             </button>
             <button
               type="submit"
-              disabled={!subject.trim() || !scoreValue || !maxScore || isLoading}
+              disabled={
+                !subject.trim() || !scoreValue || !maxScore || isLoading
+              }
               className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {isLoading ? "Saving..." : "Log Score"}
