@@ -4,10 +4,7 @@ import * as schema from "../schema";
 type ScoreInsert = InferInsertModel<typeof schema.studentScore>;
 
 export const createScore = async (data: ScoreInsert) => {
-  const [score] = await db
-    .insert(schema.studentScore)
-    .values(data)
-    .returning();
+  const [score] = await db.insert(schema.studentScore).values(data).returning();
 
   return score;
 };
@@ -15,7 +12,7 @@ export const createScore = async (data: ScoreInsert) => {
 export const getStudentScores = async (studentUserId: string) => {
   const scores = await db.query.studentScore.findMany({
     where: eq(schema.studentScore.studentUserId, studentUserId),
-    orderBy: [desc(schema.studentScore.examDate)],
+    orderBy: desc(schema.studentScore.examDate),
   });
 
   return scores;
@@ -41,8 +38,8 @@ export const updateScore = async (input: {
     .where(
       and(
         eq(schema.studentScore.id, scoreId),
-        eq(schema.studentScore.studentUserId, studentUserId)
-      )
+        eq(schema.studentScore.studentUserId, studentUserId),
+      ),
     )
     .returning();
 
@@ -58,8 +55,8 @@ export const deleteScore = async (input: {
     .where(
       and(
         eq(schema.studentScore.id, input.scoreId),
-        eq(schema.studentScore.studentUserId, input.studentUserId)
-      )
+        eq(schema.studentScore.studentUserId, input.studentUserId),
+      ),
     );
 
   return { success: true };

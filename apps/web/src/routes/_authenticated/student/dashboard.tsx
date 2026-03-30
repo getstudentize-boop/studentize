@@ -5,6 +5,7 @@ import { TasksSection } from "@/features/dashboard/tasks-section";
 import { AdvisorCard } from "@/features/dashboard/advisor-card";
 import { SessionsSection } from "@/features/dashboard/sessions-section";
 import { ScoresSection } from "@/features/dashboard/scores-section";
+import { orpc } from "orpc/client";
 import {
   BrainIcon,
   GraduationCapIcon,
@@ -17,6 +18,25 @@ import { useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/student/dashboard")({
   component: RouteComponent,
+  loader: ({ context }) => {
+    // Prefetch all dashboard data in parallel at the route level
+    // so queries start before components mount
+    context.queryClient.ensureQueryData(
+      orpc.student.getMyProfile.queryOptions({ input: {} }),
+    );
+    context.queryClient.ensureQueryData(
+      orpc.student.getMyAdvisor.queryOptions({ input: {} }),
+    );
+    context.queryClient.ensureQueryData(
+      orpc.student.getMySessions.queryOptions({ input: {} }),
+    );
+    context.queryClient.ensureQueryData(
+      orpc.task.list.queryOptions({ input: {} }),
+    );
+    context.queryClient.ensureQueryData(
+      orpc.score.list.queryOptions({ input: {} }),
+    );
+  },
 });
 
 function RouteComponent() {

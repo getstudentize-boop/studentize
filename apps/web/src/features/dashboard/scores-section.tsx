@@ -32,11 +32,11 @@ export function ScoresSection() {
   const [showScoreModal, setShowScoreModal] = useState(false);
   const [editingScore, setEditingScore] = useState<any>(null);
 
-  const scoreQueryOptions = orpc.score.list.queryOptions({ input: {} });
-  const scoresQuery = useQuery({
-    ...scoreQueryOptions,
+  const scoreQueryOptions = orpc.score.list.queryOptions({
+    input: {},
     staleTime: 1000 * 60 * 5,
   });
+  const scoresQuery = useQuery(scoreQueryOptions);
 
   const createScoreMutation = useMutation(
     orpc.score.create.mutationOptions({
@@ -116,9 +116,7 @@ export function ScoresSection() {
                 <ScoreRow
                   key={score.id}
                   score={score}
-                  onDelete={(id) =>
-                    deleteScoreMutation.mutate({ scoreId: id })
-                  }
+                  onDelete={(id) => deleteScoreMutation.mutate({ scoreId: id })}
                 />
               ))}
             </div>
@@ -130,9 +128,7 @@ export function ScoresSection() {
             className="size-10 text-zinc-300 mx-auto mb-3"
             weight="duotone"
           />
-          <p className="text-zinc-900 font-medium mb-1">
-            No scores logged yet
-          </p>
+          <p className="text-zinc-900 font-medium mb-1">No scores logged yet</p>
           <p className="text-sm text-zinc-500 mb-3">
             Track your test scores and academic progress over time
           </p>
