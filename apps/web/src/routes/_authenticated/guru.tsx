@@ -64,9 +64,11 @@ const EmptyMessage = ({ isStudent }: { isStudent: boolean }) => {
 const Message = ({
   role,
   message,
+  userRole,
 }: {
   role: "assistant" | "user" | "system";
   message: UIMessage;
+  userRole: "STUDENT" | "ADVISOR" | "OWNER" | "ADMIN";
 }) => {
   const content = message.parts
     .map((part) => (part.type === "text" ? part.text : ""))
@@ -91,7 +93,7 @@ const Message = ({
         </div>
       ) : null}
 
-      {tools.length ? (
+      {tools.length && userRole !== "STUDENT" ? (
         <>
           <hr className="my-4 border-bzinc" />
 
@@ -144,8 +146,6 @@ function App() {
   const isNewChat = !searchParams.chatId;
 
   const chatId = searchParams.chatId ?? newChatIdQuery.data;
-
-  console.log("chatId", chatId);
 
   const chatMessagesMutation = useMutation(
     orpc.advisor.chatMessages.mutationOptions({
@@ -299,7 +299,12 @@ function App() {
                 />
               ) : null}
               {chat.messages.map((msg) => (
-                <Message key={msg.id} role={msg.role} message={msg} />
+                <Message
+                  key={msg.id}
+                  role={msg.role}
+                  message={msg}
+                  userRole={user.organization?.role ?? "STUDENT"}
+                />
               ))}
               <div className="h-1" ref={bottomRef} />
             </div>
