@@ -1,8 +1,4 @@
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import {
@@ -12,7 +8,6 @@ import {
   GraduationCapIcon,
   BookOpenIcon,
   StarIcon,
-  CaretDownIcon,
 } from "@phosphor-icons/react";
 import { PageLoader } from "@/components/page-loader";
 import { Button } from "@/components/button";
@@ -23,13 +18,13 @@ import { format } from "date-fns";
 import { countWordsInTiptap } from "@/utils/essay";
 import { z } from "zod";
 
-const essayRegions = ["USA", "UK", "Other"] as const;
+const essayRegions = ["All", "US", "UK", "Other"] as const;
 type EssayRegion = (typeof essayRegions)[number];
 
 export const Route = createFileRoute("/_authenticated/essays/")({
   component: EssaysPage,
   validateSearch: z.object({
-    region: z.enum(essayRegions).optional().default("USA"),
+    region: z.enum(essayRegions).catch("All").default("All"),
   }),
 });
 
@@ -79,7 +74,7 @@ function EssaysPage() {
         setNewEssayType(null);
         navigate({ to: `/essays/${essay.id}` });
       },
-    })
+    }),
   );
 
   const deleteEssayMutation = useMutation(
@@ -89,7 +84,7 @@ function EssaysPage() {
           queryKey: orpc.essay.list.key(),
         });
       },
-    })
+    }),
   );
 
   const form = useForm({
@@ -140,14 +135,14 @@ function EssaysPage() {
 
   // Categorize essays
   const commonAppEssays = essays.filter((e: any) =>
-    e.title.toLowerCase().includes("common app")
+    e.title.toLowerCase().includes("common app"),
   );
 
   // Group supplemental essays by university
   const supplementalEssays = essays.filter(
     (e: any) =>
       !e.title.toLowerCase().includes("common app") &&
-      (e.title.includes(" - ") || e.title.toLowerCase().includes("supplement"))
+      (e.title.includes(" - ") || e.title.toLowerCase().includes("supplement")),
   );
 
   const isUkEssay = (e: any) => {
@@ -168,7 +163,7 @@ function EssaysPage() {
     (e: any) =>
       !e.title.toLowerCase().includes("common app") &&
       !e.title.includes(" - ") &&
-      !e.title.toLowerCase().includes("supplement")
+      !e.title.toLowerCase().includes("supplement"),
   );
 
   const ukEssays = remainingEssays.filter(isUkEssay);
@@ -184,7 +179,7 @@ function EssaysPage() {
       acc[university].push(essay);
       return acc;
     },
-    {}
+    {},
   );
 
   const EssayCard = ({ essay }: { essay: any }) => {
@@ -204,7 +199,7 @@ function EssaysPage() {
               e.stopPropagation();
               if (
                 confirm(
-                  "Are you sure you want to delete this essay? This cannot be undone."
+                  "Are you sure you want to delete this essay? This cannot be undone.",
                 )
               ) {
                 deleteEssayMutation.mutate({ essayId: essay.id });
@@ -244,29 +239,42 @@ function EssaysPage() {
 
   return (
     <div className="flex flex-1 h-screen text-left">
-      <div className="flex-1 flex flex-col p-6 overflow-auto bg-zinc-50">
-        <div className="max-w-5xl mx-auto w-full">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-zinc-900">My Essays</h1>
+      <div className="flex-1 flex flex-col overflow-auto bg-zinc-50">
+        <div className="flex justify-center bg-white mb-6 border-b border-zinc-200 px-6 pt-6 w-full">
+          <div className="mx-auto max-w-5xl w-full">
+            <div className="mb-6">
+              <h1 className="text-2xl font-semibold text-zinc-900">
+                My Essays
+              </h1>
               <p className="text-zinc-600 text-sm mt-1">
                 Organize and write your college application essays
               </p>
             </div>
-            <div className="relative">
-              <select
-                value={region}
-                onChange={(e) => setRegion(e.target.value as EssayRegion)}
-                className="appearance-none bg-white border border-zinc-300 rounded-lg pl-3 pr-8 py-2 text-sm font-medium text-zinc-700 hover:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
-              >
+
+            {/* Tabs */}
+            <div>
+              <div className="flex gap-2 border-b border-zinc-200">
                 {essayRegions.map((r) => (
-                  <option key={r} value={r}>{r}</option>
+                  <button
+                    key={r}
+                    onClick={() => setRegion(r)}
+                    className={`px-4 py-3 font-medium text-sm transition-colors relative ${
+                      region === r
+                        ? "text-blue-600"
+                        : "text-zinc-600 hover:text-zinc-900"
+                    }`}
+                  >
+                    {r}
+                    {region === r && (
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
+                    )}
+                  </button>
                 ))}
-              </select>
-              <CaretDownIcon className="size-4 text-zinc-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
             </div>
           </div>
-
+        </div>
+        <div className="max-w-5xl mx-auto w-full p-6">
           {showNewEssayDialog && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
               <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
@@ -300,26 +308,28 @@ function EssaysPage() {
                   )}
                   {newEssayType !== ESSAY_TYPES.COMMON_APP &&
                     newEssayType !== ESSAY_TYPES.UK_PERSONAL_STATEMENT && (
-                    <form.Field name="title">
-                      {(field) => (
-                        <div>
-                          <label className="text-sm font-medium text-zinc-700 mb-1 block">
-                            Essay Title
-                          </label>
-                          <Input
-                            value={field.state.value}
-                            onChange={(e) => field.handleChange(e.target.value)}
-                            placeholder={
-                              newEssayType === ESSAY_TYPES.SUPPLEMENTAL
-                                ? "e.g., Why Stanford?"
-                                : "e.g., Scholarship Essay"
-                            }
-                            required
-                          />
-                        </div>
-                      )}
-                    </form.Field>
-                  )}
+                      <form.Field name="title">
+                        {(field) => (
+                          <div>
+                            <label className="text-sm font-medium text-zinc-700 mb-1 block">
+                              Essay Title
+                            </label>
+                            <Input
+                              value={field.state.value}
+                              onChange={(e) =>
+                                field.handleChange(e.target.value)
+                              }
+                              placeholder={
+                                newEssayType === ESSAY_TYPES.SUPPLEMENTAL
+                                  ? "e.g., Why Stanford?"
+                                  : "e.g., Scholarship Essay"
+                              }
+                              required
+                            />
+                          </div>
+                        )}
+                      </form.Field>
+                    )}
                   {newEssayType === ESSAY_TYPES.COMMON_APP ||
                   newEssayType === ESSAY_TYPES.UK_PERSONAL_STATEMENT ? (
                     <form.Field name="selectedPromptIndex">
@@ -333,37 +343,39 @@ function EssaysPage() {
                             ? "border-blue-500 bg-blue-50"
                             : "border-green-500 bg-green-50";
                         return (
-                        <div>
-                          <label className="text-sm font-medium text-zinc-700 mb-2 block">
-                            Choose Your Prompt
-                          </label>
-                          <div className="space-y-2 max-h-96 overflow-y-auto">
-                            {prompts.map((prompt, index) => (
-                              <label
-                                key={index}
-                                className={`flex gap-3 p-3 border rounded-lg cursor-pointer transition-all ${
-                                  field.state.value === String(index)
-                                    ? selectedClass
-                                    : "border-zinc-300 hover:border-zinc-400"
-                                }`}
-                              >
-                                <input
-                                  type="radio"
-                                  name="prompt"
-                                  value={String(index)}
-                                  checked={field.state.value === String(index)}
-                                  onChange={(e) =>
-                                    field.handleChange(e.target.value)
-                                  }
-                                  className="mt-1 flex-shrink-0"
-                                />
-                                <span className="text-sm text-zinc-700">
-                                  {index + 1}. {prompt}
-                                </span>
-                              </label>
-                            ))}
+                          <div>
+                            <label className="text-sm font-medium text-zinc-700 mb-2 block">
+                              Choose Your Prompt
+                            </label>
+                            <div className="space-y-2 max-h-96 overflow-y-auto">
+                              {prompts.map((prompt, index) => (
+                                <label
+                                  key={index}
+                                  className={`flex gap-3 p-3 border rounded-lg cursor-pointer transition-all ${
+                                    field.state.value === String(index)
+                                      ? selectedClass
+                                      : "border-zinc-300 hover:border-zinc-400"
+                                  }`}
+                                >
+                                  <input
+                                    type="radio"
+                                    name="prompt"
+                                    value={String(index)}
+                                    checked={
+                                      field.state.value === String(index)
+                                    }
+                                    onChange={(e) =>
+                                      field.handleChange(e.target.value)
+                                    }
+                                    className="mt-1 flex-shrink-0"
+                                  />
+                                  <span className="text-sm text-zinc-700">
+                                    {index + 1}. {prompt}
+                                  </span>
+                                </label>
+                              ))}
+                            </div>
                           </div>
-                        </div>
                         );
                       }}
                     </form.Field>
@@ -409,14 +421,17 @@ function EssaysPage() {
           )}
 
           <div className="space-y-6">
-            {region === "USA" && (
+            {(region === "All" || region === "US") && (
               <>
                 {/* Common App Section */}
                 <div className="bg-white rounded-lg border border-zinc-200 p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-blue-50 rounded-lg">
-                        <StarIcon className="size-5 text-blue-600" weight="fill" />
+                        <StarIcon
+                          className="size-5 text-blue-600"
+                          weight="fill"
+                        />
                       </div>
                       <div>
                         <h2 className="font-semibold text-zinc-900">
@@ -435,7 +450,7 @@ function EssaysPage() {
                         form.reset();
                         form.setFieldValue(
                           "title",
-                          "Common App Personal Statement"
+                          "Common App Personal Statement",
                         );
                       }}
                       className="text-sm"
@@ -508,7 +523,7 @@ function EssaysPage() {
                               ))}
                             </div>
                           </div>
-                        )
+                        ),
                       )}
                     </div>
                   ) : (
@@ -526,14 +541,17 @@ function EssaysPage() {
               </>
             )}
 
-            {region === "UK" && (
+            {(region === "All" || region === "UK") && (
               <>
                 {/* UCAS Personal Statement Section */}
                 <div className="bg-white rounded-lg border border-zinc-200 p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-green-50 rounded-lg">
-                        <StarIcon className="size-5 text-green-600" weight="fill" />
+                        <StarIcon
+                          className="size-5 text-green-600"
+                          weight="fill"
+                        />
                       </div>
                       <div>
                         <h2 className="font-semibold text-zinc-900">
@@ -559,12 +577,14 @@ function EssaysPage() {
                   </div>
 
                   {ukEssays.filter((e: any) =>
-                    e.title.toLowerCase().includes("ucas personal statement")
+                    e.title.toLowerCase().includes("ucas personal statement"),
                   ).length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                       {ukEssays
                         .filter((e: any) =>
-                          e.title.toLowerCase().includes("ucas personal statement")
+                          e.title
+                            .toLowerCase()
+                            .includes("ucas personal statement"),
                         )
                         .map((essay: any) => (
                           <EssayCard key={essay.id} essay={essay} />
@@ -615,7 +635,9 @@ function EssaysPage() {
 
                   {ukEssays.filter(
                     (e: any) =>
-                      !e.title.toLowerCase().includes("ucas personal statement")
+                      !e.title
+                        .toLowerCase()
+                        .includes("ucas personal statement"),
                   ).length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                       {ukEssays
@@ -623,7 +645,7 @@ function EssaysPage() {
                           (e: any) =>
                             !e.title
                               .toLowerCase()
-                              .includes("ucas personal statement")
+                              .includes("ucas personal statement"),
                         )
                         .map((essay: any) => (
                           <EssayCard key={essay.id} essay={essay} />
@@ -644,7 +666,7 @@ function EssaysPage() {
               </>
             )}
 
-            {region === "Other" && (
+            {(region === "All" || region === "Other") && (
               <div className="bg-white rounded-lg border border-zinc-200 p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -690,7 +712,8 @@ function EssaysPage() {
                       No other essays yet
                     </p>
                     <p className="text-xs text-zinc-400">
-                      Add essays for scholarships, Canada applications, or other programs
+                      Add essays for scholarships, Canada applications, or other
+                      programs
                     </p>
                   </div>
                 )}
