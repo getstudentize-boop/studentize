@@ -9,6 +9,7 @@ export const essay = pgTable("essay", {
   title: text("title").notNull(),
   prompt: text("prompt"),
   content: jsonb("content").$type<any>(), // TipTap JSON content
+  region: text("region").notNull().default("US"), // "US" | "UK" | "Other"
 });
 
 export type Essay = typeof essay.$inferSelect;

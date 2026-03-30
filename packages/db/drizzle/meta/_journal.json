@@ -358,6 +358,13 @@
       "when": 1774689555970,
       "tag": "0050_freezing_wrecking_crew",
       "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "7",
+      "when": 1774898733024,
+      "tag": "0051_freezing_serpent_society",
+      "breakpoints": true
     }
   ]
 }

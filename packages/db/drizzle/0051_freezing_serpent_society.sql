@@ -1,0 +1,1 @@
+ALTER TABLE "essay" ADD COLUMN "region" text DEFAULT 'US' NOT NULL;

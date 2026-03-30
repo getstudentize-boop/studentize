@@ -31,6 +31,7 @@ export const Route = createFileRoute("/_authenticated/essays/")({
 const ESSAY_TYPES = {
   COMMON_APP: "Common App",
   UK_PERSONAL_STATEMENT: "UK Personal Statement",
+  UK_OTHER: "UK Other",
   SUPPLEMENTAL: "Supplemental",
   OTHER: "Other",
 };
@@ -120,9 +121,20 @@ function EssaysPage() {
         title = `UCAS Personal Statement - Question ${index + 1}`;
       }
 
+      // Determine region from essay type
+      const essayRegion =
+        newEssayType === ESSAY_TYPES.COMMON_APP ||
+        newEssayType === ESSAY_TYPES.SUPPLEMENTAL
+          ? "US"
+          : newEssayType === ESSAY_TYPES.UK_PERSONAL_STATEMENT ||
+              newEssayType === ESSAY_TYPES.UK_OTHER
+            ? "UK"
+            : "Other";
+
       await createEssayMutation.mutateAsync({
         title,
         prompt: prompt || undefined,
+        region: essayRegion as "US" | "UK" | "Other",
       });
     },
   });
@@ -133,41 +145,26 @@ function EssaysPage() {
     return <PageLoader message="Loading essays..." />;
   }
 
-  // Categorize essays
-  const commonAppEssays = essays.filter((e: any) =>
+  // Categorize essays by region field
+  const usEssays = essays.filter((e: any) => e.region === "US");
+  const ukEssays = essays.filter((e: any) => e.region === "UK");
+  const otherEssays = essays.filter(
+    (e: any) => e.region !== "US" && e.region !== "UK",
+  );
+
+  const commonAppEssays = usEssays.filter((e: any) =>
     e.title.toLowerCase().includes("common app"),
   );
-
-  // Group supplemental essays by university
-  const supplementalEssays = essays.filter(
-    (e: any) =>
-      !e.title.toLowerCase().includes("common app") &&
-      (e.title.includes(" - ") || e.title.toLowerCase().includes("supplement")),
+  const supplementalEssays = usEssays.filter(
+    (e: any) => !e.title.toLowerCase().includes("common app"),
   );
 
-  const isUkEssay = (e: any) => {
-    const t = e.title.toLowerCase();
-    return (
-      t.includes("ucas") ||
-      t.includes("personal statement") ||
-      t.includes("uk ") ||
-      t.includes("uk-") ||
-      t.includes("united kingdom") ||
-      t.includes("oxbridge") ||
-      t.includes("oxford") ||
-      t.includes("cambridge")
-    );
-  };
-
-  const remainingEssays = essays.filter(
-    (e: any) =>
-      !e.title.toLowerCase().includes("common app") &&
-      !e.title.includes(" - ") &&
-      !e.title.toLowerCase().includes("supplement"),
+  const ucasEssays = ukEssays.filter((e: any) =>
+    e.title.toLowerCase().includes("ucas personal statement"),
   );
-
-  const ukEssays = remainingEssays.filter(isUkEssay);
-  const otherEssays = remainingEssays.filter((e: any) => !isUkEssay(e));
+  const otherUkEssays = ukEssays.filter(
+    (e: any) => !e.title.toLowerCase().includes("ucas personal statement"),
+  );
 
   // Group supplemental essays by university
   const groupedSupplementals = supplementalEssays.reduce(
@@ -576,19 +573,11 @@ function EssaysPage() {
                     </Button>
                   </div>
 
-                  {ukEssays.filter((e: any) =>
-                    e.title.toLowerCase().includes("ucas personal statement"),
-                  ).length > 0 ? (
+                  {ucasEssays.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {ukEssays
-                        .filter((e: any) =>
-                          e.title
-                            .toLowerCase()
-                            .includes("ucas personal statement"),
-                        )
-                        .map((essay: any) => (
-                          <EssayCard key={essay.id} essay={essay} />
-                        ))}
+                      {ucasEssays.map((essay: any) => (
+                        <EssayCard key={essay.id} essay={essay} />
+                      ))}
                     </div>
                   ) : (
                     <div className="text-center py-8 border-2 border-dashed border-zinc-200 rounded-lg">
@@ -622,7 +611,7 @@ function EssaysPage() {
                     <Button
                       variant="neutral"
                       onClick={() => {
-                        setNewEssayType(ESSAY_TYPES.OTHER);
+                        setNewEssayType(ESSAY_TYPES.UK_OTHER);
                         setShowNewEssayDialog(true);
                         form.reset();
                       }}
@@ -633,23 +622,11 @@ function EssaysPage() {
                     </Button>
                   </div>
 
-                  {ukEssays.filter(
-                    (e: any) =>
-                      !e.title
-                        .toLowerCase()
-                        .includes("ucas personal statement"),
-                  ).length > 0 ? (
+                  {otherUkEssays.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {ukEssays
-                        .filter(
-                          (e: any) =>
-                            !e.title
-                              .toLowerCase()
-                              .includes("ucas personal statement"),
-                        )
-                        .map((essay: any) => (
-                          <EssayCard key={essay.id} essay={essay} />
-                        ))}
+                      {otherUkEssays.map((essay: any) => (
+                        <EssayCard key={essay.id} essay={essay} />
+                      ))}
                     </div>
                   ) : (
                     <div className="text-center py-8 border-2 border-dashed border-zinc-200 rounded-lg">

@@ -26,7 +26,10 @@ import { Loader } from "@/components/loader";
 import { Tool } from "@/features/tools";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { useAuthUser } from "../_authenticated";
-import { GuruWelcomeModal, useGuruWelcome } from "@/components/guru-welcome-modal";
+import {
+  GuruWelcomeModal,
+  useGuruWelcome,
+} from "@/components/guru-welcome-modal";
 
 export const Route = createFileRoute("/_authenticated/guru")({
   component: App,
@@ -78,7 +81,7 @@ const Message = ({
         "transition-all duration-200",
         role === "assistant"
           ? "mr-auto rounded-bl-none bg-white border border-zinc-100"
-          : "ml-auto rounded-br-none bg-[#BCFAF9] text-zinc-900"
+          : "ml-auto rounded-br-none bg-[#BCFAF9] text-zinc-900",
       )}
     >
       <Markdown>{content}</Markdown>
@@ -120,12 +123,13 @@ function App() {
   const { showWelcome, closeWelcome } = useGuruWelcome();
 
   // For students, automatically set userId to their own ID
-  const userId = user.organization?.role === "STUDENT" ? user.id : searchParams.userId;
+  const userId =
+    user.organization?.role === "STUDENT" ? user.id : searchParams.userId;
 
   const queryClient = useQueryClient();
 
   const searchStudentMutation = useMutation(
-    orpc.student.search.mutationOptions()
+    orpc.student.search.mutationOptions(),
   );
 
   const newChatIdQuery = useQuery(orpc.chat.newId.queryOptions());
@@ -134,7 +138,7 @@ function App() {
     orpc.user.display.queryOptions({
       input: { userId: userId! },
       enabled: !!userId,
-    })
+    }),
   );
 
   const isNewChat = !searchParams.chatId;
@@ -158,10 +162,10 @@ function App() {
               ...m,
               parts: [{ type: "text", text: m.content }, ...toolParts],
             };
-          })
+          }),
         );
       },
-    })
+    }),
   );
 
   const chat = useChat({
@@ -171,6 +175,8 @@ function App() {
         await queryClient.invalidateQueries({
           queryKey: orpc.advisor.chatHistory.key(),
         });
+
+        navigate({ to: "/guru", search: { userId, chatId } });
       }
     },
     transport: {
@@ -182,8 +188,8 @@ function App() {
               messages: options.messages,
               chatId: chatId!,
             },
-            { signal: options.abortSignal }
-          )
+            { signal: options.abortSignal },
+          ),
         );
       },
       reconnectToStream: () => {
@@ -229,7 +235,10 @@ function App() {
   return (
     <div className="flex flex-1 h-screen overflow-hidden">
       {showWelcome && <GuruWelcomeModal onClose={closeWelcome} />}
-      <ChatHistory studentUserId={userId} userRole={user.organization?.role ?? "STUDENT"} />
+      <ChatHistory
+        studentUserId={userId}
+        userRole={user.organization?.role ?? "STUDENT"}
+      />
       <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
         <div className="justify-between items-center flex px-6 py-4 border-b border-zinc-200 bg-white flex-shrink-0">
           <div className="flex gap-2 items-center text-sm font-medium text-zinc-900">
@@ -260,7 +269,7 @@ function App() {
             <div
               className={cn(
                 "flex-1 flex flex-col overflow-y-auto custom-scrollbar min-h-0",
-                chat.messages.length ? "gap-4" : "items-center justify-center"
+                chat.messages.length ? "gap-4" : "items-center justify-center",
               )}
             >
               {isPendingOrError ? (
@@ -276,7 +285,9 @@ function App() {
                 </div>
               ) : null}
               {isEmptyState ? (
-                <EmptyMessage isStudent={user.organization?.role === "STUDENT"} />
+                <EmptyMessage
+                  isStudent={user.organization?.role === "STUDENT"}
+                />
               ) : null}
               {chat.messages.map((msg) => (
                 <Message key={msg.id} role={msg.role} message={msg} />
@@ -292,8 +303,6 @@ function App() {
                 if (input.trim()) {
                   chat.sendMessage({ text: input });
                   setInput("");
-
-                  navigate({ to: "/guru", search: { userId, chatId } });
                 }
               }}
             >
@@ -301,14 +310,14 @@ function App() {
                 <div className="flex flex-col p-4 gap-4">
                   {(user.organization?.role === "STUDENT"
                     ? [
-                        "Where am I in the application process?",
-                        "What should I work on before my next session?",
-                        "What deadlines should I be aware of?",
+                        "What is the application process for the USA?",
+                        "What is the application process for the UK?",
+                        "How can I use Guru to my advantage?",
                       ]
                     : [
-                    `Where is ${userDisplay.name?.split(" ")[0]} in the application process?`,
-                    "What should we prioritize in our next session?",
-                    "What deadlines should we be aware of?",
+                        `Where is ${userDisplay.name?.split(" ")[0]} in the application process?`,
+                        "What should we prioritize in our next session?",
+                        "What deadlines should we be aware of?",
                       ]
                   ).map((text) => (
                     <div key={text}>
@@ -359,7 +368,7 @@ function App() {
                               orpc.user.display.queryKey({
                                 input: { userId: user.userId },
                               }),
-                              () => ({ email: "xxx", name: user.name })
+                              () => ({ email: "xxx", name: user.name }),
                             );
 
                             navigate({
@@ -401,7 +410,7 @@ function App() {
                     disabled={!input.trim() || !userId}
                     className={cn(
                       "flex-shrink-0",
-                      user.organization?.role === "STUDENT" && "ml-auto"
+                      user.organization?.role === "STUDENT" && "ml-auto",
                     )}
                   >
                     <ArrowUpIcon weight="bold" />

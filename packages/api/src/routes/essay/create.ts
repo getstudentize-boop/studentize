@@ -6,6 +6,7 @@ import { ORPCError } from "@orpc/server";
 export const CreateEssayInputSchema = z.object({
   title: z.string(),
   prompt: z.string().optional(),
+  region: z.enum(["US", "UK", "Other"]).optional().default("US"),
 });
 
 export type CreateEssayInput = z.infer<typeof CreateEssayInputSchema>;
@@ -29,6 +30,7 @@ export const createEssayHandler = async (
     title: input.title,
     prompt: input.prompt || null,
     content: null,
+    region: input.region,
   });
 
   return essay;
