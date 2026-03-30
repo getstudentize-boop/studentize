@@ -1,6 +1,9 @@
 import { Select } from "@/components/select";
 import { FormApi } from "@tanstack/react-form";
 import isoCountries from "i18n-iso-countries";
+import enLocale from "i18n-iso-countries/langs/en.json";
+
+isoCountries.registerLocale(enLocale);
 
 type FormData = {
   email: string;
