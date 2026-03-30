@@ -15,7 +15,10 @@ export function UpgradeModal({
   featureName = "this feature",
 }: UpgradeModalProps) {
   return (
-    <PrimitiveDialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <PrimitiveDialog.Root
+      open={isOpen}
+      onOpenChange={(open) => !open && onClose()}
+    >
       <PrimitiveDialog.Portal>
         <PrimitiveDialog.Overlay className="fixed inset-0 bg-black/50 data-[state=open]:animate-fadeIn data-[state=closed]:animate-fadeOut z-50" />
         <PrimitiveDialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md bg-white rounded-2xl shadow-xl p-6 z-50 focus:outline-none data-[state=open]:animate-contentShow">
@@ -36,8 +39,9 @@ export function UpgradeModal({
             </h2>
 
             <p className="text-zinc-600 mb-6">
-              To access {featureName}, schedule a free 1-on-1 consultation with the Studentize team.
-              We'll help you get started on your college application journey.
+              To access {featureName}, schedule a free 1-on-1 consultation with
+              the Studentize team. We'll help you get started on your college
+              application journey.
             </p>
 
             <div className="space-y-3">

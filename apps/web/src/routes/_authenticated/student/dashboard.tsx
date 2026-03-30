@@ -105,7 +105,7 @@ function RouteComponent() {
               to="/student/profile"
               className="bg-white rounded-xl border border-zinc-200 p-5 hover:border-zinc-300 hover:shadow-sm transition-all group"
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between h-full">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 bg-zinc-100 rounded-lg">
                     <UserIcon

@@ -25,7 +25,7 @@ export function AdvisorCard({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-zinc-200 p-5 relative">
+    <div className="bg-white rounded-xl border border-zinc-200 p-5 relative min-h-36">
       {isFreeUser && (
         <LockedOverlay
           onClick={() => onUpgrade("your personal advisor")}

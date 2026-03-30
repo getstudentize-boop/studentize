@@ -157,6 +157,7 @@ export const getStudentSessionHistory = async (input: {
 export const updateStudentOnboarding = async (
   userId: string,
   data: {
+    fullName?: string;
     phone?: string;
     location?: string;
     expectedGraduationYear?: string;
@@ -166,6 +167,16 @@ export const updateStudentOnboarding = async (
     referralSource?: string;
   },
 ) => {
+  // Update user name if provided
+  if (data.fullName) {
+    await db
+      .update(schema.user)
+      .set({ name: data.fullName })
+      .where(eq(schema.user.id, userId));
+  }
+
+  const { fullName, ...studentData } = data;
+
   // Check if student exists
   const existingStudent = await db.query.student.findFirst({
     where: eq(schema.student.userId, userId),
@@ -179,7 +190,7 @@ export const updateStudentOnboarding = async (
     const [student] = await db
       .update(schema.student)
       .set({
-        ...data,
+        ...studentData,
         onboardingCompleted: true,
         status: "ACTIVE",
       })
@@ -196,7 +207,7 @@ export const updateStudentOnboarding = async (
       .insert(schema.student)
       .values({
         userId,
-        ...data,
+        ...studentData,
         onboardingCompleted: true,
         status: "ACTIVE",
       })

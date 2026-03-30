@@ -1,8 +1,13 @@
 import { z } from "zod";
-import { updateStudentOnboarding } from "@student/db";
+import {
+  updateStudentOnboarding,
+  updateUserStatus,
+  updateMembershipRole,
+} from "@student/db";
 import { AuthContext } from "../../utils/middleware";
 
 export const CompleteStudentOnboardingInputSchema = z.object({
+  fullName: z.string().optional(),
   phone: z.string().optional(),
   location: z.string().optional(),
   expectedGraduationYear: z.string().optional(),
@@ -17,6 +22,10 @@ export const completeStudentOnboarding = async (
   data: z.infer<typeof CompleteStudentOnboardingInputSchema>
 ) => {
   await updateStudentOnboarding(ctx.user.id, data);
+
+  // Auto-approve: set user status to ACTIVE and membership role to STUDENT
+  await updateUserStatus(ctx.user.id, "ACTIVE");
+  await updateMembershipRole(ctx.user.id, ctx.organizationId, "STUDENT");
 
   return { success: true };
 };

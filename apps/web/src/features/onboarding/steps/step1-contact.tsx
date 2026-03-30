@@ -2,6 +2,7 @@ import { Input } from "@/components/input";
 import { FormApi } from "@tanstack/react-form";
 
 type FormData = {
+  fullName: string;
   email: string;
   phone: string;
   location: string;
@@ -25,6 +26,23 @@ export const Step1Contact = ({
       </p>
 
       <div className="space-y-4">
+        <form.Field
+          name="fullName"
+          children={(field) => (
+            <div>
+              <label className="block text-sm font-medium text-zinc-700 mb-2">
+                Full Name
+              </label>
+              <Input
+                type="text"
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
+                placeholder="John Doe"
+              />
+            </div>
+          )}
+        />
+
         <form.Field
           name="email"
           children={(field) => (

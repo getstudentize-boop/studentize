@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import { Button } from "@/components/button";
 import { ArrowRightIcon, ArrowLeftIcon } from "@phosphor-icons/react";
@@ -14,29 +14,25 @@ import { Step6Support } from "./steps/step6-support";
 import { Step7Referral } from "./steps/step7-referral";
 import { useAuthUser } from "@/routes/_authenticated";
 import { OrganizationLogo } from "../organization/logo";
-import { useNavigate } from "@tanstack/react-router";
 
 const TOTAL_STEPS = 7;
 
 export const StudentOnboarding = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const queryClient = useQueryClient();
   const { user } = useAuthUser();
-
-  const navigate = useNavigate();
 
   const completeOnboardingMutation = useMutation(
     orpc.student.completeOnboarding.mutationOptions({
-      onSuccess: async () => {
-        // Invalidate all queries to ensure the entire app refreshes with updated state
-        await queryClient.invalidateQueries();
-        navigate({ to: "/student/dashboard" });
+      onSuccess: () => {
+        // Full reload to pick up the new ACTIVE status and STUDENT role
+        window.location.href = "/student/dashboard";
       },
     }),
   );
 
   const form = useForm({
     defaultValues: {
+      fullName: user?.name ?? "",
       email: user?.email ?? "",
       phone: "",
       location: "",
@@ -48,6 +44,7 @@ export const StudentOnboarding = () => {
     },
     validators: {
       onChange: z.object({
+        fullName: z.string().optional(),
         email: z.email(),
         phone: z.string().optional(),
         location: z.string().optional(),
@@ -60,6 +57,7 @@ export const StudentOnboarding = () => {
     },
     onSubmit: async (vals) => {
       await completeOnboardingMutation.mutateAsync({
+        fullName: vals.value.fullName || undefined,
         phone: vals.value.phone || undefined,
         location: vals.value.location || undefined,
         expectedGraduationYear: vals.value.expectedGraduationYear || undefined,
