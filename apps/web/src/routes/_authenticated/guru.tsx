@@ -145,6 +145,8 @@ function App() {
 
   const chatId = searchParams.chatId ?? newChatIdQuery.data;
 
+  console.log("chatId", chatId);
+
   const chatMessagesMutation = useMutation(
     orpc.advisor.chatMessages.mutationOptions({
       onSuccess: (data) => {
@@ -257,7 +259,14 @@ function App() {
             )}
           </div>
 
-          <Link to="/guru">
+          <Link
+            to="/guru"
+            onClick={() =>
+              queryClient.invalidateQueries({
+                queryKey: orpc.chat.newId.key(),
+              })
+            }
+          >
             <Button variant="primary" className="text-xs">
               New Chat
               <SparkleIcon weight="fill" className="size-3.5" />

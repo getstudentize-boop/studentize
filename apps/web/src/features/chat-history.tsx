@@ -8,7 +8,7 @@ import {
 
 import { Button } from "@/components/button";
 import { InlineLoader } from "@/components/page-loader";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 
 import { format, isSameDay, subDays } from "date-fns";
@@ -206,6 +206,7 @@ export const ChatHistory = ({
   userRole: "OWNER" | "ADMIN" | "ADVISOR" | "STUDENT";
 }) => {
   const isStudent = userRole === "STUDENT";
+  const queryClient = useQueryClient();
   const [isSearching, setIsSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -256,7 +257,15 @@ export const ChatHistory = ({
           </button>
         )}
       </div>
-      <Link to="/guru" className="w-full">
+      <Link
+        to="/guru"
+        className="w-full"
+        onClick={() =>
+          queryClient.invalidateQueries({
+            queryKey: orpc.chat.newId.key(),
+          })
+        }
+      >
         <Button variant="primary" className="w-full text-xs justify-center">
           <PlusIcon className="size-3.5" />
           New Chat
