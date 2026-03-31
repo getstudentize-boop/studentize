@@ -16,7 +16,12 @@ export const getUKCollegeHandler = async (input: GetUKCollegeInput) => {
     throw new Error("College not found");
   }
 
-  const enriched = await enrichUKCollege(college);
+  // Already enriched — return immediately, no extra DB calls
+  if (college.enrichedAt) {
+    return transformUKCollegeDetail(college);
+  }
 
+  // Not enriched yet — call LLM, persist, then return
+  const enriched = await enrichUKCollege(college);
   return transformUKCollegeDetail(enriched);
 };
