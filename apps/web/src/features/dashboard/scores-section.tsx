@@ -1,5 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
+import {
+  DropdownContent,
+  DropdownItem,
+  DropdownPortal,
+  DropdownRoot,
+  DropdownTrigger,
+} from "@/components/dropdown";
 import { SectionSkeleton } from "./section-skeleton";
 import {
   PlusIcon,
@@ -103,15 +110,15 @@ export function ScoresSection() {
         <div className="space-y-6">
           <ScoreChart scores={scores} />
 
-          <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden">
-            <div className="grid grid-cols-[1fr_80px_80px_90px_28px] gap-3 px-4 py-2.5 bg-zinc-50 border-b border-zinc-200 text-xs font-medium text-zinc-500 uppercase tracking-wide">
+          <div className="bg-white rounded-xl border border-zinc-200">
+            <div className="grid grid-cols-[1fr_80px_80px_90px_28px] gap-3 px-4 py-2.5 bg-zinc-50 border-b border-zinc-200 text-xs font-medium text-zinc-500 uppercase tracking-wide rounded-t-xl">
               <div>Subject</div>
               <div>Score</div>
               <div>%</div>
               <div>Date</div>
               <div></div>
             </div>
-            <div className="max-h-[200px] overflow-y-auto">
+            <div className="max-h-[200px] overflow-y-auto rounded-b-xl">
               {scores.map((score) => (
                 <ScoreRow
                   key={score.id}
@@ -333,7 +340,6 @@ function ScoreRow({
   score: any;
   onDelete: (id: string) => void;
 }) {
-  const [showMenu, setShowMenu] = useState(false);
   const pct = Math.round((score.score / score.maxScore) * 100);
 
   const getPctColor = () => {
@@ -359,33 +365,33 @@ function ScoreRow({
       <div className="text-xs text-zinc-500">
         {format(new Date(score.examDate), "MMM d, yy")}
       </div>
-      <div className="relative">
-        <button
-          onClick={() => setShowMenu(!showMenu)}
-          className="p-1 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded transition-colors"
-        >
-          <DotsThreeIcon className="size-4" weight="bold" />
-        </button>
-        {showMenu && (
-          <>
-            <div
-              className="fixed inset-0 z-10"
-              onClick={() => setShowMenu(false)}
-            />
-            <div className="absolute right-0 top-full mt-1 z-20 bg-white rounded-lg shadow-lg border border-zinc-200 py-1 min-w-[100px]">
-              <button
-                onClick={() => {
-                  onDelete(score.id);
-                  setShowMenu(false);
-                }}
-                className="w-full px-3 py-1.5 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+      <div className="relative flex justify-end">
+        <DropdownRoot modal={false}>
+          <DropdownTrigger asChild>
+            <button
+              type="button"
+              className="p-1 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded transition-colors"
+            >
+              <DotsThreeIcon className="size-4" weight="bold" />
+            </button>
+          </DropdownTrigger>
+          <DropdownPortal>
+            <DropdownContent
+              align="end"
+              sideOffset={4}
+              collisionPadding={12}
+              className="min-w-[120px] p-0"
+            >
+              <DropdownItem
+                className="text-red-600 hover:bg-red-50 focus:bg-red-50"
+                onSelect={() => onDelete(score.id)}
               >
                 <TrashIcon className="size-4" />
                 Delete
-              </button>
-            </div>
-          </>
-        )}
+              </DropdownItem>
+            </DropdownContent>
+          </DropdownPortal>
+        </DropdownRoot>
       </div>
     </div>
   );

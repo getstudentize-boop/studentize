@@ -17,7 +17,7 @@ export const DropdownContent = forwardRef<
       sideOffset={5}
       {...props}
       className={cn(
-        "min-w-[220px] rounded-lg bg-white p-[5px] overflow-hidden shadow-xs border border-bzinc w-full will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade",
+        "z-[200] min-w-[220px] rounded-lg bg-white p-[5px] overflow-hidden shadow-xs border border-bzinc will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade",
         props.className
       )}
     />
