@@ -38,7 +38,7 @@ function App() {
 
   return (
     <div className="flex h-screen flex-1 bg-white">
-      <div className="flex-1 flex flex-col justify-center items-center px-12 relative">
+      <div className="flex flex-col justify-center items-center px-12 relative">
         <img src="/logo.png" alt="Studentize Logo" className="w-16 mb-2" />
         <div className=" mt-4 font-semibold text-zinc-900 mb-1">
           All-in-One Admissions Solution
