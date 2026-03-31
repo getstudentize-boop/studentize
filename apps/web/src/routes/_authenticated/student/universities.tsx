@@ -46,7 +46,7 @@ function UniversitiesLayout() {
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
               )}
             </Link>
-            <Link
+            {/* <Link
               to="/student/universities/shortlist"
               className={cn(
                 "px-4 py-3 font-medium text-sm transition-colors relative",
@@ -59,7 +59,7 @@ function UniversitiesLayout() {
               {isShortlist && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
               )}
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>

@@ -151,7 +151,7 @@ function RouteComponent() {
           <SessionsSection />
 
           {/* Scores Section */}
-          <ScoresSection />
+          {/* <ScoresSection /> */}
 
           {/* Upgrade Modal */}
           <UpgradeModal
