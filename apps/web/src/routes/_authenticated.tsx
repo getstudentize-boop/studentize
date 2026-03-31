@@ -16,6 +16,14 @@ export const useAuthUser = () => {
     }),
   );
 
+  // prefetch the essays and universities
+  useQuery(orpc.essay.list.queryOptions({ input: {} }));
+  useQuery(orpc.essay.list.queryOptions({ input: { region: "US" } }));
+  useQuery(orpc.essay.list.queryOptions({ input: { region: "UK" } }));
+  useQuery(orpc.essay.list.queryOptions({ input: { region: "Other" } }));
+  useQuery(orpc.college.searchUS.queryOptions({ input: {} }));
+  useQuery(orpc.college.searchUK.queryOptions({ input: {} }));
+
   return { user: userQuery.data!, isPending: userQuery.isPending };
 };
 
