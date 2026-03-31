@@ -1,0 +1,1 @@
+ALTER TABLE "uk_colleges_rows" ADD COLUMN "enriched_at" timestamp;

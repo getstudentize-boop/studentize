@@ -372,6 +372,13 @@
       "when": 1774988819754,
       "tag": "0052_flowery_rocket_raccoon",
       "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "7",
+      "when": 1774997231887,
+      "tag": "0053_moaning_speed_demon",
+      "breakpoints": true
     }
   ]
 }

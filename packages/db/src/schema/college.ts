@@ -149,6 +149,7 @@ export const ukCollege = pgTable(
     website: text("website"),
     studentLifeInfo: text("student_life_info"),
     populationOfCity: text("Population_of_City"),
+    enrichedAt: timestamp("enriched_at"),
   },
   (table) => ({
     nameIdx: index("uk_college_name_idx").on(table.universityName),

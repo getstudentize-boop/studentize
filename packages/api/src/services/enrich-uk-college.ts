@@ -113,10 +113,17 @@ function getMissingFields(college: UKCollege): EnrichableField[] {
 }
 
 export async function enrichUKCollege(college: UKCollege): Promise<UKCollege> {
+  // If we've already attempted enrichment, return as-is
+  if (college.enrichedAt) {
+    return college;
+  }
+
   const missingFields = getMissingFields(college);
 
   if (missingFields.length === 0) {
-    return college;
+    // No missing fields, mark as enriched and return
+    const updated = await updateUKCollege(college.id, { enrichedAt: new Date() });
+    return updated ?? college;
   }
 
   console.log(
@@ -185,10 +192,12 @@ Search the web for this university's official information, then respond with ONL
     }
   }
 
-  if (Object.keys(updates).length === 0) {
-    return college;
-  }
+  // Always mark as enriched, even if no data was found
+  const updatesWithTimestamp = {
+    ...updates,
+    enrichedAt: new Date(),
+  };
 
-  const updated = await updateUKCollege(college.id, updates);
+  const updated = await updateUKCollege(college.id, updatesWithTimestamp);
   return updated ?? college;
 }
