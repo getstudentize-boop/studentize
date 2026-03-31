@@ -85,7 +85,7 @@ function App() {
       <div className="flex-1 p-6 flex bg-zinc-50">
         <div className="w-full h-full flex items-center justify-center border overflow-hidden border-zinc-200 rounded-xl bg-gradient-to-b from-zinc-50 to-white relative shadow-sm">
           <video
-            src="/vid.mp4"
+            src="https://res.cloudinary.com/khaya-zulu/video/upload/v1774995762/vid_zd0obo.mp4"
             autoPlay
             loop
             muted
