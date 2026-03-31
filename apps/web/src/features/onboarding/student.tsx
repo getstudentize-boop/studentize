@@ -41,6 +41,7 @@ export const StudentOnboarding = () => {
       areasOfInterest: [] as string[],
       supportAreas: [] as string[],
       referralSource: "",
+      agreedToTerms: false,
     },
     validators: {
       onChange: z.object({
@@ -53,6 +54,7 @@ export const StudentOnboarding = () => {
         areasOfInterest: z.array(z.string()).optional(),
         supportAreas: z.array(z.string()).optional(),
         referralSource: z.string().optional(),
+        agreedToTerms: z.boolean().optional(),
       }),
     },
     onSubmit: async (vals) => {
@@ -150,14 +152,20 @@ export const StudentOnboarding = () => {
               <ArrowLeftIcon size={18} />
               Back
             </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              isLoading={completeOnboardingMutation.isPending}
-            >
-              {currentStep === TOTAL_STEPS ? "Complete" : "Next"}
-              {currentStep !== TOTAL_STEPS && <ArrowRightIcon size={18} />}
-            </Button>
+            <form.Subscribe
+              selector={(state) => state.values.agreedToTerms}
+              children={(agreedToTerms) => (
+                <Button
+                  type="submit"
+                  variant="primary"
+                  isLoading={completeOnboardingMutation.isPending}
+                  disabled={currentStep === TOTAL_STEPS && !agreedToTerms}
+                >
+                  {currentStep === TOTAL_STEPS ? "Complete" : "Next"}
+                  {currentStep !== TOTAL_STEPS && <ArrowRightIcon size={18} />}
+                </Button>
+              )}
+            />
           </div>
         </form>
       </div>
