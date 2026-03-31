@@ -13,6 +13,7 @@ import { EssayEditor } from "@/components/essay-editor";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useDebounceCallback } from "usehooks-ts";
 import { countWordsInTiptap, extractTextFromTiptap } from "@/utils/essay";
+import { useAuthUser } from "@/routes/_authenticated";
 
 export const Route = createFileRoute("/_authenticated/essays/$essayId")({
   component: EssayEditorPage,
@@ -22,6 +23,8 @@ function EssayEditorPage() {
   const { essayId } = Route.useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  const { user } = useAuthUser();
 
   const essayQuery = useQuery(
     orpc.essay.get.queryOptions({ input: { essayId } }),
@@ -37,7 +40,11 @@ function EssayEditorPage() {
   const [aiCheckResult, setAiCheckResult] = useState<{
     score: number;
     summary: string;
-    indicators: { label: string; detail: string; signal: "human" | "ai" | "neutral" }[];
+    indicators: {
+      label: string;
+      detail: string;
+      signal: "human" | "ai" | "neutral";
+    }[];
   } | null>(null);
 
   const updateEssayMutation = useMutation(
@@ -167,18 +174,22 @@ function EssayEditorPage() {
             <div className="w-px h-3 bg-zinc-300" />
             <div className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
           </div>
-          <button
-            onClick={handleAiCheck}
-            disabled={aiCheckMutation.isPending || !content || wordCount === 0}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors bg-zinc-100 text-zinc-600 hover:bg-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {aiCheckMutation.isPending ? (
-              <CircleNotchIcon className="size-4 animate-spin" />
-            ) : (
-              <ShieldCheckIcon className="size-4" weight="fill" />
-            )}
-            AI Check
-          </button>
+          {user.email === "getstudentize@gmail.com" ? (
+            <button
+              onClick={handleAiCheck}
+              disabled={
+                aiCheckMutation.isPending || !content || wordCount === 0
+              }
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors bg-zinc-100 text-zinc-600 hover:bg-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {aiCheckMutation.isPending ? (
+                <CircleNotchIcon className="size-4 animate-spin" />
+              ) : (
+                <ShieldCheckIcon className="size-4" weight="fill" />
+              )}
+              AI Check
+            </button>
+          ) : null}
           <button
             onClick={() => setShowGuru(!showGuru)}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
@@ -227,7 +238,10 @@ function EssayEditorPage() {
             )}
 
             {aiCheckResult && (
-              <div ref={aiCheckRef} className="mt-6 border border-zinc-200 rounded-lg bg-white overflow-hidden">
+              <div
+                ref={aiCheckRef}
+                className="mt-6 border border-zinc-200 rounded-lg bg-white overflow-hidden"
+              >
                 <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 bg-zinc-50">
                   <div className="flex items-center gap-2">
                     <ShieldCheckIcon className="size-5" weight="fill" />
