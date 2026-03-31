@@ -166,10 +166,7 @@ function EssaysPage() {
   });
 
   const essays = essaysQuery.data || [];
-
-  if (essaysQuery.isLoading) {
-    return <PageLoader message="Loading essays..." />;
-  }
+  const isLoading = essaysQuery.isLoading;
 
   // Categorize essays by region field
   const usEssays = essays.filter((e: any) => e.region === "US");
@@ -298,6 +295,9 @@ function EssaysPage() {
           </div>
         </div>
         <div className="max-w-5xl mx-auto w-full p-6">
+          {isLoading ? (
+            <PageLoader message="Loading essays..." className="h-80 bg-transparent" />
+          ) : null}
           {showNewEssayDialog && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
               <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
@@ -443,7 +443,7 @@ function EssaysPage() {
             </div>
           )}
 
-          <div className="space-y-6">
+          {!isLoading && <div className="space-y-6">
             {(region === "All" || region === "US") && (
               <>
                 {/* Common App Section */}
@@ -722,7 +722,7 @@ function EssaysPage() {
                 )}
               </div>
             )}
-          </div>
+          </div>}
         </div>
       </div>
     </div>

@@ -15,7 +15,9 @@ export const Route = createFileRoute("/")({
     if (user) {
       // Fetch full user data to check their role
       const fullUser = await context.queryClient.ensureQueryData(
-        orpc.user.current.queryOptions(),
+        orpc.user.current.queryOptions({
+          staleTime: Infinity,
+        }),
       );
 
       // Redirect students to their dashboard, others to /home

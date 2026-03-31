@@ -109,6 +109,8 @@ export const usCollege = pgTable(
     nameIdx: index("us_college_name_idx").on(table.schoolName),
     stateIdx: index("us_college_state_idx").on(table.schoolState),
     cityIdx: index("us_college_city_idx").on(table.schoolCity),
+    satIdx: index("us_college_sat_idx").on(table.satScoreAverage),
+    campusSettingIdx: index("us_college_campus_setting_idx").on(table.campusSetting),
   })
 );
 
@@ -151,6 +153,7 @@ export const ukCollege = pgTable(
   (table) => ({
     nameIdx: index("uk_college_name_idx").on(table.universityName),
     locationIdx: index("uk_college_location_idx").on(table.location),
+    sizeOfCityIdx: index("uk_college_size_of_city_idx").on(table.sizeOfCity),
   })
 );
 
