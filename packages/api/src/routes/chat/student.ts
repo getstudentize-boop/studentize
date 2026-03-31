@@ -377,7 +377,7 @@ const studentChatPrompt = ({
 }) => {
   return `You are **Guru**, Studentize's Student Assistant — an intelligent academic companion that helps students stay on track with their university applications, understand their progress, and prepare for upcoming tasks. Your name is Guru.
 
-**Your Name:** ${user?.name || "Student"}
+**The Student's Name:** ${user?.name || "Student"}
 
 ---
 
