@@ -26,6 +26,11 @@ export const Route = createFileRoute("/_authenticated/essays/")({
   validateSearch: z.object({
     region: z.enum(essayRegions).catch("All").default("All"),
   }),
+  beforeLoad: async ({ context }) => {
+    context.queryClient.ensureQueryData(
+      orpc.essay.list.queryOptions({ input: {} }),
+    );
+  },
 });
 
 const ESSAY_TYPES = {
@@ -63,11 +68,28 @@ function EssaysPage() {
     navigate({ to: "/essays", search: { region: r } });
   };
 
-  const essaysQuery = useQuery(
-    orpc.essay.list.queryOptions({
-      input: region === "All" ? {} : { region },
-    }),
+  // Fetch all regions (active tab + prefetch others for instant switching)
+  const essaysAllQuery = useQuery(
+    orpc.essay.list.queryOptions({ input: {} }),
   );
+  const essaysUSQuery = useQuery(
+    orpc.essay.list.queryOptions({ input: { region: "US" } }),
+  );
+  const essaysUKQuery = useQuery(
+    orpc.essay.list.queryOptions({ input: { region: "UK" } }),
+  );
+  const essaysOtherQuery = useQuery(
+    orpc.essay.list.queryOptions({ input: { region: "Other" } }),
+  );
+
+  const essaysQuery =
+    region === "All"
+      ? essaysAllQuery
+      : region === "US"
+        ? essaysUSQuery
+        : region === "UK"
+          ? essaysUKQuery
+          : essaysOtherQuery;
 
   const createEssayMutation = useMutation(
     orpc.essay.create.mutationOptions({

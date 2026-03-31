@@ -4,7 +4,6 @@ import { UpgradeModal } from "@/components/upgrade-modal";
 import { TasksSection } from "@/features/dashboard/tasks-section";
 import { AdvisorCard } from "@/features/dashboard/advisor-card";
 import { SessionsSection } from "@/features/dashboard/sessions-section";
-import { ScoresSection } from "@/features/dashboard/scores-section";
 import { orpc } from "orpc/client";
 import {
   BrainIcon,

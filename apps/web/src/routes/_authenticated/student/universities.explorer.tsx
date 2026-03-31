@@ -86,7 +86,7 @@ function CollegesPage() {
     country,
   ]);
 
-  // Fetch US colleges
+  // Fetch both US and UK colleges (prefetch inactive tab in background)
   const usCollegesQuery = useQuery(
     orpc.college.searchUS.queryOptions({
       input: {
@@ -105,11 +105,9 @@ function CollegesPage() {
         limit: 50,
         offset: offset,
       },
-      enabled: country === "us",
     }),
   );
 
-  // Fetch UK colleges
   const ukCollegesQuery = useQuery(
     orpc.college.searchUK.queryOptions({
       input: {
@@ -120,7 +118,6 @@ function CollegesPage() {
         limit: 50,
         offset: offset,
       },
-      enabled: country === "uk",
     }),
   );
 
