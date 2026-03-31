@@ -16,7 +16,7 @@ import {
 } from "@phosphor-icons/react";
 
 import { orpc } from "orpc/client";
-import type { College, UKCollegeData } from "@/features/college/types";
+import type { College, UKCollegeDetail } from "@/features/college/types";
 
 export const Route = createFileRoute(
   "/_authenticated/student/universities/$country/$id"
@@ -70,7 +70,7 @@ function CollegeDetailPage() {
 
   const collegeName = isUS
     ? (college as College).schoolName
-    : (college as UKCollegeData).universityName;
+    : (college as UKCollegeDetail).universityName;
   const placeholderImage = `https://ui-avatars.com/api/?name=${encodeURIComponent(collegeName)}&size=800&background=3b82f6&color=fff&bold=true&format=svg`;
 
   return (
@@ -177,13 +177,13 @@ function CollegeDetailPage() {
           </div>
 
           {/* About Section */}
-          {(isUS ? (college as College).aboutSection : (college as UKCollegeData).about) && (
+          {(isUS ? (college as College).aboutSection : (college as UKCollegeDetail).about) && (
             <div className="pt-6 border-t border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900 mb-3">
                 About
               </h2>
               <p className="text-gray-700 leading-relaxed">
-                {isUS ? (college as College).aboutSection : (college as UKCollegeData).about}
+                {isUS ? (college as College).aboutSection : (college as UKCollegeDetail).about}
               </p>
             </div>
           )}
@@ -224,34 +224,34 @@ function CollegeDetailPage() {
             </>
           ) : college ? (
             <>
-              {(college as UKCollegeData).tuitionFees && (
+              {(college as UKCollegeDetail).tuitionFees && (
                 <StatCard
                   icon={<CurrencyDollar size={24} />}
                   label="Tuition Fees"
-                  value={`£${Number((college as UKCollegeData).tuitionFees).toLocaleString()}`}
+                  value={`£${Number((college as UKCollegeDetail).tuitionFees).toLocaleString()}`}
                 />
               )}
-              {(college as UKCollegeData).totalForeignStudents && (
+              {(college as UKCollegeDetail).totalForeignStudents && (
                 <StatCard
                   icon={<Users size={24} />}
                   label="International Students"
                   value={Number(
-                    (college as UKCollegeData).totalForeignStudents
+                    (college as UKCollegeDetail).totalForeignStudents
                   ).toLocaleString()}
                 />
               )}
-              {(college as UKCollegeData).numberOfCampuses && (
+              {(college as UKCollegeDetail).numberOfCampuses && (
                 <StatCard
                   icon={<Buildings size={24} />}
                   label="Number of Campuses"
-                  value={(college as UKCollegeData).numberOfCampuses!}
+                  value={(college as UKCollegeDetail).numberOfCampuses!}
                 />
               )}
-              {(college as UKCollegeData).examsAccepted && (
+              {(college as UKCollegeDetail).examsAccepted && (
                 <StatCard
                   icon={<GraduationCap size={24} />}
                   label="Exams Accepted"
-                  value={(college as UKCollegeData).examsAccepted!}
+                  value={(college as UKCollegeDetail).examsAccepted!}
                 />
               )}
             </>
@@ -263,7 +263,7 @@ function CollegeDetailPage() {
           {isUS && college ? (
             <USCollegeDetails college={college as College} />
           ) : college ? (
-            <UKCollegeDetails college={college as UKCollegeData} />
+            <UKCollegeDetails college={college as UKCollegeDetail} />
           ) : null}
         </div>
       </div>
@@ -377,7 +377,7 @@ function USCollegeDetails({ college }: { college: College }) {
   );
 }
 
-function UKCollegeDetails({ college }: { college: UKCollegeData }) {
+function UKCollegeDetails({ college }: { college: UKCollegeDetail }) {
   return (
     <>
       {/* Accommodation */}

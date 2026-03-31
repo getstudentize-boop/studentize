@@ -63,7 +63,11 @@ function EssaysPage() {
     navigate({ to: "/essays", search: { region: r } });
   };
 
-  const essaysQuery = useQuery(orpc.essay.list.queryOptions({ input: {} }));
+  const essaysQuery = useQuery(
+    orpc.essay.list.queryOptions({
+      input: region === "All" ? {} : { region },
+    }),
+  );
 
   const createEssayMutation = useMutation(
     orpc.essay.create.mutationOptions({

@@ -18,7 +18,7 @@ import {
 } from "@phosphor-icons/react";
 import { orpc } from "orpc/client";
 import { Markdown } from "@/components/markdown";
-import type { UKCollegeData } from "./types";
+import type { UKCollegeDetail } from "./types";
 
 const UK_MODAL_TABS = [
   { id: "overview", label: "Overview", icon: House },
@@ -227,7 +227,7 @@ function StudentLifeDisplay({ data }: { data: Record<string, unknown> }) {
   );
 }
 
-function OverviewTab({ college }: { college: UKCollegeData }) {
+function OverviewTab({ college }: { college: UKCollegeDetail }) {
   const studentLifeData = tryParseJson(college.studentLifeInfo);
   const compositionData = tryParseJson(college.studentComposition);
   const bySubject =
@@ -288,7 +288,7 @@ function OverviewTab({ college }: { college: UKCollegeData }) {
   );
 }
 
-function AdmissionsTab({ college }: { college: UKCollegeData }) {
+function AdmissionsTab({ college }: { college: UKCollegeDetail }) {
   return (
     <div className="space-y-6">
       <Section title="Requirements">
@@ -305,7 +305,7 @@ function AdmissionsTab({ college }: { college: UKCollegeData }) {
   );
 }
 
-function FinancesTab({ college }: { college: UKCollegeData }) {
+function FinancesTab({ college }: { college: UKCollegeDetail }) {
   return (
     <div className="space-y-6">
       <Section title="Costs">
@@ -329,7 +329,7 @@ function FinancesTab({ college }: { college: UKCollegeData }) {
   );
 }
 
-function CampusLifeTab({ college }: { college: UKCollegeData }) {
+function CampusLifeTab({ college }: { college: UKCollegeDetail }) {
   return (
     <div className="space-y-6">
       {college.onCampusAccommodation && (
@@ -346,7 +346,7 @@ function CampusLifeTab({ college }: { college: UKCollegeData }) {
   );
 }
 
-function ContactTab({ college }: { college: UKCollegeData }) {
+function ContactTab({ college }: { college: UKCollegeDetail }) {
   return (
     <div className="space-y-6">
       <Section title="Contact Information">
@@ -468,19 +468,19 @@ export function UKCollegeModal({
             ) : college ? (
               <>
                 {activeTab === "overview" && (
-                  <OverviewTab college={college as UKCollegeData} />
+                  <OverviewTab college={college as UKCollegeDetail} />
                 )}
                 {activeTab === "admissions" && (
-                  <AdmissionsTab college={college as UKCollegeData} />
+                  <AdmissionsTab college={college as UKCollegeDetail} />
                 )}
                 {activeTab === "finances" && (
-                  <FinancesTab college={college as UKCollegeData} />
+                  <FinancesTab college={college as UKCollegeDetail} />
                 )}
                 {activeTab === "campus-life" && (
-                  <CampusLifeTab college={college as UKCollegeData} />
+                  <CampusLifeTab college={college as UKCollegeDetail} />
                 )}
                 {activeTab === "contact" && (
-                  <ContactTab college={college as UKCollegeData} />
+                  <ContactTab college={college as UKCollegeDetail} />
                 )}
               </>
             ) : (

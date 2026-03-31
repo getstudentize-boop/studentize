@@ -1,4 +1,4 @@
-import { db, eq, and, InferInsertModel, InferSelectModel } from "..";
+import { db, eq, and, inArray, InferInsertModel, InferSelectModel } from "..";
 import * as schema from "../schema";
 
 type ShortlistInsert = InferInsertModel<typeof schema.universityShortlist>;
@@ -75,21 +75,40 @@ export const getStudentShortlistWithDetails = async (studentUserId: string) => {
     .filter((item) => item.country === "uk")
     .map((item) => item.collegeId);
 
-  // Fetch US colleges
-  const usColleges =
+  // Fetch US and UK colleges in parallel (only columns needed for cards)
+  const [usColleges, ukColleges] = await Promise.all([
     usCollegeIds.length > 0
-      ? await db.query.usCollege.findMany({
-          where: (usCollege, { inArray }) => inArray(usCollege.id, usCollegeIds),
-        })
-      : [];
-
-  // Fetch UK colleges
-  const ukColleges =
+      ? db
+          .select({
+            id: schema.usCollege.id,
+            schoolName: schema.usCollege.schoolName,
+            schoolCity: schema.usCollege.schoolCity,
+            schoolState: schema.usCollege.schoolState,
+            imageUrl: schema.usCollege.imageUrl,
+            admissionRate: schema.usCollege.admissionRate,
+            tuitionOutOfState: schema.usCollege.tuitionOutOfState,
+            satScoreAverage: schema.usCollege.satScoreAverage,
+            usNewsNationalRanking: schema.usCollege.usNewsNationalRanking,
+            campusSetting: schema.usCollege.campusSetting,
+          })
+          .from(schema.usCollege)
+          .where(inArray(schema.usCollege.id, usCollegeIds))
+      : [],
     ukCollegeIds.length > 0
-      ? await db.query.ukCollege.findMany({
-          where: (ukCollege, { inArray }) => inArray(ukCollege.id, ukCollegeIds),
-        })
-      : [];
+      ? db
+          .select({
+            id: schema.ukCollege.id,
+            universityName: schema.ukCollege.universityName,
+            location: schema.ukCollege.location,
+            tuitionFees: schema.ukCollege.tuitionFees,
+            imageUrl: schema.ukCollege.imageUrl,
+            totalForeignStudents: schema.ukCollege.totalForeignStudents,
+            sizeOfCity: schema.ukCollege.sizeOfCity,
+          })
+          .from(schema.ukCollege)
+          .where(inArray(schema.ukCollege.id, ukCollegeIds))
+      : [],
+  ]);
 
   // Combine shortlist data with college details
   const shortlistWithDetails = shortlist.map((item) => {

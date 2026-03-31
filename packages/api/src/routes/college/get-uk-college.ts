@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { getUKCollegeById } from "@student/db";
-import { transformUKCollege } from "./transform";
+import { transformUKCollegeDetail } from "./transform";
 import { enrichUKCollege } from "../../services/enrich-uk-college";
 
 export const GetUKCollegeInputSchema = z.object({
@@ -18,5 +18,5 @@ export const getUKCollegeHandler = async (input: GetUKCollegeInput) => {
 
   const enriched = await enrichUKCollege(college);
 
-  return transformUKCollege(enriched);
+  return transformUKCollegeDetail(enriched);
 };

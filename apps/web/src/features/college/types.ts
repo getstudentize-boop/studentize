@@ -75,24 +75,28 @@ export type College = {
   gymAndHealth: string | null;
 };
 
-// UK College type matching the transformed API response
+// UK College card type - lightweight for list views
 export type UKCollegeData = {
   id: string;
   universityName: string;
   location: string | null;
   tuitionFees: number | null;
+  imageUrl: string | null;
+  totalForeignStudents: number | null;
+  sizeOfCity: string | null;
+};
+
+// Full UK College type for detail views
+export type UKCollegeDetail = UKCollegeData & {
   examsAccepted: string | null;
   scholarships: string | null;
-  imageUrl: string | null;
   address: string | null;
   phone: string | null;
   internationalEmail: string | null;
   yearOfEstablishment: string | null;
-  totalForeignStudents: number | null;
   numberOfCampuses: string | null;
   onCampusAccommodation: string | null;
   offCampusAccommodation: string | null;
-  sizeOfCity: string | null;
   academicRequirements: string | null;
   studentComposition: string | null;
   historicRanking: Record<string, Array<{ rank: number; year: number }>> | null;

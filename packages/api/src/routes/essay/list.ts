@@ -3,13 +3,15 @@ import { listEssaysByStudent } from "@student/db";
 import type { AuthContext } from "../../utils/middleware";
 import { ORPCError } from "@orpc/server";
 
-export const ListEssaysInputSchema = z.object({});
+export const ListEssaysInputSchema = z.object({
+  region: z.enum(["US", "UK", "Other"]).optional(),
+});
 
 export type ListEssaysInput = z.infer<typeof ListEssaysInputSchema>;
 
 export const listEssaysHandler = async (
   ctx: AuthContext,
-  _input: ListEssaysInput
+  input: ListEssaysInput
 ) => {
   if (!ctx.user) {
     throw new ORPCError("UNAUTHORIZED", { message: "User not authenticated" });
@@ -21,7 +23,7 @@ export const listEssaysHandler = async (
     });
   }
 
-  const essays = await listEssaysByStudent(ctx.user.id);
+  const essays = await listEssaysByStudent(ctx.user.id, input.region);
 
   return essays;
 };

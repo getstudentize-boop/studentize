@@ -23,11 +23,29 @@ export const getEssayById = async (input: { essayId: string; studentUserId: stri
   return essay;
 };
 
-export const listEssaysByStudent = async (studentUserId: string) => {
+export const listEssaysByStudent = async (
+  studentUserId: string,
+  region?: "US" | "UK" | "Other",
+) => {
+  const conditions = [eq(schema.essay.studentUserId, studentUserId)];
+
+  if (region) {
+    conditions.push(eq(schema.essay.region, region));
+  }
+
   const essays = await db
-    .select()
+    .select({
+      id: schema.essay.id,
+      createdAt: schema.essay.createdAt,
+      updatedAt: schema.essay.updatedAt,
+      studentUserId: schema.essay.studentUserId,
+      title: schema.essay.title,
+      prompt: schema.essay.prompt,
+      region: schema.essay.region,
+      content: schema.essay.content,
+    })
     .from(schema.essay)
-    .where(eq(schema.essay.studentUserId, studentUserId))
+    .where(and(...conditions))
     .orderBy(desc(schema.essay.updatedAt));
 
   return essays;

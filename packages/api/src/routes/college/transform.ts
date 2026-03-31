@@ -34,7 +34,15 @@ export function transformUSCollege(c: USCollegeRow) {
   };
 }
 
-export function transformUKCollege(c: UKCollegeRow) {
+export function transformUKCollege(c: Pick<UKCollegeRow, 'id' | 'universityName' | 'location' | 'tuitionFees' | 'imageUrl' | 'totalForeignStudents' | 'sizeOfCity'>) {
+  return {
+    ...c,
+    tuitionFees: toNumber(c.tuitionFees),
+    totalForeignStudents: toNumber(c.totalForeignStudents),
+  };
+}
+
+export function transformUKCollegeDetail(c: UKCollegeRow) {
   return {
     ...c,
     tuitionFees: toNumber(c.tuitionFees),

@@ -144,23 +144,21 @@ export const searchUSColleges = async (filters: USCollegeFilters = {}) => {
       break;
   }
 
-  const query = db
-    .select()
-    .from(schema.usCollege)
-    .where(conditions.length > 0 ? and(...conditions) : undefined)
-    .orderBy(...orderByClauses)
-    .limit(limit)
-    .offset(offset);
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-  const colleges = await query;
-
-  // Get total count for pagination
-  const countQuery = db
-    .select({ count: sql<number>`count(*)` })
-    .from(schema.usCollege)
-    .where(conditions.length > 0 ? and(...conditions) : undefined);
-
-  const [{ count }] = await countQuery;
+  const [colleges, [{ count }]] = await Promise.all([
+    db
+      .select()
+      .from(schema.usCollege)
+      .where(whereClause)
+      .orderBy(...orderByClauses)
+      .limit(limit)
+      .offset(offset),
+    db
+      .select({ count: sql<number>`count(*)` })
+      .from(schema.usCollege)
+      .where(whereClause),
+  ]);
 
   return {
     colleges,
@@ -250,23 +248,29 @@ export const searchUKColleges = async (filters: UKCollegeFilters = {}) => {
       break;
   }
 
-  const query = db
-    .select()
-    .from(schema.ukCollege)
-    .where(conditions.length > 0 ? and(...conditions) : undefined)
-    .orderBy(...orderByClauses)
-    .limit(limit)
-    .offset(offset);
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-  const colleges = await query;
-
-  // Get total count for pagination
-  const countQuery = db
-    .select({ count: sql<number>`count(*)` })
-    .from(schema.ukCollege)
-    .where(conditions.length > 0 ? and(...conditions) : undefined);
-
-  const [{ count }] = await countQuery;
+  const [colleges, [{ count }]] = await Promise.all([
+    db
+      .select({
+        id: schema.ukCollege.id,
+        universityName: schema.ukCollege.universityName,
+        location: schema.ukCollege.location,
+        tuitionFees: schema.ukCollege.tuitionFees,
+        imageUrl: schema.ukCollege.imageUrl,
+        totalForeignStudents: schema.ukCollege.totalForeignStudents,
+        sizeOfCity: schema.ukCollege.sizeOfCity,
+      })
+      .from(schema.ukCollege)
+      .where(whereClause)
+      .orderBy(...orderByClauses)
+      .limit(limit)
+      .offset(offset),
+    db
+      .select({ count: sql<number>`count(*)` })
+      .from(schema.ukCollege)
+      .where(whereClause),
+  ]);
 
   return {
     colleges,
