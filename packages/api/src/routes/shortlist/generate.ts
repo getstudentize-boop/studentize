@@ -1,4 +1,4 @@
-import { openai } from "@ai-sdk/openai";
+import { openai, OpenAIResponsesProviderOptions } from "@ai-sdk/openai";
 import {
   getStudentByUserId,
   getStudentScores,
@@ -76,15 +76,12 @@ const createSearchUSCollegesTool = () => {
         .number()
         .optional()
         .describe("Maximum admission rate (0-1, e.g., 0.5 for 50%)"),
-      minSATScore: z
+      minSATScore: z.number().optional().describe("Minimum average SAT score"),
+      maxSATScore: z.number().optional().describe("Maximum average SAT score"),
+      maxTuition: z
         .number()
         .optional()
-        .describe("Minimum average SAT score"),
-      maxSATScore: z
-        .number()
-        .optional()
-        .describe("Maximum average SAT score"),
-      maxTuition: z.number().optional().describe("Maximum out-of-state tuition"),
+        .describe("Maximum out-of-state tuition"),
       sortBy: z
         .enum(["name", "admission_rate", "sat_score", "tuition", "ranking"])
         .optional()
@@ -123,10 +120,7 @@ const createSearchUKCollegesTool = () => {
         .string()
         .optional()
         .describe("Search by university name or location"),
-      locations: z
-        .array(z.string())
-        .optional()
-        .describe("Filter by locations"),
+      locations: z.array(z.string()).optional().describe("Filter by locations"),
       maxTuition: z.number().optional().describe("Maximum tuition fees"),
       sortBy: z.enum(["name", "tuition", "ranking"]).optional(),
       sortOrder: z.enum(["asc", "desc"]).optional(),
@@ -202,7 +196,7 @@ export const generateShortlist = async (
   const studentUserId = ctx.user.id;
 
   const result = await generateText({
-    model: openai("gpt-4.1"),
+    model: openai("gpt-5.4-mini"),
     tools: {
       studentProfile: createStudentProfileTool({ studentUserId }),
       studentScores: createStudentScoresTool({ studentUserId }),
