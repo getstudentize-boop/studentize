@@ -33,7 +33,7 @@ function EssayEditorPage() {
   const [content, setContent] = useState<any>(null);
   const [title, setTitle] = useState("");
   const [prompt, setPrompt] = useState("");
-  const [showGuru, setShowGuru] = useState(false);
+  const [showGuru, setShowGuru] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const aiCheckRef = useRef<HTMLDivElement>(null);

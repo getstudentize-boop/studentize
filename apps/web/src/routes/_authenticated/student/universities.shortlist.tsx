@@ -6,19 +6,21 @@ import {
   GraduationCapIcon,
   SparkleIcon,
   PlusIcon,
-  MapPinIcon,
-  StarIcon,
   TrashIcon,
   BookmarkSimpleIcon,
   ListChecksIcon,
   ChatCircleIcon,
+  ClockIcon,
 } from "@phosphor-icons/react";
 import { cn } from "@/utils/cn";
 import { CollegeCard } from "@/features/college/college-card";
 import { CollegeModal } from "@/features/college/college-modal";
 import { UKCollegeModal } from "@/features/college/uk-college-modal";
 import type { College, UKCollegeData } from "@/features/college/types";
-import { ShortlistGeneratorModal } from "@/features/shortlist-generator-modal";
+import { ShortlistWizardModal } from "@/features/shortlist-wizard";
+import { useAuthUser } from "@/routes/_authenticated";
+
+const ALLOWED_EMAILS = ["getstudentize@gmail.com"];
 
 export const Route = createFileRoute(
   "/_authenticated/student/universities/shortlist",
@@ -45,6 +47,9 @@ interface ShortlistedUniversity {
 }
 
 function ShortlistPage() {
+  const { user } = useAuthUser();
+  const isAllowed = ALLOWED_EMAILS.includes(user.email);
+
   const [activeTab, setActiveTab] = useState<"all" | "ai" | "manual">("all");
   const [selectedCollege, setSelectedCollege] = useState<{
     college: College | UKCollegeData;
@@ -56,6 +61,11 @@ function ShortlistPage() {
   const { data: rawShortlist, isLoading } = useQuery(
     orpc.shortlist.getMyShortlist.queryOptions({ input: {} }),
   );
+
+  // Show coming soon for non-allowed users
+  if (!isAllowed) {
+    return <ComingSoonState />;
+  }
 
   const removeMutation = useMutation(
     orpc.shortlist.remove.mutationOptions({
@@ -115,7 +125,7 @@ function ShortlistPage() {
       <>
         <EmptyState onGenerate={() => setShowGenerator(true)} />
         {showGenerator && (
-          <ShortlistGeneratorModal
+          <ShortlistWizardModal
             onClose={() => {
               setShowGenerator(false);
               queryClient.invalidateQueries({
@@ -240,7 +250,7 @@ function ShortlistPage() {
             <CategorySection
               title="Uncategorized"
               description="Universities not yet assigned a category"
-              color="blue"
+              color="zinc"
               universities={uncategorized}
               onRemove={(id) => removeMutation.mutate({ id })}
               onCollegeClick={setSelectedCollege}
@@ -266,7 +276,7 @@ function ShortlistPage() {
       )}
 
       {showGenerator && (
-        <ShortlistGeneratorModal
+        <ShortlistWizardModal
           onClose={() => {
             setShowGenerator(false);
             queryClient.invalidateQueries({
@@ -276,6 +286,108 @@ function ShortlistPage() {
           }}
         />
       )}
+    </div>
+  );
+}
+
+function ComingSoonState() {
+  return (
+    <div className="flex-1 px-6 py-8 bg-zinc-50">
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white rounded-2xl border border-zinc-200 p-12 text-center">
+          <div className="max-w-md mx-auto">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-50 rounded-full mb-4">
+              <ClockIcon
+                size={32}
+                className="text-purple-600"
+                weight="duotone"
+              />
+            </div>
+            <h3 className="text-xl font-semibold text-zinc-900 mb-2">
+              Coming Soon
+            </h3>
+            <p className="text-zinc-600 mb-6">
+              We're working hard to bring you AI-powered university shortlist
+              recommendations. This feature will help you discover and organize
+              universities that match your academic profile and goals.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link
+                to="/student/universities/explorer"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 transition-all font-medium"
+              >
+                <PlusIcon size={18} weight="bold" />
+                Browse Universities
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Preview Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+          <div className="bg-white rounded-xl border border-zinc-200 p-5 opacity-75">
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-purple-50 rounded-lg">
+                <SparkleIcon
+                  size={20}
+                  className="text-purple-600"
+                  weight="fill"
+                />
+              </div>
+              <div>
+                <h4 className="font-semibold text-zinc-900 mb-1">
+                  AI-Powered Recommendations
+                </h4>
+                <p className="text-sm text-zinc-600">
+                  Get personalized university suggestions based on your academic
+                  profile and preferences.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl border border-zinc-200 p-5 opacity-75">
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-green-50 rounded-lg">
+                <ListChecksIcon
+                  size={20}
+                  className="text-green-600"
+                  weight="duotone"
+                />
+              </div>
+              <div>
+                <h4 className="font-semibold text-zinc-900 mb-1">
+                  Smart Categorization
+                </h4>
+                <p className="text-sm text-zinc-600">
+                  Universities automatically sorted into reach, target, and
+                  safety categories.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl border border-zinc-200 p-5 opacity-75">
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-blue-50 rounded-lg">
+                <GraduationCapIcon
+                  size={20}
+                  className="text-blue-600"
+                  weight="duotone"
+                />
+              </div>
+              <div>
+                <h4 className="font-semibold text-zinc-900 mb-1">
+                  US & UK Universities
+                </h4>
+                <p className="text-sm text-zinc-600">
+                  Recommendations from top universities in both the US and UK.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -389,7 +501,7 @@ function EmptyState({ onGenerate }: { onGenerate: () => void }) {
 interface CategorySectionProps {
   title: string;
   description: string;
-  color: "purple" | "blue" | "green";
+  color: "purple" | "blue" | "green" | "zinc";
   universities: ShortlistedUniversity[];
   onRemove: (id: string) => void;
   onCollegeClick: (selection: {
@@ -413,7 +525,8 @@ function CategorySection({
   const colorClasses = {
     purple: "bg-purple-50 text-purple-700 border-purple-200",
     blue: "bg-blue-50 text-blue-700 border-blue-200",
-    green: "bg-green-50 text-green-700 border-green-200",
+    green: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    zinc: "bg-zinc-100 text-zinc-600 border-zinc-200",
   };
 
   return (
@@ -453,6 +566,7 @@ function CategorySection({
               key={university.id}
               university={university}
               onRemove={onRemove}
+              color={color}
             />
           ),
         )}
@@ -464,107 +578,96 @@ function CategorySection({
 function UniversityCard({
   university,
   onRemove,
+  color,
 }: {
   university: ShortlistedUniversity;
   onRemove: (id: string) => void;
+  color: "purple" | "blue" | "green" | "zinc";
 }) {
+  const borderColors = {
+    purple: "border-l-purple-500",
+    blue: "border-l-blue-500",
+    green: "border-l-emerald-500",
+    zinc: "border-l-zinc-400",
+  };
+
   return (
-    <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden hover:shadow-lg transition-all group">
-      {/* Image/Gradient Header */}
-      <div
-        className={cn(
-          "h-32 bg-gradient-to-br relative from-zinc-800 to-zinc-900",
-        )}
-      >
-        {university.imageUrl ? (
-          <img
-            src={university.imageUrl}
-            alt={university.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-white text-4xl font-bold opacity-30">
-              {university.name.charAt(0)}
-            </div>
-          </div>
-        )}
-
-        {university.source === "ai" && (
-          <div className="absolute top-2 left-2 bg-purple-600 text-white px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1">
-            <SparkleIcon size={12} weight="fill" />
-            AI Pick
-          </div>
-        )}
-
+    <div
+      className={cn(
+        "bg-white rounded-xl border border-zinc-200 border-l-4 p-5 hover:shadow-md transition-all group",
+        borderColors[color],
+      )}
+    >
+      {/* Header */}
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div className="flex-1 min-w-0">
+          <h3 className="text-base font-semibold text-zinc-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
+            {university.name}
+          </h3>
+          <p className="text-sm text-zinc-500 mt-1">
+            {university.location}
+          </p>
+        </div>
         {university.ranking && (
-          <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
-            <StarIcon size={14} weight="fill" className="text-amber-500" />
-            <span className="text-xs font-bold text-zinc-900">
-              #{university.ranking}
-            </span>
-          </div>
+          <span className="shrink-0 bg-zinc-100 text-zinc-600 px-2 py-1 rounded-md text-xs font-semibold">
+            #{university.ranking}
+          </span>
         )}
       </div>
 
-      {/* Content */}
-      <div className="p-4">
-        <h3 className="font-semibold text-zinc-900 mb-1 group-hover:text-blue-600 transition-colors">
-          {university.name}
-        </h3>
-        <div className="flex items-center gap-1 text-sm text-zinc-600 mb-3">
-          <MapPinIcon size={14} />
-          {university.location}
+      {university.source === "ai" && (
+        <div className="mb-3">
+          <span className="inline-flex items-center gap-1 bg-purple-50 text-purple-600 px-2 py-0.5 rounded text-xs font-medium">
+            <SparkleIcon size={12} weight="fill" />
+            AI Recommended
+          </span>
         </div>
+      )}
 
-        {university.notes && (
-          <p className="text-xs text-zinc-500 mb-3 line-clamp-2">
-            {university.notes}
-          </p>
-        )}
+      {university.notes && (
+        <p className="text-sm text-zinc-600 mb-3 line-clamp-2">
+          {university.notes}
+        </p>
+      )}
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 gap-2 mb-3">
+      {/* Stats */}
+      {(university.acceptanceRate || university.tuition) && (
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-zinc-600 mb-3">
           {university.acceptanceRate && (
-            <div className="text-xs">
-              <div className="text-zinc-500">Acceptance</div>
-              <div className="font-semibold text-zinc-900">
-                {university.acceptanceRate}
-              </div>
-            </div>
+            <span>
+              Acceptance: <span className="font-medium text-zinc-800">{university.acceptanceRate}</span>
+            </span>
           )}
           {university.tuition && (
-            <div className="text-xs">
-              <div className="text-zinc-500">Tuition</div>
-              <div className="font-semibold text-zinc-900">
-                {university.tuition}
-              </div>
-            </div>
+            <span>
+              Tuition: <span className="font-medium text-zinc-800">{university.tuition}</span>
+            </span>
           )}
         </div>
+      )}
 
-        {/* Actions */}
-        <div className="flex gap-2 pt-3 border-t border-zinc-100">
-          {university.source === "ai" && university.virtualAdvisorSessionId && (
-            <Link
-              to="/student/virtual-advisors/$advisor"
-              params={{ advisor: "shortlister" }}
-              search={{
-                sessionId: university.virtualAdvisorSessionId,
-              }}
-              className="flex-1 text-sm px-3 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors font-medium flex items-center justify-center gap-2"
-            >
-              <ChatCircleIcon size={14} weight="fill" />
-              View Chat
-            </Link>
-          )}
-          <button
-            onClick={() => onRemove(university.id)}
-            className="p-2 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors ml-auto"
+      {/* Actions */}
+      <div className="flex items-center gap-2 pt-3 border-t border-zinc-100">
+        {university.source === "ai" && university.virtualAdvisorSessionId && (
+          <Link
+            to="/student/virtual-advisors/$advisor"
+            params={{ advisor: "shortlister" }}
+            search={{
+              sessionId: university.virtualAdvisorSessionId,
+            }}
+            className="text-sm px-3 py-1.5 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors font-medium flex items-center gap-1.5"
           >
-            <TrashIcon size={18} />
-          </button>
-        </div>
+            <ChatCircleIcon size={14} weight="fill" />
+            View Chat
+          </Link>
+        )}
+        <button
+          onClick={() => onRemove(university.id)}
+          className="ml-auto p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+          title="Remove from shortlist"
+        >
+          <TrashIcon size={16} />
+        </button>
       </div>
     </div>
   );
