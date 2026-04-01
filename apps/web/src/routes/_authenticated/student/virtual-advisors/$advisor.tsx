@@ -15,7 +15,7 @@ import {
   XIcon,
 } from "@phosphor-icons/react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "orpc/client";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
@@ -39,6 +39,7 @@ function RouteComponent() {
   const params = Route.useParams();
   const navigate = useNavigate();
   const search = Route.useSearch();
+  const queryClient = useQueryClient();
 
   const {
     isConnected,
@@ -239,6 +240,10 @@ function RouteComponent() {
       await bulkSaveShortlistMutation.mutateAsync({
         universities: activeShortlistUniversities,
         virtualAdvisorSessionId: sessionId || undefined,
+      });
+      queryClient.invalidateQueries({
+        queryKey: orpc.shortlist.getMyShortlist.queryOptions({ input: {} })
+          .queryKey,
       });
       markShortlistSaved(shortlistDialogIndex);
       setShortlistDialogIndex(null);
@@ -639,6 +644,10 @@ function RouteComponent() {
               await bulkSaveShortlistMutation.mutateAsync({
                 universities: historyShortlist.universities,
                 virtualAdvisorSessionId: sessionId || undefined,
+              });
+              queryClient.invalidateQueries({
+                queryKey: orpc.shortlist.getMyShortlist.queryOptions({ input: {} })
+                  .queryKey,
               });
               setHistoryShortlist({
                 ...historyShortlist,
