@@ -66,13 +66,14 @@ export const getStudentShortlistWithDetails = async (studentUserId: string) => {
   // Get all shortlist items
   const shortlist = await getStudentShortlist(studentUserId);
 
-  // Separate US and UK colleges
+  // Only look up college details for manual entries — AI-sourced entries
+  // store the university name as collegeId, not an actual DB ID
   const usCollegeIds = shortlist
-    .filter((item) => item.country === "us")
+    .filter((item) => item.country === "us" && item.source === "manual")
     .map((item) => item.collegeId);
 
   const ukCollegeIds = shortlist
-    .filter((item) => item.country === "uk")
+    .filter((item) => item.country === "uk" && item.source === "manual")
     .map((item) => item.collegeId);
 
   // Fetch US and UK colleges in parallel (only columns needed for cards)
