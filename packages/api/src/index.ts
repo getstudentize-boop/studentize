@@ -9,14 +9,14 @@ import {
   sessionUpdateHandler,
   sessionReadTranscriptionHandler,
   sessionDeleteHandler,
-} from "./routes/session";
+} from "./routes/web/session";
 
-import { student } from "./routes/student";
-import { college } from "./routes/college";
-import { shortlist } from "./routes/shortlist";
-import { essay } from "./routes/essay";
-import { task } from "./routes/task";
-import { aptitude } from "./routes/aptitude";
+import { student } from "./routes/web/student";
+import { college } from "./routes/web/college";
+import { shortlist } from "./routes/web/shortlist";
+import { essay } from "./routes/web/essay";
+import { task } from "./routes/web/task";
+import { aptitude } from "./routes/web/aptitude";
 
 import {
   advisorCreateHandler,
@@ -28,9 +28,9 @@ import {
   advisorStudentAccessGetHandler,
   advisorStudentAccessUpdateHandler,
   advisor,
-} from "./routes/advisor";
+} from "./routes/web/advisor";
 
-import { chatStudentHandler, chatNewIdHandler } from "./routes/chat";
+import { chatStudentHandler, chatNewIdHandler } from "./routes/web/chat";
 
 import {
   userDisplayHandler,
@@ -40,19 +40,19 @@ import {
   userListPendingHandler,
   userApproveHandler,
   userSwitchToStudentHandler,
-} from "./routes/user";
-import { scheduledSession } from "./routes/scheduled-session";
-import { admin } from "./routes/admin";
-import { session } from "./routes/session";
-import { organization } from "./routes/organization";
-import { virtualAdvisor } from "./routes/virtual-advisor";
-import { consultationRequest } from "./routes/consultation-request";
-import { score } from "./routes/score";
+} from "./routes/web/user";
+import { scheduledSession } from "./routes/web/scheduled-session";
+import { admin } from "./routes/web/admin";
+import { session } from "./routes/web/session";
+import { organization } from "./routes/web/organization";
+import { virtualAdvisor } from "./routes/web/virtual-advisor";
+import { consultationRequest } from "./routes/web/consultation-request";
+import { score } from "./routes/web/score";
 import {
   visitorChatHandler,
   visitorChatListHandler,
   visitorChatMessagesHandler,
-} from "./routes/visitor-chat";
+} from "./routes/web/visitor-chat";
 
 export const router = {
   admin,
@@ -117,4 +117,4 @@ export * from "./utils/workos";
 
 export * from "./utils/google";
 
-export { visitorChat } from "./routes/visitor-chat/chat";
+export { visitorChat } from "./routes/web/visitor-chat/chat";
