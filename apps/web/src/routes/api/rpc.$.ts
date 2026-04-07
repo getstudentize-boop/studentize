@@ -12,6 +12,7 @@ const organizationToHostMap = {
   localhost:
     process.env.LOCALHOST_ORGANIZATION_ID ?? "ujx3v67lc1tis9i32t3mea7b",
   "app.studentize.com": "ujx3v67lc1tis9i32t3mea7b",
+  "stage.studentize.com": "ujx3v67lc1tis9i32t3mea7b",
 };
 
 type OrganizationHost = keyof typeof organizationToHostMap;
