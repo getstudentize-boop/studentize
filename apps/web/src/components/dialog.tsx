@@ -17,7 +17,7 @@ export const DialogOverlay = forwardRef<
 >((props, ref) => (
   <PrimitiveDialog.Overlay
     ref={ref}
-    className="fixed inset-0 bg-black/50 data-[state=open]:animate-fadeIn data-[state=closed]:animate-fadeOut"
+    className="fixed inset-0 z-[99] bg-black/50 data-[state=open]:animate-fadeIn data-[state=closed]:animate-fadeOut"
     {...props}
   />
 ));

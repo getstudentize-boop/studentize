@@ -67,8 +67,8 @@ const bulkSaveShortlistHandler = privateRoute
 
 const generateShortlistHandler = privateRoute
   .input(GenerateShortlistInputSchema)
-  .handler(async ({ context }) => {
-    const result = await generateShortlist(context);
+  .handler(async ({ context, input }) => {
+    const result = await generateShortlist(context, input);
     return result;
   });
 

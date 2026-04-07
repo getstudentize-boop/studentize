@@ -19,7 +19,7 @@ function UniversitiesLayout() {
   return (
     <div className="w-full h-screen overflow-auto flex flex-col bg-zinc-50">
       {/* Header with Tabs */}
-      <div className="sticky top-0 bg-white border-b border-zinc-200 shadow-sm">
+      <div className="sticky top-0 z-10 bg-white border-b border-zinc-200 shadow-sm">
         <div className="px-6 py-6">
           <h1 className="text-3xl font-semibold text-zinc-900 tracking-tight mb-2">
             Universities

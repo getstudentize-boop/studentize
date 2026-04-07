@@ -252,15 +252,7 @@ export const searchUKColleges = async (filters: UKCollegeFilters = {}) => {
 
   const [colleges, [{ count }]] = await Promise.all([
     db
-      .select({
-        id: schema.ukCollege.id,
-        universityName: schema.ukCollege.universityName,
-        location: schema.ukCollege.location,
-        tuitionFees: schema.ukCollege.tuitionFees,
-        imageUrl: schema.ukCollege.imageUrl,
-        totalForeignStudents: schema.ukCollege.totalForeignStudents,
-        sizeOfCity: schema.ukCollege.sizeOfCity,
-      })
+      .select()
       .from(schema.ukCollege)
       .where(whereClause)
       .orderBy(...orderByClauses)
