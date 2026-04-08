@@ -3,42 +3,27 @@ import { createAnalyticsRouteHelper } from "../../utils/analytics-middleware";
 
 export const guruUsageRoute = createAnalyticsRouteHelper({
   execute: async () => {
-    const [stats] = await db.execute<{
-      total_sessions: number;
-      avg_messages: number;
-    }>(sql`
-      SELECT
-        (SELECT count(*)::int FROM virtual_advisor_session) AS total_sessions,
-        coalesce((
-          SELECT round(avg(cnt)::numeric, 1)::float
-          FROM (
-            SELECT count(*) AS cnt
-            FROM virtual_advisor_message
-            WHERE role = 'user'
-            GROUP BY session_id
-          ) t
-        ), 0) AS avg_messages
-    `);
-
-    const advisorRows = await db.execute<{
-      slug: string;
+    const rows = await db.execute<{
+      name: string | null;
+      email: string;
       sessions: number;
     }>(sql`
       SELECT
-        advisor_slug AS slug,
+        u.name,
+        u.email,
         count(*)::int AS sessions
-      FROM virtual_advisor_session
-      GROUP BY advisor_slug
+      FROM advisor_chat c
+      JOIN "user" u ON u.id = c.student_id
+      WHERE c.user_id = c.student_id
+      GROUP BY u.id, u.name, u.email
       ORDER BY count(*) DESC
+      LIMIT 10
     `);
 
-    return {
-      totalSessions: stats!.total_sessions,
-      avgMessagesPerSession: stats!.avg_messages,
-      topAdvisors: advisorRows.map((r) => ({
-        label: r.slug,
-        sessions: r.sessions,
-      })),
-    };
+    return rows.map((r) => ({
+      name: r.name,
+      email: r.email,
+      sessions: r.sessions,
+    }));
   },
 });

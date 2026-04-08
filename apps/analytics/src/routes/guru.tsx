@@ -110,7 +110,7 @@ function Guru() {
               className="rounded-xl border border-zinc-200 bg-white overflow-hidden"
               style={{ height: "calc(100vh - 17rem)" }}
             >
-              <div className="overflow-y-auto h-full">
+              <div className="overflow-y-auto h-full no-scrollbar">
                 <table className="w-full text-sm">
                   <thead className="sticky top-0 bg-white">
                     <tr className="border-b border-zinc-100 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">
