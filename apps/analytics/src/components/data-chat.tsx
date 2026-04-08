@@ -1,7 +1,7 @@
 import { useChat } from "@ai-sdk/react";
 import { useRef, useEffect, useState } from "react";
 import { cn } from "#/utils/cn";
-import { Markdown } from "#/components/Markdown";
+import { Markdown } from "#/components/markdown";
 import { eventIteratorToStream } from "@orpc/client";
 import { client } from "../../orpc/client";
 import {

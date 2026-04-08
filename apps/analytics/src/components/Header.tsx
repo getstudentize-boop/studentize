@@ -1,5 +1,10 @@
 import { cn } from "#/utils/cn";
-import { HouseIcon, InfoIcon } from "@phosphor-icons/react";
+import {
+  ChatCircleTextIcon,
+  ChatIcon,
+  HouseIcon,
+  InfoIcon,
+} from "@phosphor-icons/react";
 import { Link, useMatchRoute } from "@tanstack/react-router";
 
 const navItems = [
@@ -9,13 +14,13 @@ const navItems = [
     label: "Home",
   },
   {
-    to: "/about",
-    icon: <InfoIcon className="size-4" />,
-    label: "About",
+    to: "/guru",
+    icon: <ChatCircleTextIcon className="size-4" />,
+    label: "Guru",
   },
 ] as const;
 
-export default function Header({ children }: { children: React.ReactNode }) {
+export function Header({ children }: { children: React.ReactNode }) {
   const route = useMatchRoute();
 
   return (
@@ -49,8 +54,20 @@ export default function Header({ children }: { children: React.ReactNode }) {
                   : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900",
               )}
             >
-              <span className="flex-shrink-0">{icon}</span>
-              <span className="whitespace-nowrap text-sm font-medium opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <span
+                className={cn(
+                  "flex-shrink-0",
+                  isActive ? "text-white" : "text-zinc-600",
+                )}
+              >
+                {icon}
+              </span>
+              <span
+                className={cn(
+                  "whitespace-nowrap text-sm font-medium opacity-0 text-balance transition-opacity duration-300 group-hover:opacity-100",
+                  isActive ? "text-white" : "text-zinc-600",
+                )}
+              >
                 {label}
               </span>
             </Link>

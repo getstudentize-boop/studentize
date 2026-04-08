@@ -7,7 +7,7 @@ import { OnboardingCompletion } from "#/stats/onboarding-completion";
 import { SessionRatings } from "#/stats/session-ratings";
 import { ShortlistBreakdown } from "#/stats/shortlist-breakdown";
 import { TaskCompletion } from "#/stats/task-completion";
-import { DataChat } from "#/components/DataChat";
+import { DataChat } from "#/components/data-chat";
 
 export const Route = createFileRoute("/")({ component: App });
 
@@ -29,7 +29,7 @@ function Section({
 function App() {
   return (
     <>
-      <div className="mx-auto w-full max-w-6xl space-y-10 p-10 overflow-y-auto">
+      <div className="mx-auto w-full max-w-6xl space-y-10 p-10 overflow-y-auto no-scrollbar">
         <Section title="Growth & Funnel">
           <OnboardingCompletion />
           <ActiveStudents />

@@ -9,19 +9,25 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AboutRouteImport } from './routes/about'
+import { Route as GuruRouteImport } from './routes/guru'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GuruChatSessionIdRouteImport } from './routes/guru/$chatSessionId'
 import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc.$'
 
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
+const GuruRoute = GuruRouteImport.update({
+  id: '/guru',
+  path: '/guru',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const GuruChatSessionIdRoute = GuruChatSessionIdRouteImport.update({
+  id: '/$chatSessionId',
+  path: '/$chatSessionId',
+  getParentRoute: () => GuruRoute,
 } as any)
 const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
   id: '/api/rpc/$',
@@ -31,41 +37,44 @@ const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/guru': typeof GuruRouteWithChildren
+  '/guru/$chatSessionId': typeof GuruChatSessionIdRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/guru': typeof GuruRouteWithChildren
+  '/guru/$chatSessionId': typeof GuruChatSessionIdRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/guru': typeof GuruRouteWithChildren
+  '/guru/$chatSessionId': typeof GuruChatSessionIdRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/api/rpc/$'
+  fullPaths: '/' | '/guru' | '/guru/$chatSessionId' | '/api/rpc/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/api/rpc/$'
-  id: '__root__' | '/' | '/about' | '/api/rpc/$'
+  to: '/' | '/guru' | '/guru/$chatSessionId' | '/api/rpc/$'
+  id: '__root__' | '/' | '/guru' | '/guru/$chatSessionId' | '/api/rpc/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
+  GuruRoute: typeof GuruRouteWithChildren
   ApiRpcSplatRoute: typeof ApiRpcSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/guru': {
+      id: '/guru'
+      path: '/guru'
+      fullPath: '/guru'
+      preLoaderRoute: typeof GuruRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -74,6 +83,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/guru/$chatSessionId': {
+      id: '/guru/$chatSessionId'
+      path: '/$chatSessionId'
+      fullPath: '/guru/$chatSessionId'
+      preLoaderRoute: typeof GuruChatSessionIdRouteImport
+      parentRoute: typeof GuruRoute
     }
     '/api/rpc/$': {
       id: '/api/rpc/$'
@@ -85,9 +101,19 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface GuruRouteChildren {
+  GuruChatSessionIdRoute: typeof GuruChatSessionIdRoute
+}
+
+const GuruRouteChildren: GuruRouteChildren = {
+  GuruChatSessionIdRoute: GuruChatSessionIdRoute,
+}
+
+const GuruRouteWithChildren = GuruRoute._addFileChildren(GuruRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
+  GuruRoute: GuruRouteWithChildren,
   ApiRpcSplatRoute: ApiRpcSplatRoute,
 }
 export const routeTree = rootRouteImport

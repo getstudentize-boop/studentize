@@ -9,6 +9,8 @@ import { conversionRateRoute } from "./conversion-rate";
 import { guruUsageRoute } from "./guru-usage";
 import { sessionRatingsRoute } from "./session-ratings";
 import { taskCompletionRoute } from "./task-completion";
+import { guruChatsRoute } from "./guru-chats";
+import { guruChatMessagesRoute } from "./guru-chat-messages";
 import { analyticsChat, type AnalyticsChatInput } from "./chat";
 
 export const analytics = {
@@ -20,6 +22,10 @@ export const analytics = {
   guruUsage: analyticsRoute.handler(guruUsageRoute),
   sessionRatings: analyticsRoute.handler(sessionRatingsRoute),
   taskCompletion: analyticsRoute.handler(taskCompletionRoute),
+  guruChats: analyticsRoute.handler(guruChatsRoute),
+  guruChatMessages: analyticsRoute
+    .input(type<{ chatId: string }>())
+    .handler(({ input }) => guruChatMessagesRoute({ input })),
   chat: analyticsRoute
     .input(type<AnalyticsChatInput>())
     .handler(({ input }) => analyticsChat(input)),
