@@ -57,7 +57,7 @@ export default function Header({ children }: { children: React.ReactNode }) {
           );
         })}
       </div>
-      <div className="flex-1 overflow-auto bg-zinc-50">{children}</div>
+      <div className="flex-1 overflow-auto bg-zinc-50 flex">{children}</div>
     </div>
   );
 }

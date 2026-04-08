@@ -1,3 +1,4 @@
+import { type } from "@orpc/server";
 import { analyticsRoute } from "../../utils/analytics-middleware";
 
 import { onboardingCompletionRoute } from "./onboarding-completion";
@@ -8,6 +9,7 @@ import { conversionRateRoute } from "./conversion-rate";
 import { guruUsageRoute } from "./guru-usage";
 import { sessionRatingsRoute } from "./session-ratings";
 import { taskCompletionRoute } from "./task-completion";
+import { analyticsChat, type AnalyticsChatInput } from "./chat";
 
 export const analytics = {
   onboardingCompletion: analyticsRoute.handler(onboardingCompletionRoute),
@@ -18,4 +20,7 @@ export const analytics = {
   guruUsage: analyticsRoute.handler(guruUsageRoute),
   sessionRatings: analyticsRoute.handler(sessionRatingsRoute),
   taskCompletion: analyticsRoute.handler(taskCompletionRoute),
+  chat: analyticsRoute
+    .input(type<AnalyticsChatInput>())
+    .handler(({ input }) => analyticsChat(input)),
 };

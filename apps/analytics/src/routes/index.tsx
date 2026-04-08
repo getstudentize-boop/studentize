@@ -7,6 +7,7 @@ import { OnboardingCompletion } from "#/stats/onboarding-completion";
 import { SessionRatings } from "#/stats/session-ratings";
 import { ShortlistBreakdown } from "#/stats/shortlist-breakdown";
 import { TaskCompletion } from "#/stats/task-completion";
+import { DataChat } from "#/components/DataChat";
 
 export const Route = createFileRoute("/")({ component: App });
 
@@ -27,23 +28,27 @@ function Section({
 
 function App() {
   return (
-    <div className="mx-auto max-w-6xl space-y-10 p-10">
-      <Section title="Growth & Funnel">
-        <OnboardingCompletion />
-        <ActiveStudents />
-        <ConversionRate />
-        <FeatureAdoption />
-      </Section>
+    <>
+      <div className="mx-auto w-full max-w-6xl space-y-10 p-10 overflow-y-auto">
+        <Section title="Growth & Funnel">
+          <OnboardingCompletion />
+          <ActiveStudents />
+          <ConversionRate />
+          <FeatureAdoption />
+        </Section>
 
-      <Section title="University Research">
-        <ShortlistBreakdown />
-        <GuruUsage />
-      </Section>
+        <Section title="University Research">
+          <ShortlistBreakdown />
+          <GuruUsage />
+        </Section>
 
-      <Section title="Advising & Progress">
-        <SessionRatings />
-        <TaskCompletion />
-      </Section>
-    </div>
+        <Section title="Advising & Progress">
+          <SessionRatings />
+          <TaskCompletion />
+        </Section>
+      </div>
+
+      <DataChat />
+    </>
   );
 }
