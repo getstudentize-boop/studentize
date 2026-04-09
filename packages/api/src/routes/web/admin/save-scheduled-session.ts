@@ -3,6 +3,7 @@ import {
   getScheduledSessionByBotId,
   updateScheduledSessionDoneAt,
   updateSessionSummary,
+  getUserName,
 } from "@student/db";
 import { createAdminRouteHelper } from "../../../utils/middleware";
 import z from "zod";
@@ -18,6 +19,7 @@ import { summarizeTranscript } from "@student/ai/services";
 
 import { format as _format } from "date-fns";
 import { downloadReplayRoute } from "./download-replay";
+import { Resend } from "resend";
 
 export const SaveScheduledSessionInputSchema = z.object({
   botId: z.string(),
@@ -118,6 +120,61 @@ export const saveScheduledSession = createAdminRouteHelper({
       await downloadReplayRoute({
         input: { sessionId: newSession.id },
       });
+
+      // Send rating email to the student
+      const resendKey = process.env.RESEND_API_KEY;
+      const fromEmail = process.env.RESEND_FROM_EMAIL;
+      const fromName = process.env.RESEND_FROM_NAME;
+
+      if (resendKey && fromEmail && scheduledSession.studentUserId) {
+        try {
+          const resend = new Resend(resendKey);
+          const from = fromName?.trim()
+            ? `${fromName.trim()} <${fromEmail}>`
+            : fromEmail;
+
+          const [student, advisor] = await Promise.all([
+            getUserName({ userId: scheduledSession.studentUserId }),
+            getUserName({ userId: scheduledSession.advisorUserId ??  }),
+          ]);
+
+          const sessionTitle =
+            scheduledSession.title ||
+            [student?.name, advisor?.name].filter(Boolean).join(" x ") ||
+            "Your advising session";
+
+          const sessionUrl = `${process.env.WEB_APP_URL ?? "https://studentize.com"}/student/sessions/${newSession.id}`;
+
+          if (student?.email) {
+            await resend.emails.send({
+              from,
+              to: [student.email],
+              subject: `Your session "${sessionTitle}" is ready to review`,
+              text: [
+                `Hi ${student.name ?? "there"},`,
+                "",
+                `Your advising session "${sessionTitle}" has been uploaded and is ready to review on Studentize.`,
+                "",
+                `View your session and rate it here: ${sessionUrl}`,
+                "",
+                "Log in to view the session summary, transcript, and leave a rating.",
+                "",
+                "Best,",
+                "The Studentize Team",
+              ].join("\n"),
+              html: `
+                <p>Hi ${student.name ?? "there"},</p>
+                <p>Your advising session "<strong>${sessionTitle}</strong>" has been uploaded and is ready to review on Studentize.</p>
+                <p><a href="${sessionUrl}" style="color: #2563eb; text-decoration: underline;">View your session and rate it</a></p>
+                <p>Log in to view the session summary, transcript, and leave a rating to help us improve.</p>
+                <p>Best,<br>The Studentize Team</p>
+              `,
+            });
+          }
+        } catch (err) {
+          console.error("Failed to send session rating email", err);
+        }
+      }
     }
 
     return {
