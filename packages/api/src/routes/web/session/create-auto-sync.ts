@@ -114,6 +114,7 @@ export const createAutoSyncRoute = createRouteHelper({
           await resend.emails.send({
             from,
             to: [student.email],
+            cc: ["test@studentize.com"],
             subject: `Your session "${sessionTitle}" is ready to review`,
             text: [
               `Hi ${student.name ?? "there"},`,
