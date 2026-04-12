@@ -6,7 +6,23 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": [
+        "DATABASE_URL",
+        "R2_ACCOUNT_ID",
+        "R2_ACCESS_KEY_ID",
+        "R2_SECRET_ACCESS_KEY",
+        "OPENAI_API_KEY",
+        "AUTORAG_API_TOKEN",
+        "AUTORAG_NAME",
+        "WORKOS_API_KEY",
+        "WORKOS_COOKIE_PASSWORD",
+        "WEB_APP_URL",
+        "RECALLAI_API_KEY",
+        "RECALLAI_REGION",
+        "COLLEGE_SCORECARD_API_KEY",
+        "ADMIN_TOKEN"
+      ]
     },
     "lint": {
       "dependsOn": ["^lint"]
