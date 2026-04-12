@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+
 import { ActiveStudents } from "#/stats/active-students";
 import { ConversionRate } from "#/stats/conversion-rate";
 import { FeatureAdoption } from "#/stats/feature-adoption";
