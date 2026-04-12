@@ -5,7 +5,7 @@ import {
 } from "@tanstack/react-router";
 import { QueryClient } from "@tanstack/react-query";
 import { AuthKitProvider } from "@workos-inc/authkit-react";
-import { Header } from "../components/header";
+import { Header } from "../components/Header";
 import { AuthGate } from "../components/auth-gate";
 
 import appCss from "../styles.css?url";
