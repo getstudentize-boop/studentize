@@ -16,7 +16,7 @@ function ChatSession() {
   );
 
   return (
-    <div className="w-140 shrink-0 border-l border-zinc-200 bg-white flex flex-col h-screen">
+    <div className="w-140 shrink-0 border-l border-zinc-200 bg-white flex flex-col h-screen ">
       <div className="flex items-center justify-between border-b border-zinc-100 px-5 py-3">
         <div className="min-w-0">
           {isLoading ? (
