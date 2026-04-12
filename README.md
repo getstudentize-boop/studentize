@@ -85,7 +85,6 @@ turbo dev --filter=web
 # Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
 npx turbo dev --filter=web
 yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
 ```
 
 ## Useful Links
