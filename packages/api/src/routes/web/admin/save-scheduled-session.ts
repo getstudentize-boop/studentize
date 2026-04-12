@@ -36,7 +36,7 @@ export const saveScheduledSession = createAdminRouteHelper({
     // incorrectly attached by Recall. Just return without processing.
     if (!scheduledSession) {
       console.error(
-        `No scheduled session found for botId: ${input.botId}. Skipping.`
+        `No scheduled session found for botId: ${input.botId}. Skipping.`,
       );
       return { skipped: true };
     }
@@ -48,7 +48,7 @@ export const saveScheduledSession = createAdminRouteHelper({
     });
 
     const doneStatusChange = response.status_changes.find(
-      (c) => c.code === "done"
+      (c) => c.code === "done",
     );
 
     if (!doneStatusChange) {
@@ -70,10 +70,10 @@ export const saveScheduledSession = createAdminRouteHelper({
     const transcriptText = transcriptionData
       .map((entry) => {
         const minutes = Math.floor(
-          entry.words[0].start_timestamp.relative / 60
+          entry.words[0].start_timestamp.relative / 60,
         );
         const seconds = Math.floor(
-          entry.words[0].start_timestamp.relative % 60
+          entry.words[0].start_timestamp.relative % 60,
         );
         const timestamp = `${minutes}:${seconds.toString().padStart(2, "0")}`;
 
@@ -98,7 +98,7 @@ export const saveScheduledSession = createAdminRouteHelper({
             studentUserId: scheduledSession.studentUserId!,
             sessionId: newSession.id,
           }),
-      { type: "put" }
+      { type: "put" },
     );
 
     await uploadTextFile({ uploadUrl: upload, content: transcriptText });
@@ -135,7 +135,7 @@ export const saveScheduledSession = createAdminRouteHelper({
 
           const [student, advisor] = await Promise.all([
             getUserName({ userId: scheduledSession.studentUserId }),
-            getUserName({ userId: scheduledSession.advisorUserId ??  }),
+            getUserName({ userId: scheduledSession.advisorUserId ?? "" }),
           ]);
 
           const sessionTitle =
