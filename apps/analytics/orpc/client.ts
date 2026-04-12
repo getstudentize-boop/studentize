@@ -30,7 +30,8 @@ const getORPCClient = createIsomorphicFn()
       url: `${window.location.origin}/api/rpc`,
       headers: async () => {
         const workos = await createClient(
-          import.meta.env.VITE_WORKOS_CLIENT_ID!,
+          // import.meta.env.VITE_WORKOS_CLIENT_ID!,
+          "client_01K4FMC9RHGGAHHKPBDM7S5RSB",
           { devMode: true },
         );
 
