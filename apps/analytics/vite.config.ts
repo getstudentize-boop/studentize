@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv, type ConfigEnv } from "vite";
 import { devtools } from "@tanstack/devtools-vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
@@ -9,22 +9,24 @@ import tailwindcss from "@tailwindcss/vite";
 
 import { nitro } from "nitro/vite";
 
-const config = defineConfig({
-  plugins: [
-    devtools(),
-    tsconfigPaths({ projects: ["./tsconfig.json"] }),
-    tailwindcss(),
-    tanstackStart(),
-    viteReact(),
-    // @ts-ignore
-    nitro({
-      runtimeConfig: {
-        nitro: {
-          envPrefix: "VITE_",
-        },
-      },
-    }),
-  ],
-});
+export default ({ mode }: ConfigEnv) => {
+  Object.assign(process.env, loadEnv(mode, process.cwd(), ""));
 
-export default config;
+  return defineConfig({
+    plugins: [
+      devtools(),
+      tsconfigPaths({ projects: ["./tsconfig.json"] }),
+      tailwindcss(),
+      tanstackStart(),
+      viteReact(),
+      // @ts-ignore
+      nitro({
+        runtimeConfig: {
+          nitro: {
+            envPrefix: "VITE_",
+          },
+        },
+      }),
+    ],
+  });
+};
