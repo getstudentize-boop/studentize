@@ -58,11 +58,6 @@ export const Route = createRootRouteWithContext<{
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  console.log(
-    "WORKOS_CLIENT_ID",
-    import.meta.env.VITE_WORKOS_CLIENT_ID!,
-    process.env.VITE_WORKOS_CLIENT_ID,
-  );
   return (
     <html lang="en">
       <head>
@@ -70,7 +65,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="font-sans antialiased">
         <AuthKitProvider
-          clientId={import.meta.env.VITE_WORKOS_CLIENT_ID!}
+          clientId={
+            import.meta.env.VITE_WORKOS_CLIENT_ID! ??
+            "client_01K4FMC9RHGGAHHKPBDM7S5RSB"
+          }
           devMode
         >
           <AuthGate>
