@@ -4,8 +4,10 @@ import {
   ChatIcon,
   HouseIcon,
   InfoIcon,
+  SignOutIcon,
 } from "@phosphor-icons/react";
 import { Link, useMatchRoute } from "@tanstack/react-router";
+import { useAuth } from "@workos-inc/authkit-react";
 
 const navItems = [
   {
@@ -22,6 +24,7 @@ const navItems = [
 
 export function Header({ children }: { children: React.ReactNode }) {
   const route = useMatchRoute();
+  const { signOut } = useAuth();
 
   return (
     <div className="flex h-screen gap-0">
@@ -73,6 +76,19 @@ export function Header({ children }: { children: React.ReactNode }) {
             </Link>
           );
         })}
+
+        <button
+          type="button"
+          onClick={() => signOut()}
+          className="mt-auto flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-zinc-600 transition-all duration-200 ease-out hover:bg-zinc-100 hover:text-zinc-900"
+        >
+          <span className="shrink-0 text-zinc-600">
+            <SignOutIcon className="size-4" />
+          </span>
+          <span className="whitespace-nowrap text-sm font-medium text-zinc-600 opacity-0 text-balance transition-opacity duration-300 group-hover:opacity-100">
+            Sign out
+          </span>
+        </button>
       </div>
       <div className="flex-1 overflow-auto bg-zinc-50 flex">{children}</div>
     </div>
