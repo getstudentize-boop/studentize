@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as GuruRouteImport } from './routes/guru'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GuruChatSessionIdRouteImport } from './routes/guru/$chatSessionId'
+import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc.$'
 
 const GuruRoute = GuruRouteImport.update({
@@ -29,6 +30,11 @@ const GuruChatSessionIdRoute = GuruChatSessionIdRouteImport.update({
   path: '/$chatSessionId',
   getParentRoute: () => GuruRoute,
 } as any)
+const ApiHealthRoute = ApiHealthRouteImport.update({
+  id: '/api/health',
+  path: '/api/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
   id: '/api/rpc/$',
   path: '/api/rpc/$',
@@ -38,12 +44,14 @@ const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/guru': typeof GuruRouteWithChildren
+  '/api/health': typeof ApiHealthRoute
   '/guru/$chatSessionId': typeof GuruChatSessionIdRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/guru': typeof GuruRouteWithChildren
+  '/api/health': typeof ApiHealthRoute
   '/guru/$chatSessionId': typeof GuruChatSessionIdRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
@@ -51,20 +59,33 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/guru': typeof GuruRouteWithChildren
+  '/api/health': typeof ApiHealthRoute
   '/guru/$chatSessionId': typeof GuruChatSessionIdRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/guru' | '/guru/$chatSessionId' | '/api/rpc/$'
+  fullPaths:
+    | '/'
+    | '/guru'
+    | '/api/health'
+    | '/guru/$chatSessionId'
+    | '/api/rpc/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/guru' | '/guru/$chatSessionId' | '/api/rpc/$'
-  id: '__root__' | '/' | '/guru' | '/guru/$chatSessionId' | '/api/rpc/$'
+  to: '/' | '/guru' | '/api/health' | '/guru/$chatSessionId' | '/api/rpc/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/guru'
+    | '/api/health'
+    | '/guru/$chatSessionId'
+    | '/api/rpc/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GuruRoute: typeof GuruRouteWithChildren
+  ApiHealthRoute: typeof ApiHealthRoute
   ApiRpcSplatRoute: typeof ApiRpcSplatRoute
 }
 
@@ -91,6 +112,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GuruChatSessionIdRouteImport
       parentRoute: typeof GuruRoute
     }
+    '/api/health': {
+      id: '/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
+      preLoaderRoute: typeof ApiHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/rpc/$': {
       id: '/api/rpc/$'
       path: '/api/rpc/$'
@@ -114,6 +142,7 @@ const GuruRouteWithChildren = GuruRoute._addFileChildren(GuruRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GuruRoute: GuruRouteWithChildren,
+  ApiHealthRoute: ApiHealthRoute,
   ApiRpcSplatRoute: ApiRpcSplatRoute,
 }
 export const routeTree = rootRouteImport
