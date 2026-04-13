@@ -11,11 +11,12 @@ export const cookieOpts = {
 } as const;
 
 export const workos = new WorkOS(process.env.WORKOS_API_KEY!, {
-  clientId: process.env.VITE_WORKOS_CLIENT_ID!,
+  clientId:
+    process.env.VITE_WORKOS_CLIENT_ID! ?? "client_01K4FMCA6X5ZS7Z6GZSZRFMA78",
 });
 
 const jwksUrl = workos.userManagement.getJwksUrl(
-  process.env.VITE_WORKOS_CLIENT_ID!
+  process.env.VITE_WORKOS_CLIENT_ID! ?? "client_01K4FMCA6X5ZS7Z6GZSZRFMA78",
 );
 
 const JWKS = createRemoteJWKSet(new URL(jwksUrl));
