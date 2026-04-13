@@ -10,13 +10,18 @@ export const cookieOpts = {
   sameSite: "lax",
 } as const;
 
+console.log("🔥".repeat(100));
+console.log(process.env.VITE_WORKOS_CLIENT_ID);
+console.log(process.env.WORKOS_API_KEY);
+console.log("🔥".repeat(100));
+
 export const workos = new WorkOS(process.env.WORKOS_API_KEY!, {
   clientId:
-    process.env.VITE_WORKOS_CLIENT_ID! ?? "client_01K4FMCA6X5ZS7Z6GZSZRFMA78",
+    process.env.VITE_WORKOS_CLIENT_ID! || "client_01K4FMCA6X5ZS7Z6GZSZRFMA78",
 });
 
 const jwksUrl = workos.userManagement.getJwksUrl(
-  process.env.VITE_WORKOS_CLIENT_ID! ?? "client_01K4FMCA6X5ZS7Z6GZSZRFMA78",
+  process.env.VITE_WORKOS_CLIENT_ID! || "client_01K4FMCA6X5ZS7Z6GZSZRFMA78",
 );
 
 const JWKS = createRemoteJWKSet(new URL(jwksUrl));
