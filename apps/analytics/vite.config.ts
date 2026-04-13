@@ -18,15 +18,8 @@ export default ({ mode }: ConfigEnv) => {
       tsconfigPaths({ projects: ["./tsconfig.json"] }),
       tailwindcss(),
       tanstackStart(),
+      nitro(),
       viteReact(),
-      // @ts-ignore
-      nitro({
-        runtimeConfig: {
-          nitro: {
-            envPrefix: "VITE_",
-          },
-        },
-      }),
     ],
   });
 };
