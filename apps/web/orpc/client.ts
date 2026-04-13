@@ -25,7 +25,7 @@ const getORPCClient = createIsomorphicFn()
           console.error("ORPC Error:", error);
         }),
       ],
-    })
+    }),
   )
   .client((): RouterClient<typeof router> => {
     const link = new RPCLink({
@@ -33,7 +33,7 @@ const getORPCClient = createIsomorphicFn()
       headers: async () => {
         const workos = await createClient(
           import.meta.env.VITE_WORKOS_CLIENT_ID!,
-          { devMode: true }
+          { devMode: true },
         );
 
         const data = await workos.getAccessToken();
