@@ -16,7 +16,14 @@ const config = defineConfig({
     tailwindcss(),
     tanstackStart(),
     viteReact(),
-    nitro(),
+    // @ts-ignore
+    nitro({
+      runtimeConfig: {
+        nitro: {
+          envPrefix: "VITE_",
+        },
+      },
+    }),
   ],
 });
 
