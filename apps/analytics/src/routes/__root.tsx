@@ -67,7 +67,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <AuthKitProvider
           clientId={
             import.meta.env.VITE_WORKOS_CLIENT_ID! ??
-            "client_01K4FMC9RHGGAHHKPBDM7S5RSB"
+            "client_01K4FMCA6X5ZS7Z6GZSZRFMA78"
           }
           devMode
         >
