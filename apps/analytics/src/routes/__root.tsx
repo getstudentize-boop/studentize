@@ -58,7 +58,11 @@ export const Route = createRootRouteWithContext<{
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  console.log("WORKOS_CLIENT_ID", import.meta.env.VITE_WORKOS_CLIENT_ID!);
+  console.log(
+    "WORKOS_CLIENT_ID",
+    import.meta.env.VITE_WORKOS_CLIENT_ID!,
+    process.env.VITE_WORKOS_CLIENT_ID,
+  );
   return (
     <html lang="en">
       <head>
